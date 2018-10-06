@@ -20,36 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_ENGINE_HPP
-#define FIRESTORM_ENGINE_HPP
+#ifndef FIRESTORM_INPUTMANAGER_HPP
+#define FIRESTORM_INPUTMANAGER_HPP
 
-#include <graphics/Window.hpp>
+#include "Keys.hpp"
+#include "core/Types.hpp"
+#include "graphics/Window.hpp"
 
 #include <memory>
-#include <io/InputManager.hpp>
 
-namespace fs
+namespace fs::io
 {
-class Engine
+class InputManager
 {
 public:
-    Engine();
-    virtual ~Engine();
+    InputManager();
+    virtual ~InputManager() = default;
 
-    void create(core::Vector2i windowSize, const std::string& windowTitle, core::fs_uint32 windowFlags = 0);
-    virtual void destroy();
+    void create(const graphics::Window& window);
+    void destroy();
 
-    const graphics::Window& getWindow() const;
-
-    const io::InputManager getInputManager() const;
+    KeyState getKeyState(Key key) const;
+    KeyState getButtonState(Button button) const;
 
 protected:
-    graphics::WindowPtr window;
+    const graphics::Window* window;
 
-    io::InputManagerPtr inputManager;
 };
 
-typedef std::unique_ptr<Engine> EnginePtr;
+typedef std::unique_ptr<InputManager> InputManagerPtr;
 }
 
-#endif //FIRESTORM_ENGINE_HPP
+#endif //FIRESTORM_INPUTMANAGER_HPP

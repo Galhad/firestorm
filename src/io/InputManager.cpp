@@ -20,36 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_ENGINE_HPP
-#define FIRESTORM_ENGINE_HPP
+#include "InputManager.hpp"
 
-#include <graphics/Window.hpp>
-
-#include <memory>
-#include <io/InputManager.hpp>
-
-namespace fs
+namespace fs::io
 {
-class Engine
+InputManager::InputManager() : window(nullptr)
 {
-public:
-    Engine();
-    virtual ~Engine();
 
-    void create(core::Vector2i windowSize, const std::string& windowTitle, core::fs_uint32 windowFlags = 0);
-    virtual void destroy();
-
-    const graphics::Window& getWindow() const;
-
-    const io::InputManager getInputManager() const;
-
-protected:
-    graphics::WindowPtr window;
-
-    io::InputManagerPtr inputManager;
-};
-
-typedef std::unique_ptr<Engine> EnginePtr;
 }
 
-#endif //FIRESTORM_ENGINE_HPP
+void InputManager::create(const fs::graphics::Window& window)
+{
+    this->window = &window;
+}
+
+void InputManager::destroy()
+{
+    window = nullptr;
+}
+
+KeyState InputManager::getKeyState(Key key) const
+{
+    int state = glfwGetKey(window->getWindow(), static_cast<int>(key));
+    return static_cast<KeyState>(state);
+}
+
+KeyState InputManager::getButtonState(Button button) const
+{
+    int state = glfwGetMouseButton(window->getWindow(), static_cast<int>(button));
+    return static_cast<KeyState>(state);
+}
+
+}

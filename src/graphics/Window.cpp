@@ -31,7 +31,6 @@ Window::~Window()
 
 void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
 {
-    glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
@@ -41,7 +40,6 @@ void Window::create(core::Vector2i size, const std::string& title, core::fs_uint
 void Window::destroy()
 {
     glfwDestroyWindow(window);
-    glfwTerminate();
 }
 
 GLFWwindow* Window::getWindow() const

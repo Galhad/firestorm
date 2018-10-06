@@ -25,17 +25,13 @@
 
 #include <GLFW/glfw3.h>
 
-#include "core/types.hpp"
+#include "core/Types.hpp"
 
 #include <string>
 #include <memory>
 
 namespace fs::graphics
 {
-enum class WindowPosition : fcore::s_int64
-{
-    CENTERED = 7120261
-};
 
 class Window
 {

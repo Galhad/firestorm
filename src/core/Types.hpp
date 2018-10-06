@@ -49,9 +49,22 @@ struct Recti
 
 struct Vector2i
 {
-    fs_uint64 x = 0;
-    fs_uint64 y = 0;
+    fs_uint64 x = 0ull;
+    fs_uint64 y = 0ull;
 };
+
+struct Vector2f
+{
+    float x = 0.f;
+    float y = 0.f;
+};
+
+struct Vector2d
+{
+    double x = 0.;
+    double y = 0.;
+};
+
 }
 
 #endif //FIRESTORM_TYPES_HPP

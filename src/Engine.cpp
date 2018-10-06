@@ -24,28 +24,38 @@
 
 namespace fs
 {
-Engine::Engine() : window(new graphics::Window())
+Engine::Engine() : window(new graphics::Window()), inputManager(new io::InputManager())
 {
 
 }
 
 Engine::~Engine()
 {
-
+    destroy();
 }
 
 void Engine::create(core::Vector2i windowSize, const std::string& windowTitle, core::fs_uint32 windowFlags)
 {
+    glfwInit();
     window->create(windowSize, windowTitle, windowFlags);
 }
 
 void Engine::destroy()
 {
     window->destroy();
+
+    glfwTerminate();
 }
 
-const graphics::WindowPtr& Engine::getWindow() const
+const graphics::Window& Engine::getWindow() const
 {
-    return window;
+    return *window;
 }
+
+const io::InputManager Engine::getInputManager() const
+{
+    return *inputManager;
+}
+
+
 }
