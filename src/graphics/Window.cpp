@@ -22,17 +22,14 @@
 
 #include "Window.hpp"
 
-fs::Window::Window()
+namespace fs::graphics
 {
-
-}
-
-fs::Window::~Window()
+Window::~Window()
 {
     destroy();
 }
 
-void fs::Window::create(Vector2i size, const std::string& title, fs_uint32 flags)
+void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
 {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -41,36 +38,37 @@ void fs::Window::create(Vector2i size, const std::string& title, fs_uint32 flags
     window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
 }
 
-void fs::Window::destroy()
+void Window::destroy()
 {
     glfwDestroyWindow(window);
     glfwTerminate();
 }
 
-GLFWwindow* fs::Window::getWindow() const
+GLFWwindow* Window::getWindow() const
 {
     return window;
 }
 
-const std::string& fs::Window::getTitle() const
+const std::string& Window::getTitle() const
 {
     return title;
 }
 
-void fs::Window::setTitle(std::string& title)
+void Window::setTitle(std::string& title)
 {
     this->title = title;
     glfwSetWindowTitle(window, title.c_str());
 }
 
-Vector2i fs::Window::getPosition() const
+core::Vector2i Window::getPosition() const
 {
-    Vector2i position{};
+    core::Vector2i position{};
     glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
     return position;
 }
 
-void fs::Window::setPosition(Vector2i position)
+void Window::setPosition(core::Vector2i position)
 {
     glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
+}
 }

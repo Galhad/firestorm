@@ -29,22 +29,22 @@
 
 namespace fs
 {
-    class Engine
-    {
-    public:
-        Engine();
-        virtual ~Engine();
+class Engine
+{
+public:
+    Engine();
+    virtual ~Engine();
 
-        void create(Vector2i windowSize, const std::string& windowTitle, fs_uint32 windowFlags = 0);
-        virtual void destroy();
+    void create(core::Vector2i windowSize, const std::string& windowTitle, core::fs_uint32 windowFlags = 0);
+    virtual void destroy();
 
-        const WindowPtr& getWindow() const;
+    const graphics::WindowPtr& getWindow() const;
 
-    protected:
-        WindowPtr window;
-    };
+protected:
+    graphics::WindowPtr window;
+};
 
-    typedef std::unique_ptr<Engine> EnginePtr;
+typedef std::unique_ptr<Engine> EnginePtr;
 }
 
 #endif //FIRESTORM_ENGINE_HPP

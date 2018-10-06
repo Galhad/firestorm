@@ -22,28 +22,30 @@
 
 #include "Engine.hpp"
 
-fs::Engine::Engine() : window(new Window())
+namespace fs
+{
+Engine::Engine() : window(new graphics::Window())
 {
 
 }
 
-fs::Engine::~Engine()
+Engine::~Engine()
 {
 
 }
 
-void fs::Engine::create(Vector2i windowSize, const std::string& windowTitle, fs_uint32 windowFlags)
+void Engine::create(core::Vector2i windowSize, const std::string& windowTitle, core::fs_uint32 windowFlags)
 {
     window->create(windowSize, windowTitle, windowFlags);
 }
 
-void fs::Engine::destroy()
+void Engine::destroy()
 {
     window->destroy();
 }
 
-const fs::WindowPtr& fs::Engine::getWindow() const
+const graphics::WindowPtr& Engine::getWindow() const
 {
     return window;
 }
-
+}

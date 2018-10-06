@@ -25,6 +25,8 @@
 
 #include <cstdint>
 
+namespace fs::core
+{
 using fs_uint8 = uint8_t;
 using fs_int8 = int8_t;
 
@@ -47,8 +49,9 @@ struct Recti
 
 struct Vector2i
 {
-    fs_uint64 x= 0;
-    fs_uint64 y= 0;
+    fs_uint64 x = 0;
+    fs_uint64 y = 0;
 };
+}
 
 #endif //FIRESTORM_TYPES_HPP

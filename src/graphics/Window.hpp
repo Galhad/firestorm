@@ -30,36 +30,36 @@
 #include <string>
 #include <memory>
 
-namespace fs
+namespace fs::graphics
 {
-    enum class WindowPosition : fs_int64
-    {
-        CENTERED = 7120261
-    };
+enum class WindowPosition : fcore::s_int64
+{
+    CENTERED = 7120261
+};
 
-    class Window
-    {
-    public:
-        Window();
-        virtual ~Window();
+class Window
+{
+public:
+    Window() = default;
+    virtual ~Window();
 
-        void create(Vector2i size, const std::string& title, fs_uint32 flags = 0);
-        virtual void destroy();
+    void create(core::Vector2i size, const std::string& title, core::fs_uint32 flags = 0);
+    virtual void destroy();
 
-        const std::string& getTitle() const;
-        void setTitle(std::string& title);
+    const std::string& getTitle() const;
+    void setTitle(std::string& title);
 
-        Vector2i getPosition() const;
-        void setPosition(Vector2i position);
+    core::Vector2i getPosition() const;
+    void setPosition(core::Vector2i position);
 
-        GLFWwindow* getWindow() const;
+    GLFWwindow* getWindow() const;
 
-    protected:
-        GLFWwindow* window;
-        std::string title;
-    };
+protected:
+    GLFWwindow* window;
+    std::string title;
+};
 
-    typedef std::unique_ptr<Window> WindowPtr;
+typedef std::unique_ptr<Window> WindowPtr;
 }
 
 #endif //FIRESTORM_WINDOW_HPP
