@@ -20,9 +20,57 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_FIRESTORM_HPP
-#define FIRESTORM_FIRESTORM_HPP
+#include "Window.hpp"
 
-#include "core/types.hpp"
+fs::Window::Window()
+{
 
-#endif //FIRESTORM_FIRESTORM_HPP
+}
+
+fs::Window::~Window()
+{
+    destroy();
+}
+
+void fs::Window::create(Vector2i size, const std::string& title, fs_uint32 flags)
+{
+    glfwInit();
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
+    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
+}
+
+void fs::Window::destroy()
+{
+    glfwDestroyWindow(window);
+    glfwTerminate();
+}
+
+GLFWwindow* fs::Window::getWindow() const
+{
+    return window;
+}
+
+const std::string& fs::Window::getTitle() const
+{
+    return title;
+}
+
+void fs::Window::setTitle(std::string& title)
+{
+    this->title = title;
+    glfwSetWindowTitle(window, title.c_str());
+}
+
+Vector2i fs::Window::getPosition() const
+{
+    Vector2i position{};
+    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
+    return position;
+}
+
+void fs::Window::setPosition(Vector2i position)
+{
+    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
+}

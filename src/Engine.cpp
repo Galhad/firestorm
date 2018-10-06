@@ -20,9 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_FIRESTORM_HPP
-#define FIRESTORM_FIRESTORM_HPP
+#include "Engine.hpp"
 
-#include "core/types.hpp"
+fs::Engine::Engine() : window(new Window())
+{
 
-#endif //FIRESTORM_FIRESTORM_HPP
+}
+
+fs::Engine::~Engine()
+{
+
+}
+
+void fs::Engine::create(Vector2i windowSize, const std::string& windowTitle, fs_uint32 windowFlags)
+{
+    window->create(windowSize, windowTitle, windowFlags);
+}
+
+void fs::Engine::destroy()
+{
+    window->destroy();
+}
+
+const fs::WindowPtr& fs::Engine::getWindow() const
+{
+    return window;
+}
+

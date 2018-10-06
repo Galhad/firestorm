@@ -20,9 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_FIRESTORM_HPP
-#define FIRESTORM_FIRESTORM_HPP
+#ifndef FIRESTORM_WINDOW_HPP
+#define FIRESTORM_WINDOW_HPP
+
+#include <GLFW/glfw3.h>
 
 #include "core/types.hpp"
 
-#endif //FIRESTORM_FIRESTORM_HPP
+#include <string>
+#include <memory>
+
+namespace fs
+{
+    enum class WindowPosition : fs_int64
+    {
+        CENTERED = 7120261
+    };
+
+    class Window
+    {
+    public:
+        Window();
+        virtual ~Window();
+
+        void create(Vector2i size, const std::string& title, fs_uint32 flags = 0);
+        virtual void destroy();
+
+        const std::string& getTitle() const;
+        void setTitle(std::string& title);
+
+        Vector2i getPosition() const;
+        void setPosition(Vector2i position);
+
+        GLFWwindow* getWindow() const;
+
+    protected:
+        GLFWwindow* window;
+        std::string title;
+    };
+
+    typedef std::unique_ptr<Window> WindowPtr;
+}
+
+#endif //FIRESTORM_WINDOW_HPP

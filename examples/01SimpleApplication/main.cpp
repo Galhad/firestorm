@@ -20,21 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_TYPES_HPP
-#define FIRESTORM_TYPES_HPP
+#include "Engine.hpp"
 
-#include <cstdint>
-
-using fs_uint8 = uint8_t;
-using fs_int8 = int8_t;
-
-using fs_uint16 = uint16_t;
-using fs_int16 = int16_t;
-
-using fs_uint32 = uint32_t;
-using fs_int32 = int32_t;
-
-using fs_uint64 = uint64_t;
-using fs_int64 = int64_t;
-
-#endif //FIRESTORM_TYPES_HPP
+int main(int arg, char** argv)
+{
+    fs::Engine engine;
+    engine.create({800, 600}, "01SimpleApplication", 0);
+    while (true);
+    return 0;
+}
