@@ -20,43 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_WINDOW_HPP
-#define FIRESTORM_WINDOW_HPP
-
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
-#include "core/Types.hpp"
-
-#include <string>
-#include <memory>
+#ifndef FIRESTORM_QUEUEFAMILYINDICES_HPP
+#define FIRESTORM_QUEUEFAMILYINDICES_HPP
 
 namespace fs::graphics
 {
-
-class Window
+struct QueueFamilyIndices
 {
-public:
-    Window() = default;
-    virtual ~Window();
+    int graphicsFamily = -1;
+    int presentFamily = -1;
 
-    void create(core::Vector2i size, const std::string& title, core::fs_uint32 flags = 0);
-    virtual void destroy();
-
-    const std::string& getTitle() const;
-    void setTitle(std::string& title);
-
-    core::Vector2i getPosition() const;
-    void setPosition(core::Vector2i position);
-
-    GLFWwindow* getWindow() const;
-
-protected:
-    GLFWwindow* window;
-    std::string title;
+    bool isComplete() const
+    {
+        return graphicsFamily >= 0 && presentFamily >= 0;
+    }
 };
-
-typedef std::unique_ptr<Window> WindowPtr;
 }
-
-#endif //FIRESTORM_WINDOW_HPP
+#endif //FIRESTORM_QUEUEFAMILYINDICES_HPP

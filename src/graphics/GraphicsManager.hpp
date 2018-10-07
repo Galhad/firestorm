@@ -20,43 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_WINDOW_HPP
-#define FIRESTORM_WINDOW_HPP
+#ifndef FIRESTORM_GRAPHICSMANAGER_HPP
+#define FIRESTORM_GRAPHICSMANAGER_HPP
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 
-#include "core/Types.hpp"
+#include "vulkan/Instance.hpp"
+#include "vulkan/Device.hpp"
+#include "vulkan/SwapChain.hpp"
 
-#include <string>
+#include "Window.hpp"
+#include "WindowCreationParams.hpp"
+#include "GraphicsCreationParams.hpp"
+
 #include <memory>
 
 namespace fs::graphics
 {
-
-class Window
+class GraphicsManager
 {
 public:
-    Window() = default;
-    virtual ~Window();
+    GraphicsManager();
+    virtual ~GraphicsManager() = default;
 
-    void create(core::Vector2i size, const std::string& title, core::fs_uint32 flags = 0);
+    void create(const WindowCreationParams& windowCreationParams, const GraphicsCreationParams& graphicsCreationParams);
     virtual void destroy();
 
-    const std::string& getTitle() const;
-    void setTitle(std::string& title);
-
-    core::Vector2i getPosition() const;
-    void setPosition(core::Vector2i position);
-
-    GLFWwindow* getWindow() const;
+    const graphics::Window& getWindow() const;
 
 protected:
-    GLFWwindow* window;
-    std::string title;
+    WindowPtr window;
+
+    InstancePtr vulkanInstance;
+    DevicePtr vulkanDevice;
+    SwapChainPtr vulkanSwapChain;
+
+private:
+    void recreateSwapChain();
 };
 
-typedef std::unique_ptr<Window> WindowPtr;
+typedef std::unique_ptr<GraphicsManager> GraphicsManagerPtr;
+
 }
 
-#endif //FIRESTORM_WINDOW_HPP
+#endif //FIRESTORM_GRAPHICSMANAGER_HPP

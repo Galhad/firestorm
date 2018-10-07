@@ -23,10 +23,11 @@
 #ifndef FIRESTORM_ENGINE_HPP
 #define FIRESTORM_ENGINE_HPP
 
-#include <graphics/Window.hpp>
+#include "EngineCreationParams.hpp"
+#include "graphics/GraphicsManager.hpp"
+#include "io/InputManager.hpp"
 
 #include <memory>
-#include <io/InputManager.hpp>
 
 namespace fs
 {
@@ -36,16 +37,16 @@ public:
     Engine();
     virtual ~Engine();
 
-    void create(core::Vector2i windowSize, const std::string& windowTitle, core::fs_uint32 windowFlags = 0);
+    void create(const EngineCreationParams& creationParams);
     virtual void destroy();
 
-    const graphics::Window& getWindow() const;
+    void run();
 
+    const graphics::GraphicsManager& getGraphicsManager() const;
     const io::InputManager getInputManager() const;
 
 protected:
-    graphics::WindowPtr window;
-
+    graphics::GraphicsManagerPtr graphicsManager;
     io::InputManagerPtr inputManager;
 };
 

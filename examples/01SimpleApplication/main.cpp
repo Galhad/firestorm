@@ -25,7 +25,8 @@
 int main(int arg, char** argv)
 {
     fs::Engine engine;
-    engine.create({800, 600}, "01SimpleApplication", 0);
-    while (true);
+
+    engine.create({{{800, 600}, "01SimpleApplication", 0}, {"01SimpleApplication"}});
+    engine.run();
     return 0;
 }

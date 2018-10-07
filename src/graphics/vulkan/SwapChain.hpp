@@ -20,43 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_WINDOW_HPP
-#define FIRESTORM_WINDOW_HPP
+#ifndef FIRESTORM_SWAPCHAIN_HPP
+#define FIRESTORM_SWAPCHAIN_HPP
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include "Device.hpp"
 
-#include "core/Types.hpp"
-
-#include <string>
+#include <vulkan/vulkan.h>
 #include <memory>
+#include <vector>
 
 namespace fs::graphics
 {
 
-class Window
+class SwapChain
 {
 public:
-    Window() = default;
-    virtual ~Window();
+    SwapChain() = default;
+    virtual ~ SwapChain() = default;
 
-    void create(core::Vector2i size, const std::string& title, core::fs_uint32 flags = 0);
+    void create(const Device& device);
     virtual void destroy();
 
-    const std::string& getTitle() const;
-    void setTitle(std::string& title);
+private:
+    const Device* device = nullptr;
 
-    core::Vector2i getPosition() const;
-    void setPosition(core::Vector2i position);
+    VkSwapchainKHR swapChain = VK_NULL_HANDLE;
+    std::vector<VkImage> swapChainImages;
+    VkFormat swapChainImageFormat = VK_FORMAT_UNDEFINED;
+    VkExtent2D swapChainExtent = {};
+    std::vector<VkImageView> swapChainImageViews;
 
-    GLFWwindow* getWindow() const;
+private:
 
-protected:
-    GLFWwindow* window;
-    std::string title;
+    void createSwapChain();
+    VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats);
+    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
+    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
+    void createImageViews();
+    VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlagBits aspectFlags);
 };
 
-typedef std::unique_ptr<Window> WindowPtr;
+typedef std::unique_ptr<SwapChain> SwapChainPtr;
+
 }
 
-#endif //FIRESTORM_WINDOW_HPP
+#endif //FIRESTORM_SWAPCHAIN_HPP

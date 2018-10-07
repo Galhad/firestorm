@@ -24,7 +24,7 @@
 
 namespace fs
 {
-Engine::Engine() : window(new graphics::Window()), inputManager(new io::InputManager())
+Engine::Engine() : graphicsManager(new graphics::GraphicsManager()), inputManager(new io::InputManager())
 {
 
 }
@@ -34,22 +34,24 @@ Engine::~Engine()
     destroy();
 }
 
-void Engine::create(core::Vector2i windowSize, const std::string& windowTitle, core::fs_uint32 windowFlags)
+void Engine::create(const EngineCreationParams& creationParams)
 {
     glfwInit();
-    window->create(windowSize, windowTitle, windowFlags);
+    graphicsManager->create(creationParams.windowCreationParams, creationParams.grahicsCreationParams);
+    inputManager->create(graphicsManager->getWindow());
 }
 
 void Engine::destroy()
 {
-    window->destroy();
+    inputManager->destroy();
+    graphicsManager->destroy();
 
     glfwTerminate();
 }
 
-const graphics::Window& Engine::getWindow() const
+const graphics::GraphicsManager& Engine::getGraphicsManager() const
 {
-    return *window;
+    return *graphicsManager;
 }
 
 const io::InputManager Engine::getInputManager() const
@@ -57,5 +59,12 @@ const io::InputManager Engine::getInputManager() const
     return *inputManager;
 }
 
+void Engine::run()
+{
+    while (!glfwWindowShouldClose(graphicsManager->getWindow().getWindow()))
+    {
+        glfwPollEvents();
+    }
+}
 
 }

@@ -20,43 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_WINDOW_HPP
-#define FIRESTORM_WINDOW_HPP
-
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#ifndef FIRESTORM_GRAPHICSCREATIONPARAMS_HPP
+#define FIRESTORM_GRAPHICSCREATIONPARAMS_HPP
 
 #include "core/Types.hpp"
 
 #include <string>
-#include <memory>
 
 namespace fs::graphics
 {
 
-class Window
+struct GraphicsCreationParams
 {
-public:
-    Window() = default;
-    virtual ~Window();
-
-    void create(core::Vector2i size, const std::string& title, core::fs_uint32 flags = 0);
-    virtual void destroy();
-
-    const std::string& getTitle() const;
-    void setTitle(std::string& title);
-
-    core::Vector2i getPosition() const;
-    void setPosition(core::Vector2i position);
-
-    GLFWwindow* getWindow() const;
-
-protected:
-    GLFWwindow* window;
-    std::string title;
+    const std::string& applicationName;
+    core::fs_uint8 applicationVersionMajor = 0;
+    core::fs_uint8 applicationVersionMinor = 0;
+    core::fs_uint8 applicationVersionPath = 0;
+    bool enableValidationLayers = false;
 };
 
-typedef std::unique_ptr<Window> WindowPtr;
 }
 
-#endif //FIRESTORM_WINDOW_HPP
+#endif //FIRESTORM_GRAPHICSCREATIONPARAMS_HPP
