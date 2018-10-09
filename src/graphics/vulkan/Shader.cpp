@@ -20,50 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_GRAPHICSMANAGER_HPP
-#define FIRESTORM_GRAPHICSMANAGER_HPP
-
-
-#include "vulkan/Instance.hpp"
-#include "vulkan/Device.hpp"
-#include "vulkan/SwapChain.hpp"
-#include "vulkan/Shader.hpp"
-
-#include "Window.hpp"
-#include "WindowCreationParams.hpp"
-#include "GraphicsCreationParams.hpp"
-
-#include <memory>
+#include "Shader.hpp"
 
 namespace fs::graphics
 {
-class GraphicsManager
+void Shader::create(const fs::graphics::Device& device, const std::vector<fs::core::fs_int8>& code,
+                                  fs::graphics::ShaderType type)
 {
-public:
-    GraphicsManager();
-    virtual ~GraphicsManager() = default;
+    this->device = &device;
 
-    void create(const WindowCreationParams& windowCreationParams, const GraphicsCreationParams& graphicsCreationParams);
-    virtual void destroy();
+    VkShaderModuleCreateInfo shaderModuleCreateInfo = {};
+    shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    shaderModuleCreateInfo.codeSize = code.size();
+    shaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
-    const graphics::Window& getWindow() const;
-
-protected:
-    WindowPtr window;
-
-    InstancePtr vulkanInstance;
-    DevicePtr vulkanDevice;
-    SwapChainPtr vulkanSwapChain;
-
-    ShaderPtr vulkanVertexShader;
-    ShaderPtr vulkanFragmentShader;
-
-private:
-    void recreateSwapChain();
-};
-
-typedef std::unique_ptr<GraphicsManager> GraphicsManagerPtr;
-
+    if (vkCreateShaderModule(device.getDevice(), &shaderModuleCreateInfo, nullptr, &shaderModule) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create shader module.");
+    }
 }
 
-#endif //FIRESTORM_GRAPHICSMANAGER_HPP
+void Shader::destroy()
+{
+    vkDestroyShaderModule(device->getDevice(), shaderModule, nullptr);
+
+    type = ShaderType::Unknwon;
+    device = nullptr;
+}
+}

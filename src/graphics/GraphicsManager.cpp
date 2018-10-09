@@ -20,19 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <vector>
 #include "GraphicsManager.hpp"
+
+#include "shaders/basic/BasicShaders.hpp"
+
+#include <vector>
 
 namespace fs::graphics
 {
 GraphicsManager::GraphicsManager() : window(new Window()), vulkanInstance(new Instance()),
-                                                   vulkanDevice(new Device()), vulkanSwapChain(new SwapChain())
+                                     vulkanDevice(new Device()), vulkanSwapChain(new SwapChain()),
+                                     vulkanVertexShader(new Shader()), vulkanFragmentShader(new Shader())
 {
 
 }
 
 void GraphicsManager::create(const WindowCreationParams& windowCreationParams,
-                                           const GraphicsCreationParams& graphicsCreationParams)
+                             const GraphicsCreationParams& graphicsCreationParams)
 {
     window->create(windowCreationParams.windowSize, windowCreationParams.windowTitle, windowCreationParams.windowFlags);
     vulkanInstance->create(graphicsCreationParams.applicationName, graphicsCreationParams.applicationVersionMajor,
@@ -42,6 +46,11 @@ void GraphicsManager::create(const WindowCreationParams& windowCreationParams,
     vulkanDevice->create(*vulkanInstance, *window);
     vulkanSwapChain->create(*vulkanDevice);
 
+    std::vector<core::fs_int8> vertexShaderCode(vert_spv, vert_spv + vert_spv_len);
+    vulkanVertexShader->create(*vulkanDevice, vertexShaderCode, ShaderType::Vertex);
+
+    std::vector<core::fs_int8> fragmentShaderCode(frag_spv, frag_spv + frag_spv_len);
+    vulkanFragmentShader->create(*vulkanDevice, fragmentShaderCode, ShaderType::Fragment);
 }
 
 void GraphicsManager::destroy()

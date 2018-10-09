@@ -20,50 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_GRAPHICSMANAGER_HPP
-#define FIRESTORM_GRAPHICSMANAGER_HPP
+#ifndef FIRESTORM_SHADER_HPP
+#define FIRESTORM_SHADER_HPP
 
-
-#include "vulkan/Instance.hpp"
-#include "vulkan/Device.hpp"
-#include "vulkan/SwapChain.hpp"
-#include "vulkan/Shader.hpp"
-
-#include "Window.hpp"
-#include "WindowCreationParams.hpp"
-#include "GraphicsCreationParams.hpp"
+#include "Device.hpp"
+#include "core/Types.hpp"
 
 #include <memory>
 
 namespace fs::graphics
 {
-class GraphicsManager
+
+enum class ShaderType
 {
-public:
-    GraphicsManager();
-    virtual ~GraphicsManager() = default;
-
-    void create(const WindowCreationParams& windowCreationParams, const GraphicsCreationParams& graphicsCreationParams);
-    virtual void destroy();
-
-    const graphics::Window& getWindow() const;
-
-protected:
-    WindowPtr window;
-
-    InstancePtr vulkanInstance;
-    DevicePtr vulkanDevice;
-    SwapChainPtr vulkanSwapChain;
-
-    ShaderPtr vulkanVertexShader;
-    ShaderPtr vulkanFragmentShader;
-
-private:
-    void recreateSwapChain();
+    Unknwon,
+    Vertex,
+    Fragment
 };
 
-typedef std::unique_ptr<GraphicsManager> GraphicsManagerPtr;
+class Shader
+{
+public:
+    Shader() = default;
+    virtual ~Shader() = default;
 
+    void create(const Device& device, const std::vector<core::fs_int8>& code, ShaderType type);
+    virtual void destroy();
+
+private:
+    const Device* device = nullptr;
+
+    ShaderType type = ShaderType::Unknwon;
+    VkShaderModule shaderModule = VK_NULL_HANDLE;
+};
+typedef std::unique_ptr<Shader> ShaderPtr;
 }
 
-#endif //FIRESTORM_GRAPHICSMANAGER_HPP
+#endif //FIRESTORM_SHADER_HPP
