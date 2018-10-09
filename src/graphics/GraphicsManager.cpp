@@ -30,7 +30,8 @@ namespace fs::graphics
 {
 GraphicsManager::GraphicsManager() : window(new Window()), vulkanInstance(new Instance()),
                                      vulkanDevice(new Device()), vulkanSwapChain(new SwapChain()),
-                                     vulkanVertexShader(new Shader()), vulkanFragmentShader(new Shader())
+                                     vulkanVertexShader(new Shader()), vulkanFragmentShader(new Shader()),
+                                     vulkanGraphicsPipeline(new GraphicsPipeline())
 {
 
 }
@@ -44,6 +45,12 @@ void GraphicsManager::create(const WindowCreationParams& windowCreationParams,
                            graphicsCreationParams.applicationVersionPath,
                            graphicsCreationParams.enableValidationLayers);
     vulkanDevice->create(*vulkanInstance, *window);
+
+    createSwapChain();
+}
+
+void GraphicsManager::createSwapChain() const
+{
     vulkanSwapChain->create(*vulkanDevice);
 
     std::vector<core::fs_int8> vertexShaderCode(vert_spv, vert_spv + vert_spv_len);
@@ -51,14 +58,27 @@ void GraphicsManager::create(const WindowCreationParams& windowCreationParams,
 
     std::vector<core::fs_int8> fragmentShaderCode(frag_spv, frag_spv + frag_spv_len);
     vulkanFragmentShader->create(*vulkanDevice, fragmentShaderCode, ShaderType::Fragment);
+
+    vulkanGraphicsPipeline->create(*vulkanVertexShader, *vulkanFragmentShader, *vulkanSwapChain);
 }
 
 void GraphicsManager::destroy()
 {
-    vulkanSwapChain->destroy();
+    destroySwapChain();
+
     vulkanDevice->destroy();
     vulkanInstance->destroy();
     window->destroy();
+}
+
+void GraphicsManager::destroySwapChain() const
+{
+    vulkanGraphicsPipeline->destroy();
+
+    vulkanFragmentShader->destroy();
+    vulkanVertexShader->destroy();
+
+    vulkanSwapChain->destroy();
 }
 
 const Window& GraphicsManager::getWindow() const
@@ -78,9 +98,8 @@ void GraphicsManager::recreateSwapChain()
 
     vkDeviceWaitIdle(vulkanDevice->getDevice());
 
-    vulkanSwapChain->destroy();
-
-    vulkanSwapChain->create(*vulkanDevice);
+    destroySwapChain();
+    createSwapChain();
 }
 
 }

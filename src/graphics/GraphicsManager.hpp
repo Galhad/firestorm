@@ -28,6 +28,7 @@
 #include "vulkan/Device.hpp"
 #include "vulkan/SwapChain.hpp"
 #include "vulkan/Shader.hpp"
+#include "vulkan/GraphicsPipeline.hpp"
 
 #include "Window.hpp"
 #include "WindowCreationParams.hpp"
@@ -54,12 +55,15 @@ protected:
     InstancePtr vulkanInstance;
     DevicePtr vulkanDevice;
     SwapChainPtr vulkanSwapChain;
+    GraphicsPipelinePtr vulkanGraphicsPipeline;
 
     ShaderPtr vulkanVertexShader;
     ShaderPtr vulkanFragmentShader;
 
 private:
     void recreateSwapChain();
+    void destroySwapChain() const;
+    void createSwapChain() const;
 };
 
 typedef std::unique_ptr<GraphicsManager> GraphicsManagerPtr;
