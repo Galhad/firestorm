@@ -41,6 +41,13 @@ public:
     void create(const Device& device);
     virtual void destroy();
 
+    const Device* getDevice() const;
+    const VkSwapchainKHR getSwapChain() const;
+    const std::vector<VkImage>& getSwapChainImages() const;
+    VkFormat getSwapChainImageFormat() const;
+    const VkExtent2D& getSwapChainExtent() const;
+    const std::vector<VkImageView>& getSwapChainImageViews() const;
+
 private:
     const Device* device = nullptr;
 

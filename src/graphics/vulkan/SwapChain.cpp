@@ -28,6 +28,7 @@
 
 namespace fs::graphics
 {
+
 void SwapChain::create(const Device& device)
 {
     this->device = &device;
@@ -199,4 +200,35 @@ VkImageView SwapChain::createImageView(VkImage image, VkFormat format, VkImageAs
 
     return imageView;
 }
+
+const Device* SwapChain::getDevice() const
+{
+    return device;
+}
+
+const VkSwapchainKHR SwapChain::getSwapChain() const
+{
+    return swapChain;
+}
+
+const std::vector<VkImage>& SwapChain::getSwapChainImages() const
+{
+    return swapChainImages;
+}
+
+VkFormat SwapChain::getSwapChainImageFormat() const
+{
+    return swapChainImageFormat;
+}
+
+const VkExtent2D& SwapChain::getSwapChainExtent() const
+{
+    return swapChainExtent;
+}
+
+const std::vector<VkImageView>& SwapChain::getSwapChainImageViews() const
+{
+    return swapChainImageViews;
+}
+
 }
