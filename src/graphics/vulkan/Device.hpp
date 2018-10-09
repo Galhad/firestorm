@@ -52,6 +52,8 @@ public:
     const VkDevice getDevice() const;
     const VkQueue getGraphicsQueue() const;
     const VkQueue getPresentationQueue() const;
+    const VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling,
+                              VkFormatFeatureFlags features) const;
 
 private:
     const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
