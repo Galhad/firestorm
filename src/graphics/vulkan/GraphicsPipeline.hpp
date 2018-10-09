@@ -42,8 +42,6 @@ public:
     virtual void destroy();
 
 private:
-//    const Shader* vertexShader;
-//    const Shader* fragmentShader;
     const SwapChain* swapChain = nullptr;
     RenderPassPtr renderPass;
 

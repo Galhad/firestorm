@@ -41,6 +41,9 @@ public:
     void create(const Instance& instance, const Window& window);
     virtual void destroy();
 
+    const VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling,
+                                       VkFormatFeatureFlags features) const;
+
     const QueueFamilyIndices& getQueueFamilyIndices() const;
     const SwapChainSupportDetails& getSwapChainSupportDetails() const;
 
@@ -52,11 +55,10 @@ public:
     const VkDevice getDevice() const;
     const VkQueue getGraphicsQueue() const;
     const VkQueue getPresentationQueue() const;
-    const VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling,
-                              VkFormatFeatureFlags features) const;
+    const VkCommandPool getCommandPool() const;
 
 private:
-    const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
     const Instance* instance = nullptr;
     const Window* window = nullptr;
@@ -68,6 +70,7 @@ private:
     VkDevice device = VK_NULL_HANDLE;
     VkQueue graphicsQueue = VK_NULL_HANDLE;
     VkQueue presentationQueue = VK_NULL_HANDLE;
+    VkCommandPool commandPool = VK_NULL_HANDLE;
 
     QueueFamilyIndices queueFamilyIndices;
     SwapChainSupportDetails swapChainSupportDetails;
@@ -82,6 +85,7 @@ private:
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice physicalDevice) const;
 
     void createLogicalDevice();
+    void createCommandPool();
 };
 
 typedef std::unique_ptr<Device> DevicePtr;

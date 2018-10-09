@@ -36,10 +36,13 @@ void Device::create(const Instance& instance, const Window& window)
     createSurface();
     pickPhysicalDevice();
     createLogicalDevice();
+    createCommandPool();
 }
 
 void Device::destroy()
 {
+    vkDestroyCommandPool(device, commandPool, nullptr);
+
     vkDestroyDevice(device, nullptr);
 
     window = nullptr;
@@ -320,4 +323,23 @@ const VkFormat Device::findSupportedFormat(const std::vector<VkFormat>& candidat
 
     throw std::runtime_error("Failed to find supported format!");
 }
+
+const VkCommandPool Device::getCommandPool() const
+{
+    return commandPool;
+}
+
+void Device::createCommandPool()
+{
+    VkCommandPoolCreateInfo commandPoolCreateInfo = {};
+    commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    commandPoolCreateInfo.queueFamilyIndex = static_cast<uint32_t>(queueFamilyIndices.graphicsFamily);
+    commandPoolCreateInfo.flags = 0; // optional
+
+    if (vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &commandPool) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create command pool.");
+    }
+}
+
 }
