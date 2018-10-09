@@ -47,6 +47,8 @@ public:
     void create(const Device& device, const std::vector<core::fs_int8>& code, ShaderType type);
     virtual void destroy();
 
+    const VkShaderModule getShaderModule() const;
+
 private:
     const Device* device = nullptr;
 

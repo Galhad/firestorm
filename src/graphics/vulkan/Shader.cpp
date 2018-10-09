@@ -47,4 +47,9 @@ void Shader::destroy()
     type = ShaderType::Unknwon;
     device = nullptr;
 }
+
+const VkShaderModule Shader::getShaderModule() const
+{
+    return shaderModule;
+}
 }
