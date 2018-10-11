@@ -38,6 +38,8 @@ void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragment
 
     renderPass->create(swapChain);
 
+    createDescriptorSetLayout();
+
     createPipelineLayout();
 
     std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages = getShaderStage(vertexShader, fragmentShader);
@@ -305,11 +307,6 @@ void GraphicsPipeline::createPipelineLayout()
     {
         throw std::runtime_error("Failed to create graphicsPipeline layout!");
     }
-}
-
-void GraphicsPipeline::createPipeline()
-{
-
 }
 
 }

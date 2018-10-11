@@ -53,7 +53,6 @@ private:
     void createDescriptorSetLayout();
     void createPipelineLayout();
     void createPipeline();
-
     std::array<VkPipelineShaderStageCreateInfo,2> getShaderStage(const Shader& vertexShader, const Shader& fragmentShader) const;
     VkPipelineVertexInputStateCreateInfo getVertexInput(VkVertexInputBindingDescription& bindingDescription,
                                                         std::array<VkVertexInputAttributeDescription, 3>& attributeDescription) const;
