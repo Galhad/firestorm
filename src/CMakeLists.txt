@@ -1,3 +1,4 @@
 include_directories(./)
 
-add_library(firestorm Firestorm.hpp core/Types.hpp graphics/Window.cpp graphics/Window.hpp Engine.cpp Engine.hpp io/InputManager.cpp io/InputManager.hpp io/Keys.hpp graphics/GraphicsManager.cpp graphics/GraphicsManager.hpp graphics/vulkan/Instance.cpp graphics/vulkan/Instance.hpp graphics/WindowCreationParams.hpp graphics/GraphicsCreationParams.hpp EngineCreationParams.hpp graphics/vulkan/Device.cpp graphics/vulkan/Device.hpp graphics/vulkan/QueueFamilyIndices.hpp graphics/vulkan/SwapChainSupportDetails.hpp graphics/vulkan/SwapChain.cpp graphics/vulkan/SwapChain.hpp graphics/shaders/basic/BasicShaders.hpp graphics/vulkan/Shader.cpp graphics/vulkan/Shader.hpp graphics/vulkan/GraphicsPipeline.cpp graphics/vulkan/GraphicsPipeline.hpp graphics/vulkan/RenderPass.cpp graphics/vulkan/RenderPass.hpp graphics/vulkan/Vertex.cpp graphics/vulkan/Vertex.hpp)
+file(GLOB_RECURSE SOURCES "*.cpp")
+add_library(firestorm ${SOURCES})
