@@ -44,6 +44,8 @@ public:
     const VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling,
                                        VkFormatFeatureFlags features) const;
 
+    const core::fs_uint32 findMemoryType(core::fs_uint32 typeFilter, VkMemoryPropertyFlags properties) const;
+
     const QueueFamilyIndices& getQueueFamilyIndices() const;
     const SwapChainSupportDetails& getSwapChainSupportDetails() const;
 
