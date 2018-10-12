@@ -26,7 +26,7 @@ int main(int arg, char** argv)
 {
     fs::Engine engine;
 
-    engine.create({{{800, 600}, "01SimpleApplication", 0}, {"01SimpleApplication"}});
+    engine.create({{{800, 600}, "01SimpleApplication", 0}, {"01SimpleApplication", 0, 1, 0, true}});
     engine.run();
     return 0;
 }
