@@ -27,6 +27,8 @@
 namespace fs::graphics
 {
 
+Image::~Image() = default;
+
 void Image::create(const Device& device, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
                    VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags)
 {
@@ -97,7 +99,6 @@ void Image::createImageView(VkFormat format, VkImageAspectFlags aspectFlags)
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    VkImageView imageView;
     if (vkCreateImageView(device->getDevice(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create texture image view!");
@@ -187,6 +188,11 @@ void Image::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout 
 bool Image::hasStencilComponent(VkFormat format)
 {
     return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
+}
+
+const VkImageView Image::getImageView() const
+{
+    return imageView;
 }
 
 }

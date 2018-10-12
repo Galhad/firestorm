@@ -20,45 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_IMAGE_HPP
-#define FIRESTORM_IMAGE_HPP
+#ifndef FIRESTORM_DEPTHIMAGE_HPP
+#define FIRESTORM_DEPTHIMAGE_HPP
 
-#include "Device.hpp"
+#include "Image.hpp"
+#include "SwapChain.hpp"
 
-#include <vulkan/vulkan.h>
 #include <memory>
 
 namespace fs::graphics
 {
-class Image
+class DepthImage : public Image
 {
 public:
-    Image() = default;
-    virtual ~Image() = 0;
+    DepthImage() = default;
+    ~DepthImage() override = default;
 
-    void create(const Device& device, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
-                VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
-    virtual void destroy();
-
-    void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
-
-    const VkImageView getImageView() const;
-
-protected:
-    const Device* device = nullptr;
-
-    VkImage image = VK_NULL_HANDLE;
-    VkDeviceMemory imageMemory = VK_NULL_HANDLE;
-    VkImageView imageView = VK_NULL_HANDLE;
+    void create(const SwapChain& swapChain);
+    void destroy() override;
 
 private:
-    void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
-                     VkMemoryPropertyFlags properties);
-    void createImageView(VkFormat format, VkImageAspectFlags aspectFlags);
-    bool hasStencilComponent(VkFormat format);
+    const SwapChain* swapChain = nullptr;
+    VkFormat findDepthFormat();
 };
 
-typedef std::unique_ptr<Image> ImagePtr;
-
+typedef std::unique_ptr<DepthImage> DepthImagePtr;
 }
-#endif //FIRESTORM_IMAGE_HPP
+
+#endif //FIRESTORM_DEPTHIMAGE_HPP

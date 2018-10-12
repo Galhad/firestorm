@@ -24,6 +24,7 @@
 
 namespace fs::graphics
 {
+
 void CommandBuffer::create(const Device& device)
 {
     this->device = &device;
@@ -76,4 +77,5 @@ void CommandBuffer::reset()
 {
     vkResetCommandBuffer(commandBuffer, 0);
 }
+
 }

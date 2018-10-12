@@ -20,45 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_IMAGE_HPP
-#define FIRESTORM_IMAGE_HPP
-
-#include "Device.hpp"
-
-#include <vulkan/vulkan.h>
-#include <memory>
+#include "DepthImage.hpp"
 
 namespace fs::graphics
 {
-class Image
+
+void DepthImage::create(const SwapChain& swapChain)
 {
-public:
-    Image() = default;
-    virtual ~Image() = 0;
+    this->swapChain = &swapChain;
 
-    void create(const Device& device, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
-                VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImageAspectFlags aspectFlags);
-    virtual void destroy();
+    VkFormat depthFormat = findDepthFormat();
+    Image::create(*swapChain.getDevice(), swapChain.getSwapChainExtent().width, swapChain.getSwapChainExtent().height,
+                  depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT);
+    transitionImageLayout(image, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED,
+                          VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+}
 
-    void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+void DepthImage::destroy()
+{
+    Image::destroy();
+    swapChain = nullptr;
+}
 
-    const VkImageView getImageView() const;
-
-protected:
-    const Device* device = nullptr;
-
-    VkImage image = VK_NULL_HANDLE;
-    VkDeviceMemory imageMemory = VK_NULL_HANDLE;
-    VkImageView imageView = VK_NULL_HANDLE;
-
-private:
-    void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
-                     VkMemoryPropertyFlags properties);
-    void createImageView(VkFormat format, VkImageAspectFlags aspectFlags);
-    bool hasStencilComponent(VkFormat format);
-};
-
-typedef std::unique_ptr<Image> ImagePtr;
+VkFormat DepthImage::findDepthFormat()
+{
+    return swapChain->getDevice()->findSupportedFormat(
+        {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+    );
+}
 
 }
-#endif //FIRESTORM_IMAGE_HPP
