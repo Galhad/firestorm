@@ -32,16 +32,44 @@ GraphicsPipeline::GraphicsPipeline() : renderPass(new RenderPass())
 
 }
 
-void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragmentShader, const SwapChain& swapChain)
+void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragmentShader, const SwapChain& swapChain,
+                              const DepthImage& depthImage)
 {
     this->swapChain = &swapChain;
+    this->depthImage = &depthImage;
 
     renderPass->create(swapChain);
 
     createDescriptorSetLayout();
 
     createPipelineLayout();
+    createPipeline(vertexShader, fragmentShader);
 
+    createFramebuffers();
+}
+
+void GraphicsPipeline::destroy()
+{
+    for (const auto& framebuffer : framebuffers)
+    {
+        vkDestroyFramebuffer(swapChain->getDevice()->getDevice(), framebuffer, nullptr);
+    }
+
+    vkDestroyPipeline(swapChain->getDevice()->getDevice(), graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(swapChain->getDevice()->getDevice(), graphicsPipelineLayout, nullptr);
+
+    vkDestroyDescriptorSetLayout(swapChain->getDevice()->getDevice(), descriptorSetLayout, nullptr);
+
+    renderPass->destroy();
+    renderPass = nullptr;
+
+    depthImage = nullptr;
+    swapChain = nullptr;
+}
+
+void
+GraphicsPipeline::createPipeline(const Shader& vertexShader, const Shader& fragmentShader)
+{
     std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages = getShaderStage(vertexShader, fragmentShader);
 
     auto bindingDescription = Vertex::getBindingDescription();
@@ -50,7 +78,9 @@ void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragment
     VkPipelineVertexInputStateCreateInfo vertexInput = getVertexInput(bindingDescription, attributeDescription);
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = getInputAssembly();
 
-    VkPipelineViewportStateCreateInfo viewport = getViewport(swapChain);
+    VkViewport viewport = getViewport();
+    VkRect2D scissor = getScissors();
+    VkPipelineViewportStateCreateInfo viewportState = getViewportState(viewport, scissor);
     VkPipelineRasterizationStateCreateInfo rasterization = getRasterization();
     VkPipelineMultisampleStateCreateInfo multisample = getMultisample();
 
@@ -67,7 +97,7 @@ void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragment
     // fixed functions
     graphicsPipelineCreateInfo.pVertexInputState = &vertexInput;
     graphicsPipelineCreateInfo.pInputAssemblyState = &inputAssembly;
-    graphicsPipelineCreateInfo.pViewportState = &viewport;
+    graphicsPipelineCreateInfo.pViewportState = &viewportState;
     graphicsPipelineCreateInfo.pRasterizationState = &rasterization;
     graphicsPipelineCreateInfo.pMultisampleState = &multisample;
     graphicsPipelineCreateInfo.pDepthStencilState = &depthStencil; // optional
@@ -82,13 +112,11 @@ void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragment
     graphicsPipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE; // optional
     graphicsPipelineCreateInfo.basePipelineIndex = -1; // optional
 
-    if (vkCreateGraphicsPipelines(swapChain.getDevice()->getDevice(), VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo,
-                                  nullptr, &graphicsPipeline) !=
-        VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(swapChain->getDevice()->getDevice(), VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo,
+                                  nullptr, &graphicsPipeline) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create graphics graphicsPipeline.");
     }
-
 }
 
 VkPipelineDepthStencilStateCreateInfo GraphicsPipeline::getDepthStencil() const
@@ -188,20 +216,8 @@ VkPipelineRasterizationStateCreateInfo GraphicsPipeline::getRasterization() cons
     return rasterizationStateCreateInfo;
 }
 
-VkPipelineViewportStateCreateInfo GraphicsPipeline::getViewport(const SwapChain& swapChain) const
+VkPipelineViewportStateCreateInfo GraphicsPipeline::getViewportState(VkViewport& viewport, VkRect2D& scissor) const
 {
-    VkViewport viewport = {};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = swapChain.getSwapChainExtent().width;
-    viewport.height = swapChain.getSwapChainExtent().height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-
-    VkRect2D scissor = {};
-    scissor.offset = {0, 0};
-    scissor.extent = swapChain.getSwapChainExtent();
-
     // multiple viewpors and scissors requires gpu feature
     VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
     viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -210,6 +226,26 @@ VkPipelineViewportStateCreateInfo GraphicsPipeline::getViewport(const SwapChain&
     viewportStateCreateInfo.scissorCount = 1;
     viewportStateCreateInfo.pScissors = &scissor;
     return viewportStateCreateInfo;
+}
+
+VkRect2D GraphicsPipeline::getScissors() const
+{
+    VkRect2D scissor = {};
+    scissor.offset = {0, 0};
+    scissor.extent = swapChain->getSwapChainExtent();
+    return scissor;
+}
+
+VkViewport GraphicsPipeline::getViewport() const
+{
+    VkViewport viewport = {};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = swapChain->getSwapChainExtent().width;
+    viewport.height = swapChain->getSwapChainExtent().height;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    return viewport;
 }
 
 VkPipelineInputAssemblyStateCreateInfo GraphicsPipeline::getInputAssembly() const
@@ -256,14 +292,6 @@ GraphicsPipeline::getShaderStage(const Shader& vertexShader, const Shader& fragm
     return {vertShaderStageInfo, fragShaderStageInfo};
 }
 
-void GraphicsPipeline::destroy()
-{
-    vkDestroyPipeline(swapChain->getDevice()->getDevice(), graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(swapChain->getDevice()->getDevice(), graphicsPipelineLayout, nullptr);
-    renderPass->destroy();
-    renderPass = nullptr;
-}
-
 void GraphicsPipeline::createDescriptorSetLayout()
 {
     VkDescriptorSetLayoutBinding uboLayoutBinding = {};
@@ -306,6 +334,35 @@ void GraphicsPipeline::createPipelineLayout()
                                &graphicsPipelineLayout) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create graphicsPipeline layout!");
+    }
+}
+
+void GraphicsPipeline::createFramebuffers()
+{
+    const auto& swapChainImageViews = swapChain->getSwapChainImageViews();
+    framebuffers.resize(swapChainImageViews.size());
+
+    for (size_t i = 0; i < swapChainImageViews.size(); ++i)
+    {
+        std::array<VkImageView, 2> attachments = {
+            swapChainImageViews[i],
+            depthImage->getImageView()
+        };
+
+        VkFramebufferCreateInfo framebufferCreateInfo = {};
+        framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferCreateInfo.renderPass = renderPass->getRenderPass();
+        framebufferCreateInfo.attachmentCount = attachments.size();
+        framebufferCreateInfo.pAttachments = attachments.data();
+        framebufferCreateInfo.width = swapChain->getSwapChainExtent().width;
+        framebufferCreateInfo.height = swapChain->getSwapChainExtent().height;
+        framebufferCreateInfo.layers = 1;
+
+        if (vkCreateFramebuffer(swapChain->getDevice()->getDevice(), &framebufferCreateInfo, nullptr,
+                                &framebuffers[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create framebuffer.");
+        }
     }
 }
 

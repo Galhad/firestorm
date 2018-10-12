@@ -26,6 +26,7 @@
 #include "Shader.hpp"
 #include "SwapChain.hpp"
 #include "RenderPass.hpp"
+#include "DepthImage.hpp"
 
 #include <vulkan/vulkan.h>
 #include <memory>
@@ -38,32 +39,55 @@ public:
     GraphicsPipeline();
     virtual ~GraphicsPipeline() = default;
 
-    void create(const Shader& vertexShader, const Shader& fragmentShader, const SwapChain& swapChain);
+    void create(const Shader& vertexShader, const Shader& fragmentShader, const SwapChain& swapChain,
+                const DepthImage& depthImage);
     virtual void destroy();
 
 private:
-    const SwapChain* swapChain = nullptr;
     RenderPassPtr renderPass;
+
+    const SwapChain* swapChain = nullptr;
+    const DepthImage* depthImage = nullptr;
+
+//    VkPipelineVertexInputStateCreateInfo vertexInput = {};
+//    VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+//
+//    VkPipelineViewportStateCreateInfo viewport  = {};
+//    VkPipelineRasterizationStateCreateInfo rasterization = {};
+//    VkPipelineMultisampleStateCreateInfo multisample = {};
+//
+//    VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+//    VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo = {};
+//
+//    VkPipelineDepthStencilStateCreateInfo depthStencil = {};
 
     VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
     VkPipelineLayout graphicsPipelineLayout = VK_NULL_HANDLE;
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
 
+    std::vector<VkFramebuffer> framebuffers;
+
 private:
     void createDescriptorSetLayout();
     void createPipelineLayout();
-    void createPipeline();
-    std::array<VkPipelineShaderStageCreateInfo,2> getShaderStage(const Shader& vertexShader, const Shader& fragmentShader) const;
+    void createPipeline(const Shader& vertexShader, const Shader& fragmentShader);
+
+    std::array<VkPipelineShaderStageCreateInfo, 2>
+    getShaderStage(const Shader& vertexShader, const Shader& fragmentShader) const;
     VkPipelineVertexInputStateCreateInfo getVertexInput(VkVertexInputBindingDescription& bindingDescription,
                                                         std::array<VkVertexInputAttributeDescription, 3>& attributeDescription) const;
     VkPipelineInputAssemblyStateCreateInfo getInputAssembly() const;
-    VkPipelineViewportStateCreateInfo getViewport(const SwapChain& swapChain) const;
+    VkPipelineViewportStateCreateInfo getViewportState(VkViewport& viewport, VkRect2D& scissor) const;
     VkPipelineRasterizationStateCreateInfo getRasterization() const;
     VkPipelineMultisampleStateCreateInfo getMultisample() const;
     VkPipelineColorBlendAttachmentState getColorBlendAttachment() const;
     VkPipelineColorBlendStateCreateInfo getColorBlend(VkPipelineColorBlendAttachmentState& colorBlendAttachment) const;
     VkPipelineDepthStencilStateCreateInfo getDepthStencil() const;
+    void createFramebuffers();
+    VkViewport getViewport() const;
+    VkRect2D getScissors() const;
 };
+
 typedef std::unique_ptr<GraphicsPipeline> GraphicsPipelinePtr;
 
 }

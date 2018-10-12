@@ -29,6 +29,7 @@
 #include "vulkan/SwapChain.hpp"
 #include "vulkan/Shader.hpp"
 #include "vulkan/GraphicsPipeline.hpp"
+#include "vulkan/DepthImage.hpp"
 
 #include "Window.hpp"
 #include "WindowCreationParams.hpp"
@@ -55,10 +56,12 @@ protected:
     InstancePtr vulkanInstance;
     DevicePtr vulkanDevice;
     SwapChainPtr vulkanSwapChain;
+    DepthImagePtr vulkanDepthImage;
     GraphicsPipelinePtr vulkanGraphicsPipeline;
 
     ShaderPtr vulkanVertexShader;
     ShaderPtr vulkanFragmentShader;
+
 
 private:
     void recreateSwapChain();

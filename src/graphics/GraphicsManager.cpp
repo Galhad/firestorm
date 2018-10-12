@@ -31,7 +31,7 @@ namespace fs::graphics
 GraphicsManager::GraphicsManager() : window(new Window()), vulkanInstance(new Instance()),
                                      vulkanDevice(new Device()), vulkanSwapChain(new SwapChain()),
                                      vulkanVertexShader(new Shader()), vulkanFragmentShader(new Shader()),
-                                     vulkanGraphicsPipeline(new GraphicsPipeline())
+                                     vulkanGraphicsPipeline(new GraphicsPipeline()), vulkanDepthImage(new DepthImage())
 {
 
 }
@@ -59,7 +59,9 @@ void GraphicsManager::createSwapChain() const
     std::vector<core::fs_int8> fragmentShaderCode(frag_spv, frag_spv + frag_spv_len);
     vulkanFragmentShader->create(*vulkanDevice, fragmentShaderCode, ShaderType::Fragment);
 
-    vulkanGraphicsPipeline->create(*vulkanVertexShader, *vulkanFragmentShader, *vulkanSwapChain);
+    vulkanDepthImage->create(*vulkanSwapChain);
+
+    vulkanGraphicsPipeline->create(*vulkanVertexShader, *vulkanFragmentShader, *vulkanSwapChain, *vulkanDepthImage);
 }
 
 void GraphicsManager::destroy()
@@ -74,6 +76,8 @@ void GraphicsManager::destroy()
 void GraphicsManager::destroySwapChain() const
 {
     vulkanGraphicsPipeline->destroy();
+
+    vulkanDepthImage->destroy();
 
     vulkanFragmentShader->destroy();
     vulkanVertexShader->destroy();
