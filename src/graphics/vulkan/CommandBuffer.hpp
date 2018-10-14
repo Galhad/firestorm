@@ -45,7 +45,6 @@ public:
 
     const VkCommandBuffer getCommandBuffer() const;
 
-
 private:
     const Device* device = nullptr;
 
