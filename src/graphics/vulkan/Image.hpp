@@ -51,7 +51,7 @@ protected:
     VkDeviceMemory imageMemory = VK_NULL_HANDLE;
     VkImageView imageView = VK_NULL_HANDLE;
 
-private:
+protected:
     void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
                      VkMemoryPropertyFlags properties);
     void createImageView(VkFormat format, VkImageAspectFlags aspectFlags);

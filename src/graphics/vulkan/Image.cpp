@@ -183,6 +183,7 @@ void Image::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout 
     );
 
     commandBuffer.endSingleTimeCommand();
+    commandBuffer.destroy();
 }
 
 bool Image::hasStencilComponent(VkFormat format)
