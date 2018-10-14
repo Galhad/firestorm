@@ -59,6 +59,9 @@ public:
     const VkQueue getPresentationQueue() const;
     const VkCommandPool getCommandPool() const;
 
+    explicit operator VkDevice() const;
+    explicit operator VkPhysicalDevice() const;
+
 private:
     const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 

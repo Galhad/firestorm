@@ -358,4 +358,14 @@ const core::fs_uint32 Device::findMemoryType(uint32_t typeFilter, VkMemoryProper
     throw std::runtime_error("Failed to find suitable memory type.");
 }
 
+Device::operator VkDevice() const
+{
+    return device;
+}
+
+Device::operator VkPhysicalDevice() const
+{
+    return physicalDevice;
+}
+
 }
