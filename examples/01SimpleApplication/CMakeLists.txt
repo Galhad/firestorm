@@ -1,5 +1,9 @@
-add_executable(01SimpleApplication main.cpp)
+file(GLOB_RECURSE SOURCES "*.cpp")
 
-include_directories(../../src)
+set(STB_DIRECTORY ../../external/stb)
+file(GLOB_RECURSE STB_HEADERS "${STB_DIRECTORY}/*.h")
+
+add_executable(01SimpleApplication ${SOURCES} ${STB_HEADERS})
 
 target_link_libraries(01SimpleApplication firestorm glfw vulkan)
+target_include_directories(01SimpleApplication PRIVATE ./ ../../src ${STB_DIRECTORY})

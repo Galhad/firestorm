@@ -20,62 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_GRAPHICSMANAGER_HPP
-#define FIRESTORM_GRAPHICSMANAGER_HPP
+#ifndef FIRESTORM_TEXTURE_HPP
+#define FIRESTORM_TEXTURE_HPP
 
-
-#include "vulkan/Instance.hpp"
-#include "vulkan/Device.hpp"
-#include "vulkan/SwapChain.hpp"
-#include "vulkan/Shader.hpp"
-#include "vulkan/GraphicsPipeline.hpp"
-#include "vulkan/DepthImage.hpp"
-
-#include "Window.hpp"
-#include "WindowCreationParams.hpp"
-#include "GraphicsCreationParams.hpp"
-#include "Texture.hpp"
-
-#include "io/Resource.hpp"
+#include "core/Types.hpp"
+#include "vulkan/TextureImage.hpp"
 
 #include <memory>
 
 namespace fs::graphics
 {
-class GraphicsManager
+
+class Texture
 {
 public:
-    GraphicsManager();
-    virtual ~GraphicsManager() = default;
+    Texture() = default;
+    virtual ~Texture() = default;
 
-    void create(const WindowCreationParams& windowCreationParams, const GraphicsCreationParams& graphicsCreationParams);
+    void create(TextureImage textureImage, core::fs_uint32 width ,core::fs_uint32 height,core::fs_uint32 channels = 4);
     virtual void destroy();
 
-    Texture createTexture(const io::Resource& resource) const;
-
-    const graphics::Window& getWindow() const;
-
 protected:
-    WindowPtr window;
+    core::fs_uint32 width = 0;
+    core::fs_uint32 height = 0;
+    core::fs_uint32 channels = 0;
+    TextureImage textureImage;
 
-    InstancePtr vulkanInstance;
-    DevicePtr vulkanDevice;
-    SwapChainPtr vulkanSwapChain;
-    DepthImagePtr vulkanDepthImage;
-    GraphicsPipelinePtr vulkanGraphicsPipeline;
-
-    ShaderPtr vulkanVertexShader;
-    ShaderPtr vulkanFragmentShader;
-
-
-private:
-    void recreateSwapChain();
-    void destroySwapChain() const;
-    void createSwapChain() const;
 };
 
-typedef std::unique_ptr<GraphicsManager> GraphicsManagerPtr;
-
+typedef std::unique_ptr<Texture> TexturePtr;
 }
 
-#endif //FIRESTORM_GRAPHICSMANAGER_HPP
+#endif //FIRESTORM_TEXTURE_HPP

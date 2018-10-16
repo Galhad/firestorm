@@ -20,36 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_TEXTUREIMAGE_HPP
-#define FIRESTORM_TEXTUREIMAGE_HPP
-
-#include "Image.hpp"
-#include "Buffer.hpp"
-
-#include <memory>
-#include <cstdint>
-#include <stdint-gcc.h>
+#include "Texture.hpp"
 
 namespace fs::graphics
 {
-class TextureImage : public Image
+
+void Texture::create(TextureImage textureImage, core::fs_uint32 width, core::fs_uint32 height,
+                     core::fs_uint32 channels)
 {
-public:
-    TextureImage() = default;
-    ~TextureImage() override = default;
+    this->textureImage = std::move(textureImage);
+    width = width;
+    height = height;
+    channels = channels;
 
-    void create(const Device& device, core::fs_uint32 width, core::fs_uint32 height, const core::fs_uint8* bytes,
-                core::fs_uint64 size);
-    void destroy() override;
-
-protected:
-    Buffer buffer;
-
-protected:
-    void copyBufferToImage(core::fs_uint32 width, core::fs_uint32 height);
-};
-
-typedef std::unique_ptr<TextureImage> TextureImagePtr;
 }
 
-#endif //FIRESTORM_TEXTUREIMAGE_HPP
+void Texture::destroy()
+{
+    textureImage.destroy();
+
+    width = 0;
+    height = 0;
+    channels = 0;
+}
+}

@@ -29,19 +29,17 @@ namespace fs::graphics
 {
 
 void
-TextureImage::create(const Device& device, core::fs_uint32 width, core::fs_uint32 height,
-                     const std::vector<core::fs_uint8>& bytes)
+TextureImage::create(const Device& device, core::fs_uint32 width, core::fs_uint32 height, const core::fs_uint8* bytes,
+                     core::fs_uint64 size)
 {
     this->device = &device;
 
-    VkDeviceSize imageSize = bytes.size();
-
-    buffer.create(device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+    buffer.create(device, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     void* data;
-    vkMapMemory(static_cast<VkDevice>(device), static_cast<VkDeviceMemory>(buffer), 0, imageSize, 0, &data);
-    memcpy(data, bytes.data(), static_cast<size_t>(imageSize));
+    vkMapMemory(static_cast<VkDevice>(device), static_cast<VkDeviceMemory>(buffer), 0, size, 0, &data);
+    memcpy(data, bytes, static_cast<size_t>(size));
     vkUnmapMemory(static_cast<VkDevice>(device), static_cast<VkDeviceMemory>(buffer));
 
     VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
@@ -64,6 +62,7 @@ TextureImage::create(const Device& device, core::fs_uint32 width, core::fs_uint3
 
 void TextureImage::destroy()
 {
+    buffer.destroy();
     Image::destroy();
 }
 
