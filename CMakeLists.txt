@@ -11,3 +11,6 @@ set(CMAKE_BUILD_TYPE Debug)
 
 add_subdirectory(src)
 add_subdirectory(examples)
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/resources)
+file(COPY ./resources/texture.png DESTINATION ${CMAKE_BINARY_DIR}/resources)

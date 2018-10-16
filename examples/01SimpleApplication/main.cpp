@@ -27,6 +27,11 @@ int main(int arg, char** argv)
     fs::Engine engine;
 
     engine.create({{{800, 600}, "01SimpleApplication", 0}, {"01SimpleApplication", 0, 1, 0, true}});
+    fs::io::Resource textureResource = engine.getFileProvider().loadFile("../resources/texture.png");
+    fs::graphics::Texture texture = engine.getGraphicsManager().createTexture(textureResource);
+
     engine.run();
+
+    texture.destroy();
     return 0;
 }
