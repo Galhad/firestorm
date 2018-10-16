@@ -37,7 +37,7 @@ public:
     virtual ~Resource() = default;
 
     void create(const std::string& filename, const std::vector<core::fs_uint8>& data);
-    void create(std::string&& filename, std::vector<core::fs_uint8>&& data);
+    void create(const std::string& filename, std::vector<core::fs_uint8>&& data);
     virtual void destroy();
 
     const std::vector<core::fs_uint8>& getData() const;

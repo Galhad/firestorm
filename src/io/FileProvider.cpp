@@ -20,40 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_ENGINE_HPP
-#define FIRESTORM_ENGINE_HPP
+#include "FileProvider.hpp"
 
-#include "EngineCreationParams.hpp"
-#include "graphics/GraphicsManager.hpp"
-#include "io/InputManager.hpp"
-#include "io/FileProvider.hpp"
+#include <fstream>
 
-#include <memory>
-
-namespace fs
+namespace fs::io
 {
-class Engine
+void FileProvider::create()
 {
-public:
-    Engine();
-    virtual ~Engine();
 
-    void create(const EngineCreationParams& creationParams);
-    virtual void destroy();
-
-    void run();
-
-    const graphics::GraphicsManager& getGraphicsManager() const;
-    const io::InputManager& getInputManager() const;
-    const io::FileProvider& getFileProvider() const;
-
-protected:
-    graphics::GraphicsManagerPtr graphicsManager;
-    io::InputManagerPtr inputManager;
-    io::FileProviderPtr fileProvider;
-};
-
-typedef std::unique_ptr<Engine> EnginePtr;
 }
 
-#endif //FIRESTORM_ENGINE_HPP
+void FileProvider::destroy()
+{
+
+}
+
+Resource FileProvider::loadFile(const std::string& filename) const
+{
+    std::ifstream file{filename.c_str(), std::ifstream::binary | std::ifstream::in};
+    if (!file.is_open())
+    {
+        throw std::runtime_error("Failed to open file " + filename);
+    }
+
+    file.seekg(0, std::ifstream::end);
+    core::fs_int64 size = file.tellg();
+    file.seekg(0, std::ifstream::beg);
+
+    std::vector<core::fs_uint8> data(static_cast<unsigned long>(size));
+    file.read(reinterpret_cast<char*>(data.data()), size);
+    file.close();
+
+    Resource resource;
+    resource.create(filename, std::move(data));
+    return resource;
+}
+}

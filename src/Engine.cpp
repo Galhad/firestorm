@@ -24,7 +24,8 @@
 
 namespace fs
 {
-Engine::Engine() : graphicsManager(new graphics::GraphicsManager()), inputManager(new io::InputManager())
+Engine::Engine() : graphicsManager(new graphics::GraphicsManager()), inputManager(new io::InputManager()),
+                   fileProvider(new io::FileProvider())
 {
 
 }
@@ -39,10 +40,12 @@ void Engine::create(const EngineCreationParams& creationParams)
     glfwInit();
     graphicsManager->create(creationParams.windowCreationParams, creationParams.grahicsCreationParams);
     inputManager->create(graphicsManager->getWindow());
+    fileProvider->create();
 }
 
 void Engine::destroy()
 {
+    fileProvider->destroy();
     inputManager->destroy();
     graphicsManager->destroy();
 
@@ -54,9 +57,14 @@ const graphics::GraphicsManager& Engine::getGraphicsManager() const
     return *graphicsManager;
 }
 
-const io::InputManager Engine::getInputManager() const
+const io::InputManager& Engine::getInputManager() const
 {
     return *inputManager;
+}
+
+const io::FileProvider& Engine::getFileProvider() const
+{
+    return *fileProvider;
 }
 
 void Engine::run()

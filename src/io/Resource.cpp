@@ -31,7 +31,7 @@ void Resource::create(const std::string& filename, const std::vector<core::fs_ui
     this->data = data;
 }
 
-void Resource::create(std::string&& filename, std::vector<core::fs_uint8>&& data)
+void Resource::create(const std::string& filename, std::vector<core::fs_uint8>&& data)
 {
     this->filename = filename;
     this->data = data;

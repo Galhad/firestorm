@@ -20,40 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_ENGINE_HPP
-#define FIRESTORM_ENGINE_HPP
+#ifndef FIRESTORM_FILEPROVIDER_HPP
+#define FIRESTORM_FILEPROVIDER_HPP
 
-#include "EngineCreationParams.hpp"
-#include "graphics/GraphicsManager.hpp"
-#include "io/InputManager.hpp"
-#include "io/FileProvider.hpp"
+#include "Resource.hpp"
 
 #include <memory>
 
-namespace fs
+namespace fs::io
 {
-class Engine
+class FileProvider
 {
 public:
-    Engine();
-    virtual ~Engine();
+    FileProvider() = default;
+    virtual ~FileProvider() = default;
 
-    void create(const EngineCreationParams& creationParams);
+    void create();
     virtual void destroy();
 
-    void run();
+    Resource loadFile(const std::string& filename) const;
 
-    const graphics::GraphicsManager& getGraphicsManager() const;
-    const io::InputManager& getInputManager() const;
-    const io::FileProvider& getFileProvider() const;
-
-protected:
-    graphics::GraphicsManagerPtr graphicsManager;
-    io::InputManagerPtr inputManager;
-    io::FileProviderPtr fileProvider;
 };
 
-typedef std::unique_ptr<Engine> EnginePtr;
+typedef std::unique_ptr<FileProvider> FileProviderPtr;
 }
 
-#endif //FIRESTORM_ENGINE_HPP
+#endif //FIRESTORM_FILEPROVIDER_HPP
