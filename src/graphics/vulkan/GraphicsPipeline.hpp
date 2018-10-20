@@ -64,6 +64,8 @@ private:
     VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
     VkPipelineLayout graphicsPipelineLayout = VK_NULL_HANDLE;
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
+    VkSampler textureSampler;
+
 
     std::vector<VkFramebuffer> framebuffers;
 
@@ -71,6 +73,8 @@ private:
     void createDescriptorSetLayout();
     void createPipelineLayout();
     void createPipeline(const Shader& vertexShader, const Shader& fragmentShader);
+    void createFramebuffers();
+    void createTextureSampler();
 
     std::array<VkPipelineShaderStageCreateInfo, 2>
     getShaderStage(const Shader& vertexShader, const Shader& fragmentShader) const;
@@ -83,7 +87,6 @@ private:
     VkPipelineColorBlendAttachmentState getColorBlendAttachment() const;
     VkPipelineColorBlendStateCreateInfo getColorBlend(VkPipelineColorBlendAttachmentState& colorBlendAttachment) const;
     VkPipelineDepthStencilStateCreateInfo getDepthStencil() const;
-    void createFramebuffers();
     VkViewport getViewport() const;
     VkRect2D getScissors() const;
 };
