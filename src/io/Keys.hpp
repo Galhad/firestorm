@@ -174,7 +174,6 @@ enum class Key
 
     Last = GLFW_KEY_LAST
 };
-}
 
 enum class Button
 {
@@ -187,9 +186,10 @@ enum class Button
     Button7 = GLFW_MOUSE_BUTTON_7,
     Button8 = GLFW_MOUSE_BUTTON_8,
     Last = GLFW_MOUSE_BUTTON_LAST,
-    Lef = GLFW_MOUSE_BUTTON_LEFT,
+    Left = GLFW_MOUSE_BUTTON_LEFT,
     Right = GLFW_MOUSE_BUTTON_RIGHT,
     Middle = GLFW_MOUSE_BUTTON_MIDDLE,
 };
+}
 
 #endif //FIRESTORM_KEYS_HPP
