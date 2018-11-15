@@ -50,6 +50,7 @@ private:
     VkAttachmentDescription getColorAttachmentDescription() const;
     VkAttachmentDescription getDepthAttachmentDescription();
 };
+
 typedef std::unique_ptr<RenderPass> RenderPassPtr;
 }
 

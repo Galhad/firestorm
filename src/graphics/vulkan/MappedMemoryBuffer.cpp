@@ -20,60 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#include "MappedMemoryBuffer.hpp"
 
 namespace fs::graphics
 {
-Window::~Window()
+void MappedMemoryBuffer::create(const fs::graphics::Device& device, VkDeviceSize size)
 {
-    destroy();
+    Buffer::create(device, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    vkMapMemory(device.getDevice(), bufferMemory, 0, size, 0,
+                &mappedData);
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
+void MappedMemoryBuffer::destroy()
 {
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    vkUnmapMemory(device->getDevice(), bufferMemory);
+    mappedData = nullptr;
 
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
+    Buffer::destroy();
 }
 
-void Window::destroy()
+void* MappedMemoryBuffer::getMappedData() const
 {
-    glfwDestroyWindow(window);
+    return mappedData;
 }
-
-GLFWwindow* Window::getWindow() const
-{
-    return window;
-}
-
-const std::string& Window::getTitle() const
-{
-    return title;
-}
-
-void Window::setTitle(std::string& title)
-{
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
-}
-
-core::Vector2i Window::getPosition() const
-{
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
-}
-
-void Window::setPosition(core::Vector2i position)
-{
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
-}
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
 }

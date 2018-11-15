@@ -55,6 +55,7 @@ private:
     ShaderType type = ShaderType::Unknwon;
     VkShaderModule shaderModule = VK_NULL_HANDLE;
 };
+
 typedef std::unique_ptr<Shader> ShaderPtr;
 }
 

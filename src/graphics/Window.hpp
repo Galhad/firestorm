@@ -24,6 +24,7 @@
 #define FIRESTORM_WINDOW_HPP
 
 #define GLFW_INCLUDE_VULKAN
+
 #include <GLFW/glfw3.h>
 
 #include "core/Types.hpp"
@@ -49,11 +50,14 @@ public:
     core::Vector2i getPosition() const;
     void setPosition(core::Vector2i position);
 
+    const core::Vector2i& getSize() const;
+
     GLFWwindow* getWindow() const;
 
 protected:
-    GLFWwindow* window;
+    GLFWwindow* window = nullptr;
     std::string title;
+    core::Vector2i size;
 };
 
 typedef std::unique_ptr<Window> WindowPtr;

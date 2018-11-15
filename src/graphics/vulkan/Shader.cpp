@@ -25,7 +25,7 @@
 namespace fs::graphics
 {
 void Shader::create(const fs::graphics::Device& device, const std::vector<fs::core::fs_int8>& code,
-                                  fs::graphics::ShaderType type)
+                    fs::graphics::ShaderType type)
 {
     this->device = &device;
 

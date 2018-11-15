@@ -20,60 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#ifndef FIRESTORM_SPRITESHEET_HPP
+#define FIRESTORM_SPRITESHEET_HPP
+
+#include "Texture.hpp"
+#include "Sprite.hpp"
+
+#include <memory>
+#include <list>
 
 namespace fs::graphics
 {
-Window::~Window()
+class SpriteSheet : public Texture
 {
-    destroy();
+public:
+    SpriteSheet() = default;
+    virtual ~SpriteSheet() = default;
+
+    void
+    create(const fs::graphics::GraphicsPipeline& graphicsPipeline, TextureImage textureImage, core::fs_uint32 width,
+           core::fs_uint32 height,
+           core::fs_uint32 pixelsPerUnit = 100, core::fs_uint32 channels = 4);
+    void destroy() override;
+
+    Sprite* addSprite(core::Recti rect);
+    bool removeSprite(Sprite* sprite);
+    void clearSprites();
+
+    const std::list<Sprite>& getSprites() const;
+    std::list<Sprite>& getSprites();
+
+    bool areSpritesChanged() const;
+    void setSpritesChanged(bool spritesChanged);
+
+private:
+    const fs::graphics::GraphicsPipeline* graphicsPipeline = nullptr;
+
+    std::list<Sprite> sprites;
+    bool spritesChanged = true;
+
+};
+
+typedef std::unique_ptr<SpriteSheet> SpriteSheetPtr;
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
-{
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
-}
-
-void Window::destroy()
-{
-    glfwDestroyWindow(window);
-}
-
-GLFWwindow* Window::getWindow() const
-{
-    return window;
-}
-
-const std::string& Window::getTitle() const
-{
-    return title;
-}
-
-void Window::setTitle(std::string& title)
-{
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
-}
-
-core::Vector2i Window::getPosition() const
-{
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
-}
-
-void Window::setPosition(core::Vector2i position)
-{
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
-}
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
-}
+#endif //FIRESTORM_SPRITESHEET_HPP

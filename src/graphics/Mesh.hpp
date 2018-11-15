@@ -20,60 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#ifndef FIRESTORM_MESH_HPP
+#define FIRESTORM_MESH_HPP
+
+#include "vulkan/Vertex.hpp"
+#include "core/Types.hpp"
+
+#include <memory>
+#include <vector>
 
 namespace fs::graphics
 {
-Window::~Window()
+class Mesh
 {
-    destroy();
+public:
+    Mesh() = default;
+    virtual ~Mesh() = default;
+
+    void create(const std::vector<graphics::Vertex>& vertices, const std::vector<core::fs_uint32>& indices);
+    virtual void destroy();
+
+    const std::vector<graphics::Vertex>& getVertices() const;
+    void setVertices(const std::vector<graphics::Vertex>& vertices);
+
+    const std::vector<core::fs_uint32>& getIndices() const;
+    void setIndices(const std::vector<core::fs_uint32>& indices);
+
+    core::fs_uint32 getIndexBase() const;
+    void setIndexBase(core::fs_uint32 indexBase);
+
+protected:
+    std::vector<graphics::Vertex> vertices;
+    std::vector<core::fs_uint32> indices;
+
+    core::fs_uint32 indexBase = 0;
+};
+
+typedef std::unique_ptr<Mesh> MeshPtr;
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
-{
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
-}
-
-void Window::destroy()
-{
-    glfwDestroyWindow(window);
-}
-
-GLFWwindow* Window::getWindow() const
-{
-    return window;
-}
-
-const std::string& Window::getTitle() const
-{
-    return title;
-}
-
-void Window::setTitle(std::string& title)
-{
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
-}
-
-core::Vector2i Window::getPosition() const
-{
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
-}
-
-void Window::setPosition(core::Vector2i position)
-{
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
-}
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
-}
+#endif //FIRESTORM_MESH_HPP

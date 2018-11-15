@@ -20,60 +20,75 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#include "SceneManager.hpp"
 
-namespace fs::graphics
+namespace fs::scene
 {
-Window::~Window()
+
+void SceneManager::create()
 {
-    destroy();
+
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
+void SceneManager::destroy()
 {
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
+    activeScene = nullptr;
+    clearScenes();
 }
 
-void Window::destroy()
+Scene* SceneManager::createScene()
 {
-    glfwDestroyWindow(window);
+    ScenePtr scene(new Scene());
+
+    auto result = scenes.insert(std::move(scene));
+    if (!result.second)
+    {
+        return nullptr;
+    }
+
+    return result.first->get();
 }
 
-GLFWwindow* Window::getWindow() const
+void SceneManager::destoryScene(const Scene* scene)
 {
-    return window;
+    for (const auto& ownedScene : scenes)
+    {
+        if (ownedScene.get() == scene)
+        {
+            if (activeScene == scene)
+            {
+                activeScene = nullptr;
+            }
+
+            ownedScene->destroy();
+            scenes.erase(ownedScene);
+        }
+    }
 }
 
-const std::string& Window::getTitle() const
+void SceneManager::clearScenes()
 {
-    return title;
+    activeScene = nullptr;
+    for (const auto& ownedScene : scenes)
+    {
+        ownedScene->destroy();
+        scenes.erase(ownedScene);
+    }
 }
 
-void Window::setTitle(std::string& title)
+void SceneManager::setActiveScene(const Scene* activeScene)
 {
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
+    for (const auto& scene : scenes)
+    {
+        if (scene.get() == activeScene)
+        {
+            this->activeScene = scene.get();
+        }
+    }
 }
 
-core::Vector2i Window::getPosition() const
+Scene* SceneManager::getActiveScene() const
 {
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
+    return activeScene;
 }
-
-void Window::setPosition(core::Vector2i position)
-{
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
-}
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
 }

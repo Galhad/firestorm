@@ -22,12 +22,20 @@
 
 #include "Engine.hpp"
 
+#include <chrono>
+
 namespace fs
 {
 Engine::Engine() : graphicsManager(new graphics::GraphicsManager()), inputManager(new io::InputManager()),
-                   fileProvider(new io::FileProvider())
+                   fileProvider(new io::FileProvider()), sceneManager(new scene::SceneManager())
 {
-
+    graphicsManager->getVulkanDriver().setPerCommmandBufferCallback([&](const VkCommandBuffer& commandBuffer,
+                                                                        const VkPipelineLayout& pipelineLayout,
+                                                                        const VkDescriptorSet& uniformDescriptorSet)
+                                                                    {
+                                                                        render(commandBuffer, pipelineLayout,
+                                                                               uniformDescriptorSet);
+                                                                    });
 }
 
 Engine::~Engine()
@@ -39,6 +47,7 @@ void Engine::create(const EngineCreationParams& creationParams)
 {
     glfwInit();
     graphicsManager->create(creationParams.windowCreationParams, creationParams.grahicsCreationParams);
+    sceneManager->create();
     inputManager->create(graphicsManager->getWindow());
     fileProvider->create();
 }
@@ -47,32 +56,67 @@ void Engine::destroy()
 {
     fileProvider->destroy();
     inputManager->destroy();
+    sceneManager->destroy();
     graphicsManager->destroy();
 
     glfwTerminate();
 }
 
-const graphics::GraphicsManager& Engine::getGraphicsManager() const
+graphics::GraphicsManager& Engine::getGraphicsManager() const
 {
     return *graphicsManager;
 }
 
-const io::InputManager& Engine::getInputManager() const
+io::InputManager& Engine::getInputManager() const
 {
     return *inputManager;
 }
 
-const io::FileProvider& Engine::getFileProvider() const
+io::FileProvider& Engine::getFileProvider() const
 {
     return *fileProvider;
 }
 
 void Engine::run()
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     while (!glfwWindowShouldClose(graphicsManager->getWindow().getWindow()))
     {
         glfwPollEvents();
+        auto end = std::chrono::high_resolution_clock::now();
+        float deltaTimeMs =
+            static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())
+            / 1'000'000.f;
+
+        start = end;
+
+        update(deltaTimeMs);
+
+        const auto& activeScene = sceneManager->getActiveScene();
+        if (activeScene != nullptr)
+        {
+            activeScene->update(deltaTimeMs);
+            graphicsManager->draw();
+        }
     }
+    graphicsManager->getVulkanDriver().finish();
+}
+
+void Engine::render(const VkCommandBuffer& commandBuffer,
+                    const VkPipelineLayout& pipelineLayout,
+                    const VkDescriptorSet& uniformDescriptorSet)
+{
+    const auto& activeScene = sceneManager->getActiveScene();
+    if (activeScene != nullptr)
+    {
+        activeScene->render(commandBuffer, pipelineLayout, uniformDescriptorSet);
+    }
+}
+
+scene::SceneManager& Engine::getSceneManager() const
+{
+    return *sceneManager;
 }
 
 }

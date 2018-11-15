@@ -20,60 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#ifndef FIRESTORM_SCENEMANAGER_HPP
+#define FIRESTORM_SCENEMANAGER_HPP
 
-namespace fs::graphics
+#include "Scene.hpp"
+
+#include <memory>
+#include <set>
+
+namespace fs::scene
 {
-Window::~Window()
+class SceneManager
 {
-    destroy();
+public:
+    SceneManager() = default;
+    virtual ~SceneManager() = default;
+
+    void create();
+    virtual void destroy();
+
+    Scene* createScene();
+    void destoryScene(const Scene* scene);
+    void clearScenes();
+
+    void setActiveScene(const Scene* activeScene);
+    Scene* getActiveScene() const;
+
+private:
+    std::set<ScenePtr> scenes;
+    Scene* activeScene = nullptr;
+
+};
+
+typedef std::unique_ptr<SceneManager> SceneManagerPtr;
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
-{
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
-}
-
-void Window::destroy()
-{
-    glfwDestroyWindow(window);
-}
-
-GLFWwindow* Window::getWindow() const
-{
-    return window;
-}
-
-const std::string& Window::getTitle() const
-{
-    return title;
-}
-
-void Window::setTitle(std::string& title)
-{
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
-}
-
-core::Vector2i Window::getPosition() const
-{
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
-}
-
-void Window::setPosition(core::Vector2i position)
-{
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
-}
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
-}
+#endif //FIRESTORM_SCENEMANAGER_HPP

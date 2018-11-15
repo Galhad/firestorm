@@ -43,38 +43,40 @@ public:
                 const DepthImage& depthImage);
     virtual void destroy();
 
+    const SwapChain* getSwapChain() const;
+    const VkDescriptorPool& getDescriptorPool() const;
+    const VkDescriptorSetLayout& getSceneDescriptorSetLayout() const;
+    const VkDescriptorSetLayout& getMaterialDescriptorSetLayout() const;
+    const std::vector<VkFramebuffer>& getFramebuffers() const;
+    const RenderPass* getRenderPass() const;
+    const VkPipeline& getGraphicsPipeline() const;
+    const VkPipelineLayout& getGraphicsPipelineLayout() const;
+
 private:
     RenderPassPtr renderPass;
 
     const SwapChain* swapChain = nullptr;
     const DepthImage* depthImage = nullptr;
 
-//    VkPipelineVertexInputStateCreateInfo vertexInput = {};
-//    VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
-//
-//    VkPipelineViewportStateCreateInfo viewport  = {};
-//    VkPipelineRasterizationStateCreateInfo rasterization = {};
-//    VkPipelineMultisampleStateCreateInfo multisample = {};
-//
-//    VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-//    VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo = {};
-//
-//    VkPipelineDepthStencilStateCreateInfo depthStencil = {};
-
-    VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
     VkPipelineLayout graphicsPipelineLayout = VK_NULL_HANDLE;
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
     VkSampler textureSampler;
 
+    VkDescriptorSetLayout sceneDescriptorSetLayout = VK_NULL_HANDLE;
+    VkDescriptorSetLayout materialDescriptorSetLayout = VK_NULL_HANDLE;
+
+    VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
 
     std::vector<VkFramebuffer> framebuffers;
 
 private:
-    void createDescriptorSetLayout();
+    void createDescriptorSetLayouts();
     void createPipelineLayout();
     void createPipeline(const Shader& vertexShader, const Shader& fragmentShader);
     void createFramebuffers();
     void createTextureSampler();
+
+    void createDescriptorPool();
 
     std::array<VkPipelineShaderStageCreateInfo, 2>
     getShaderStage(const Shader& vertexShader, const Shader& fragmentShader) const;

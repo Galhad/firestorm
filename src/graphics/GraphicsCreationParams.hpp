@@ -32,11 +32,13 @@ namespace fs::graphics
 
 struct GraphicsCreationParams
 {
-    const std::string& applicationName;
+    std::string applicationName = "";
     core::fs_uint8 applicationVersionMajor = 0;
     core::fs_uint8 applicationVersionMinor = 0;
     core::fs_uint8 applicationVersionPath = 0;
     bool enableValidationLayers = false;
+    core::fs_uint8 maxFramesInFlight = 2;
+    core::fs_uint32 pixelsToUnits = 100;
 };
 
 }

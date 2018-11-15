@@ -37,14 +37,12 @@ public:
     Buffer() = default;
     virtual ~Buffer() = default;
 
-    void create(const Device& device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+    void create(const Device& device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+                void* data = nullptr);
     virtual void destroy();
 
-    const VkBuffer getBuffer() const;
-    const VkDeviceMemory getBufferMemory() const;
-
-    explicit operator VkBuffer() const;
-    explicit operator VkDeviceMemory() const;
+    const VkBuffer& getBuffer() const;
+    const VkDeviceMemory& getBufferMemory() const;
 
 protected:
     const Device* device = nullptr;

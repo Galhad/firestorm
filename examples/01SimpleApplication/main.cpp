@@ -20,18 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Engine.hpp"
+#include "SimpleApplication.hpp"
+
+using namespace fs;
 
 int main(int arg, char** argv)
 {
-    fs::Engine engine;
+    fs::SimpleApplicationPtr simpleApplication(new fs::SimpleApplication());
 
-    engine.create({{{800, 600}, "01SimpleApplication", 0}, {"01SimpleApplication", 0, 1, 0, true}});
-    fs::io::Resource textureResource = engine.getFileProvider().loadFile("../resources/texture.png");
-    fs::graphics::Texture texture = engine.getGraphicsManager().createTexture(textureResource);
+    simpleApplication->run();
 
-    engine.run();
-
-    texture.destroy();
     return 0;
 }

@@ -50,7 +50,8 @@ private:
 
     VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
 };
-typedef std::unique_ptr <CommandBuffer> CommandBufferPtr;
+
+typedef std::unique_ptr<CommandBuffer> CommandBufferPtr;
 
 }
 #endif //FIRESTORM_COMMANDBUFFER_HPP

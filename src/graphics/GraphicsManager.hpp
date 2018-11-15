@@ -30,14 +30,19 @@
 #include "vulkan/Shader.hpp"
 #include "vulkan/GraphicsPipeline.hpp"
 #include "vulkan/DepthImage.hpp"
+#include "vulkan/VulkanDriver.hpp"
 
 #include "Window.hpp"
 #include "WindowCreationParams.hpp"
 #include "GraphicsCreationParams.hpp"
 #include "Texture.hpp"
+#include "UniformData.hpp"
+#include "SpriteSheet.hpp"
 
 #include "io/Resource.hpp"
+#include "scene/Scene.hpp"
 
+#include <list>
 #include <memory>
 
 namespace fs::graphics
@@ -51,27 +56,29 @@ public:
     void create(const WindowCreationParams& windowCreationParams, const GraphicsCreationParams& graphicsCreationParams);
     virtual void destroy();
 
-    Texture createTexture(const io::Resource& resource) const;
+    void draw();
+
+    Texture* createTexture(const io::Resource& resource, core::fs_uint32 pixelsPerUnit = 100) const;
+
+    SpriteSheet* createSpriteSheet(const io::Resource& resource, core::fs_uint32 pixelsPerUnit = 100);
+    void clearSpriteSheets();
 
     const graphics::Window& getWindow() const;
+    graphics::Window& getWindow();
+
+    const VulkanDriver& getVulkanDriver() const;
+    VulkanDriver& getVulkanDriver();
+
+    const std::list<SpriteSheet>& getSpriteSheets() const;
+
+protected:
+    void createVertexBuffers();
 
 protected:
     WindowPtr window;
+    VulkanDriverPtr vulkanDriver;
 
-    InstancePtr vulkanInstance;
-    DevicePtr vulkanDevice;
-    SwapChainPtr vulkanSwapChain;
-    DepthImagePtr vulkanDepthImage;
-    GraphicsPipelinePtr vulkanGraphicsPipeline;
-
-    ShaderPtr vulkanVertexShader;
-    ShaderPtr vulkanFragmentShader;
-
-
-private:
-    void recreateSwapChain();
-    void destroySwapChain() const;
-    void createSwapChain() const;
+    std::list<SpriteSheet> spriteSheets;
 };
 
 typedef std::unique_ptr<GraphicsManager> GraphicsManagerPtr;

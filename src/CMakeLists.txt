@@ -1,4 +1,4 @@
-file(GLOB_RECURSE SOURCES "*.cpp")
+file(GLOB_RECURSE SOURCES "*.cpp" "*.hpp")
 
 set(STB_DIRECTORY ../external/stb)
 file(GLOB_RECURSE STB_HEADERS "${STB_DIRECTORY}/*.h")

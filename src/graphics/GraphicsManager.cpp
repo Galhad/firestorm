@@ -22,20 +22,17 @@
 
 #include "GraphicsManager.hpp"
 
-#include "shaders/basic/BasicShaders.hpp"
-
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <stb_image.h>
 
 #include <vector>
+#include <iostream>
+#include <set>
 
 namespace fs::graphics
 {
-GraphicsManager::GraphicsManager() : window(new Window()), vulkanInstance(new Instance()),
-                                     vulkanDevice(new Device()), vulkanSwapChain(new SwapChain()),
-                                     vulkanVertexShader(new Shader()), vulkanFragmentShader(new Shader()),
-                                     vulkanGraphicsPipeline(new GraphicsPipeline()), vulkanDepthImage(new DepthImage())
+GraphicsManager::GraphicsManager() : window(new Window()), vulkanDriver(new VulkanDriver())
 {
 
 }
@@ -44,73 +41,18 @@ void GraphicsManager::create(const WindowCreationParams& windowCreationParams,
                              const GraphicsCreationParams& graphicsCreationParams)
 {
     window->create(windowCreationParams.windowSize, windowCreationParams.windowTitle, windowCreationParams.windowFlags);
-    vulkanInstance->create(graphicsCreationParams.applicationName, graphicsCreationParams.applicationVersionMajor,
-                           graphicsCreationParams.applicationVersionMinor,
-                           graphicsCreationParams.applicationVersionPath,
-                           graphicsCreationParams.enableValidationLayers);
-    vulkanDevice->create(*vulkanInstance, *window);
-
-    createSwapChain();
-}
-
-void GraphicsManager::createSwapChain() const
-{
-    vulkanSwapChain->create(*vulkanDevice);
-
-    std::vector<core::fs_int8> vertexShaderCode(vert_spv, vert_spv + vert_spv_len);
-    vulkanVertexShader->create(*vulkanDevice, vertexShaderCode, ShaderType::Vertex);
-
-    std::vector<core::fs_int8> fragmentShaderCode(frag_spv, frag_spv + frag_spv_len);
-    vulkanFragmentShader->create(*vulkanDevice, fragmentShaderCode, ShaderType::Fragment);
-
-    vulkanDepthImage->create(*vulkanSwapChain);
-
-    vulkanGraphicsPipeline->create(*vulkanVertexShader, *vulkanFragmentShader, *vulkanSwapChain, *vulkanDepthImage);
+    vulkanDriver->create(graphicsCreationParams, *window);
 }
 
 void GraphicsManager::destroy()
 {
-    destroySwapChain();
+    clearSpriteSheets();
 
-    vulkanDevice->destroy();
-    vulkanInstance->destroy();
+    vulkanDriver->destroy();
     window->destroy();
 }
 
-void GraphicsManager::destroySwapChain() const
-{
-    vulkanGraphicsPipeline->destroy();
-
-    vulkanDepthImage->destroy();
-
-    vulkanFragmentShader->destroy();
-    vulkanVertexShader->destroy();
-
-    vulkanSwapChain->destroy();
-}
-
-const Window& GraphicsManager::getWindow() const
-{
-    return *window;
-}
-
-void GraphicsManager::recreateSwapChain()
-{
-    int width = 0;
-    int height = 0;
-    while (width == 0 || height == 0)
-    {
-        glfwGetFramebufferSize(window->getWindow(), &width, &height);
-        glfwWaitEvents();
-    }
-
-    vkDeviceWaitIdle(vulkanDevice->getDevice());
-
-    destroySwapChain();
-    createSwapChain();
-}
-
-Texture GraphicsManager::createTexture(const io::Resource& resource) const
+Texture* GraphicsManager::createTexture(const io::Resource& resource, core::fs_uint32 pixelsPerUnit) const
 {
     int width, height, channels;
     int desiredChannels = STBI_rgb_alpha;
@@ -125,16 +67,129 @@ Texture GraphicsManager::createTexture(const io::Resource& resource) const
     }
 
     TextureImage textureImage;
-    textureImage.create(*vulkanDevice, static_cast<core::fs_uint32>(width), static_cast<core::fs_uint32>(height),
+    textureImage.create(vulkanDriver->getDevice(), static_cast<core::fs_uint32>(width),
+                        static_cast<core::fs_uint32>(height),
                         pixels, imageSize);
 
-    Texture texture;
-    texture.create(std::move(textureImage), static_cast<core::fs_uint32>(width), static_cast<core::fs_uint32>(height),
-                   static_cast<core::fs_uint32>(desiredChannels));
+    auto texture = new Texture();
+    texture->create(std::move(textureImage), static_cast<core::fs_uint32>(width), static_cast<core::fs_uint32>(height),
+                    pixelsPerUnit, static_cast<core::fs_uint32>(desiredChannels));
 
     stbi_image_free(pixels);
 
     return texture;
+}
+
+SpriteSheet* GraphicsManager::createSpriteSheet(const io::Resource& resource, core::fs_uint32 pixelsPerUnit)
+{
+    int width, height, channels;
+    int desiredChannels = STBI_rgb_alpha;
+    const auto& bytes = resource.getData();
+    stbi_uc* pixels = stbi_load_from_memory(bytes.data(), static_cast<int>(bytes.size()), &width, &height,
+                                            &channels, STBI_rgb_alpha);
+    auto imageSize = static_cast<VkDeviceSize>(width * height * desiredChannels);
+
+    if (!pixels)
+    {
+        throw std::runtime_error("Failed to load texture image!");
+    }
+
+    TextureImage textureImage;
+    textureImage.create(vulkanDriver->getDevice(), static_cast<core::fs_uint32>(width),
+                        static_cast<core::fs_uint32>(height),
+                        pixels, imageSize);
+
+    auto& spriteSheet = spriteSheets.emplace_back();
+    spriteSheet.create(vulkanDriver->getGraphicsPipeline(), textureImage,
+                       static_cast<core::fs_uint32>(width), static_cast<core::fs_uint32>(height),
+                       pixelsPerUnit, static_cast<core::fs_uint32>(desiredChannels));
+
+    stbi_image_free(pixels);
+
+    return &spriteSheet;
+}
+
+void GraphicsManager::clearSpriteSheets()
+{
+    for (auto& spriteSheet : spriteSheets)
+    {
+        spriteSheet.destroy();
+    }
+    spriteSheets.clear();
+}
+
+void GraphicsManager::draw()
+{
+    bool spritesChanged = false;
+    for (auto& spriteSheet : spriteSheets)
+    {
+        if (spriteSheet.areSpritesChanged())
+        {
+            spritesChanged = true;
+            spriteSheet.setSpritesChanged(false);
+        }
+    }
+    if (spritesChanged)
+    {
+        createVertexBuffers();
+    }
+
+    vulkanDriver->draw();
+}
+
+const Window& GraphicsManager::getWindow() const
+{
+    return *window;
+}
+
+Window& GraphicsManager::getWindow()
+{
+    return *window;
+}
+
+const VulkanDriver& GraphicsManager::getVulkanDriver() const
+{
+    return *vulkanDriver;
+}
+
+VulkanDriver& GraphicsManager::getVulkanDriver()
+{
+    return *vulkanDriver;
+}
+
+void GraphicsManager::createVertexBuffers()
+{
+    std::vector<Vertex> vertices;
+    std::vector<core::fs_uint32> indices;
+    core::fs_uint32 indexBase = 0;
+
+    std::set<Sprite*> processedMaterials;
+    for (auto& spriteSheet : spriteSheets)
+    {
+        for (auto& sprite : spriteSheet.getSprites())
+        {
+            if (processedMaterials.find(&sprite) != processedMaterials.end())
+            {
+                continue;
+            }
+
+            auto& mesh = sprite.getMesh();
+            mesh.setIndexBase(indexBase);
+
+            vertices.insert(vertices.end(), mesh.getVertices().begin(), mesh.getVertices().end());
+            indices.insert(indices.end(), mesh.getIndices().begin(), mesh.getIndices().end());
+
+            indexBase += mesh.getVertices().size();
+            processedMaterials.insert(&sprite);
+        }
+    }
+
+    vulkanDriver->createVertexBuffers(vertices, indices);
+}
+
+const std::list<SpriteSheet>& GraphicsManager::getSpriteSheets() const
+{
+    return spriteSheets;
 }
 
 }

@@ -25,10 +25,12 @@
 
 #include "EngineCreationParams.hpp"
 #include "graphics/GraphicsManager.hpp"
+#include "scene/SceneManager.hpp"
 #include "io/InputManager.hpp"
 #include "io/FileProvider.hpp"
 
 #include <memory>
+#include <functional>
 
 namespace fs
 {
@@ -43,14 +45,23 @@ public:
 
     void run();
 
-    const graphics::GraphicsManager& getGraphicsManager() const;
-    const io::InputManager& getInputManager() const;
-    const io::FileProvider& getFileProvider() const;
+    virtual void update(float deltaTimeMs) = 0;
+
+    graphics::GraphicsManager& getGraphicsManager() const;
+    scene::SceneManager& getSceneManager() const;
+    io::InputManager& getInputManager() const;
+    io::FileProvider& getFileProvider() const;
+
+protected:
+    virtual void render(const VkCommandBuffer& commandBuffer,
+                        const VkPipelineLayout& pipelineLayout,
+                        const VkDescriptorSet& uniformDescriptorSet);
 
 protected:
     graphics::GraphicsManagerPtr graphicsManager;
     io::InputManagerPtr inputManager;
     io::FileProviderPtr fileProvider;
+    scene::SceneManagerPtr sceneManager;
 };
 
 typedef std::unique_ptr<Engine> EnginePtr;

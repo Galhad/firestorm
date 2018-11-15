@@ -20,60 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#ifndef FIRESTORM_MAPPEDMEMORYBUFFER_HPP
+#define FIRESTORM_MAPPEDMEMORYBUFFER_HPP
 
+#include "Buffer.hpp"
+
+#include <memory>
+//todo: rename to uniform buffer?
 namespace fs::graphics
 {
-Window::~Window()
+class MappedMemoryBuffer : public Buffer
 {
-    destroy();
+public:
+    MappedMemoryBuffer() = default;
+    ~MappedMemoryBuffer() override = default;
+
+    void create(const Device& device, VkDeviceSize size);
+    void destroy() override;
+
+    void* getMappedData() const;
+
+protected:
+    void* mappedData = nullptr;
+
+};
+
+typedef std::unique_ptr<MappedMemoryBuffer> MappedMemoryBufferPtr;
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
-{
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
-}
-
-void Window::destroy()
-{
-    glfwDestroyWindow(window);
-}
-
-GLFWwindow* Window::getWindow() const
-{
-    return window;
-}
-
-const std::string& Window::getTitle() const
-{
-    return title;
-}
-
-void Window::setTitle(std::string& title)
-{
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
-}
-
-core::Vector2i Window::getPosition() const
-{
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
-}
-
-void Window::setPosition(core::Vector2i position)
-{
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
-}
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
-}
+#endif //FIRESTORM_MAPPEDMEMORYBUFFER_HPP

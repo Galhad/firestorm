@@ -23,6 +23,7 @@
 #ifndef FIRESTORM_TYPES_HPP
 #define FIRESTORM_TYPES_HPP
 
+#include <glm/glm.hpp>
 #include <cstdint>
 
 namespace fs::core
@@ -39,6 +40,16 @@ using fs_int32 = int32_t;
 using fs_uint64 = uint64_t;
 using fs_int64 = int64_t;
 
+using Vector2f = glm::vec2;
+using Vector3f = glm::vec3;
+using Vector4f = glm::vec4;
+
+using fs_float32 = glm::highp_float32;
+using fs_float64 = glm::highp_float64;
+
+using fs_mat4 = glm::mat4;
+using fs_mat3 = glm::mat3;
+
 struct Recti
 {
     fs_uint64 x = 0;
@@ -47,16 +58,18 @@ struct Recti
     fs_uint64 height = 0;
 };
 
+struct Rectf
+{
+    fs_float32 x = 0.f;
+    fs_float32 y = 0.f;
+    fs_float32 width = 0.f;
+    fs_float32 height = 0.f;
+};
+
 struct Vector2i
 {
     fs_uint64 x = 0ull;
     fs_uint64 y = 0ull;
-};
-
-struct Vector2f
-{
-    float x = 0.f;
-    float y = 0.f;
 };
 
 struct Vector2d

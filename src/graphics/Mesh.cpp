@@ -20,60 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#include "Mesh.hpp"
 
 namespace fs::graphics
 {
-Window::~Window()
+
+void Mesh::create(const std::vector<graphics::Vertex>& vertices, const std::vector<core::fs_uint32>& indices)
 {
-    destroy();
+    setVertices(vertices);
+    setIndices(indices);
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
+void Mesh::destroy()
 {
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
 }
 
-void Window::destroy()
+const std::vector<graphics::Vertex>& Mesh::getVertices() const
 {
-    glfwDestroyWindow(window);
+    return vertices;
 }
 
-GLFWwindow* Window::getWindow() const
+void Mesh::setVertices(const std::vector<graphics::Vertex>& vertices)
 {
-    return window;
+    Mesh::vertices = vertices;
 }
 
-const std::string& Window::getTitle() const
+const std::vector<core::fs_uint32>& Mesh::getIndices() const
 {
-    return title;
+    return indices;
 }
 
-void Window::setTitle(std::string& title)
+void Mesh::setIndices(const std::vector<core::fs_uint32>& indices)
 {
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
+    Mesh::indices = indices;
 }
 
-core::Vector2i Window::getPosition() const
+core::fs_uint32 Mesh::getIndexBase() const
 {
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
+    return 0;
 }
 
-void Window::setPosition(core::Vector2i position)
+void Mesh::setIndexBase(core::fs_uint32 indexBase)
 {
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
+    Mesh::indexBase = indexBase;
 }
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
 }

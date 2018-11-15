@@ -20,60 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#ifndef FIRESTORM_SIMPLEAPPLICATION_HPP
+#define FIRESTORM_SIMPLEAPPLICATION_HPP
 
-namespace fs::graphics
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <Engine.hpp>
+
+#include <scene/SpriteSceneNode.hpp>
+#include <scene/Camera.hpp>
+#include <iostream>
+#include <memory>
+
+namespace fs
 {
-Window::~Window()
+class SimpleApplication : public fs::Engine
 {
-    destroy();
+public:
+    SimpleApplication();
+    ~SimpleApplication() override;
+
+    void update(float deltaTimeMs) override;
+
+private:
+    scene::Camera camera;
+    scene::Scene* scene;
+    scene::SpriteSceneNode spriteSceneNode1;
+    scene::SpriteSceneNode spriteSceneNode2;
+    graphics::SpriteSheet* spriteSheet;
+    graphics::Sprite* sprite;
+
+};
+typedef std::unique_ptr<SimpleApplication> SimpleApplicationPtr;
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
-{
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
-}
-
-void Window::destroy()
-{
-    glfwDestroyWindow(window);
-}
-
-GLFWwindow* Window::getWindow() const
-{
-    return window;
-}
-
-const std::string& Window::getTitle() const
-{
-    return title;
-}
-
-void Window::setTitle(std::string& title)
-{
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
-}
-
-core::Vector2i Window::getPosition() const
-{
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
-}
-
-void Window::setPosition(core::Vector2i position)
-{
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
-}
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
-}
+#endif //FIRESTORM_SIMPLEAPPLICATION_HPP

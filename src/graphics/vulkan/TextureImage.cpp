@@ -34,13 +34,9 @@ TextureImage::create(const Device& device, core::fs_uint32 width, core::fs_uint3
 {
     this->device = &device;
 
+    Buffer buffer;
     buffer.create(device, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-    void* data;
-    vkMapMemory(static_cast<VkDevice>(device), static_cast<VkDeviceMemory>(buffer), 0, size, 0, &data);
-    memcpy(data, bytes, static_cast<size_t>(size));
-    vkUnmapMemory(static_cast<VkDevice>(device), static_cast<VkDeviceMemory>(buffer));
+                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, (void*) bytes);
 
     VkFormat format = VK_FORMAT_R8G8B8A8_UNORM;
     createImage(width, height, format, VK_IMAGE_TILING_OPTIMAL,
@@ -48,25 +44,36 @@ TextureImage::create(const Device& device, core::fs_uint32 width, core::fs_uint3
 
     transitionImageLayout(image, format, VK_IMAGE_LAYOUT_UNDEFINED,
                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    copyBufferToImage(width, height);
+    copyBufferToImage(width, height, buffer);
 
     transitionImageLayout(image, format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                          imageLayout);
     createImageView(format, VK_IMAGE_ASPECT_COLOR_BIT);
     // TODO
     // For practical applications it is recommended to combine these operations in a single command buffer and
     // execute them asynchronously for higher throughput, especially the transitions and copy in the createTextureImage function.
     // Try to experiment with this by creating a setupCommandBuffer that the helper functions record commands into,
     // and add a flushSetupCommands to execute the commands that have been recorded so far.
+    buffer.destroy();
+
+    createSampler();
+
+    descriptorImageInfo.sampler = sampler;
+    descriptorImageInfo.imageView = imageView;
+    descriptorImageInfo.imageLayout = imageLayout;
 }
 
 void TextureImage::destroy()
 {
-    buffer.destroy();
+    vkDestroySampler(device->getDevice(), sampler, nullptr);
+    sampler = VK_NULL_HANDLE;
+
+    descriptorImageInfo = {};
+
     Image::destroy();
 }
 
-void TextureImage::copyBufferToImage(core::fs_uint32 width, core::fs_uint32 height)
+void TextureImage::copyBufferToImage(core::fs_uint32 width, core::fs_uint32 height, const Buffer& buffer)
 {
     CommandBuffer commandBuffer;
     commandBuffer.create(*device);
@@ -91,7 +98,7 @@ void TextureImage::copyBufferToImage(core::fs_uint32 width, core::fs_uint32 heig
 
     vkCmdCopyBufferToImage(
         commandBuffer.getCommandBuffer(),
-        static_cast<VkBuffer>(buffer),
+        buffer.getBuffer(),
         image,
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         1,
@@ -100,6 +107,37 @@ void TextureImage::copyBufferToImage(core::fs_uint32 width, core::fs_uint32 heig
 
     commandBuffer.endSingleTimeCommand();
     commandBuffer.destroy();
+}
+
+void TextureImage::createSampler()
+{
+    VkSamplerCreateInfo samplerInfo = {};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.anisotropyEnable = VK_TRUE;
+    samplerInfo.maxAnisotropy = 16;
+    samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    samplerInfo.unnormalizedCoordinates = VK_FALSE;
+    samplerInfo.compareEnable = VK_FALSE;
+    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    samplerInfo.mipLodBias = 0.0f;
+    samplerInfo.minLod = 0.0f;
+    samplerInfo.maxLod = 0.0f;
+
+    if (vkCreateSampler(device->getDevice(), &samplerInfo, nullptr, &sampler) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create texture sampler!");
+    }
+}
+
+const VkDescriptorImageInfo& TextureImage::getDescriptorImageInfo() const
+{
+    return descriptorImageInfo;
 }
 }
 

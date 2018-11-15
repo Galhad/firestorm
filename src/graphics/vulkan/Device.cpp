@@ -104,7 +104,8 @@ bool Device::pickDeviceIfSuitable(VkPhysicalDevice device)
     SwapChainSupportDetails swapChainSupportDetails = querySwapChainSupport(device);
 
     bool swapChainAdequate =
-    extensionsSupported && !swapChainSupportDetails.formats.empty() && !swapChainSupportDetails.presentModes.empty();
+        extensionsSupported && !swapChainSupportDetails.formats.empty() &&
+        !swapChainSupportDetails.presentModes.empty();
 
     if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader &&
         indices.isComplete() && extensionsSupported && swapChainAdequate && deviceFeatures.samplerAnisotropy)

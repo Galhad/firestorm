@@ -23,6 +23,7 @@
 #include "GraphicsPipeline.hpp"
 
 #include "Vertex.hpp"
+#include "graphics/Transform.hpp"
 
 namespace fs::graphics
 {
@@ -40,7 +41,7 @@ void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragment
 
     renderPass->create(swapChain);
 
-    createDescriptorSetLayout();
+    createDescriptorSetLayouts();
 
     createPipelineLayout();
     createPipeline(vertexShader, fragmentShader);
@@ -48,10 +49,14 @@ void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragment
     createFramebuffers();
 
     createTextureSampler();
+
+    createDescriptorPool();
 }
 
 void GraphicsPipeline::destroy()
 {
+    vkDestroyDescriptorPool(swapChain->getDevice()->getDevice(), descriptorPool, nullptr);
+
     vkDestroySampler(swapChain->getDevice()->getDevice(), textureSampler, nullptr);
 
     for (const auto& framebuffer : framebuffers)
@@ -62,7 +67,8 @@ void GraphicsPipeline::destroy()
     vkDestroyPipeline(swapChain->getDevice()->getDevice(), graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(swapChain->getDevice()->getDevice(), graphicsPipelineLayout, nullptr);
 
-    vkDestroyDescriptorSetLayout(swapChain->getDevice()->getDevice(), descriptorSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(swapChain->getDevice()->getDevice(), sceneDescriptorSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(swapChain->getDevice()->getDevice(), materialDescriptorSetLayout, nullptr);
 
     renderPass->destroy();
     renderPass = nullptr;
@@ -93,6 +99,16 @@ GraphicsPipeline::createPipeline(const Shader& vertexShader, const Shader& fragm
 
     VkPipelineDepthStencilStateCreateInfo depthStencil = getDepthStencil();
 
+//    VkDynamicState dynamicStates[] = {
+//        VK_DYNAMIC_STATE_VIEWPORT,
+//        VK_DYNAMIC_STATE_LINE_WIDTH
+//    };
+//
+//    VkPipelineDynamicStateCreateInfo dynamicState = {};
+//    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+//    dynamicState.dynamicStateCount = 2;
+//    dynamicState.pDynamicStates = dynamicStates;
+
     VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {};
     graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     // shaders
@@ -106,7 +122,8 @@ GraphicsPipeline::createPipeline(const Shader& vertexShader, const Shader& fragm
     graphicsPipelineCreateInfo.pMultisampleState = &multisample;
     graphicsPipelineCreateInfo.pDepthStencilState = &depthStencil; // optional
     graphicsPipelineCreateInfo.pColorBlendState = &colorBlendStateCreateInfo;
-    graphicsPipelineCreateInfo.pDynamicState = nullptr; // optional
+//    graphicsPipelineCreateInfo.pDynamicState = &dynamicState; // optional
+    graphicsPipelineCreateInfo.pDynamicState = nullptr;
     // graphicsPipeline layout
     graphicsPipelineCreateInfo.layout = graphicsPipelineLayout;
     // render passes
@@ -163,24 +180,17 @@ VkPipelineColorBlendAttachmentState GraphicsPipeline::getColorBlendAttachment() 
     VkPipelineColorBlendAttachmentState colorBlendAttachmentState = {};
     colorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
                                                | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    colorBlendAttachmentState.blendEnable = VK_FALSE;
-    colorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-    colorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+
+    // for alpha blending
+    // finalColor.rgb = newAlpha * newColor + (1 - newAlpha) * oldColor;
+    // finalColor.a = newAlpha.a;
+    colorBlendAttachmentState.blendEnable = VK_TRUE;
+    colorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    colorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
     colorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
     colorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
     colorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
-
-    // for alpha blending
-// finalColor.rgb = newAlpha * newColor + (1 - newAlpha) * oldColor;
-// finalColor.a = newAlpha.a;
-//    colorBlendAttachment.blendEnable = VK_TRUE;
-//    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-//    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-//    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-//    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-//    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-//    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
     return colorBlendAttachmentState;
 }
@@ -211,7 +221,7 @@ VkPipelineRasterizationStateCreateInfo GraphicsPipeline::getRasterization() cons
     rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizationStateCreateInfo.lineWidth = 1.0f;
     rasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    rasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
     rasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
     rasterizationStateCreateInfo.depthBiasConstantFactor = 0.0f; // optional
     rasterizationStateCreateInfo.depthBiasClamp = 0.0f; // optional
@@ -296,43 +306,21 @@ GraphicsPipeline::getShaderStage(const Shader& vertexShader, const Shader& fragm
     return {vertShaderStageInfo, fragShaderStageInfo};
 }
 
-void GraphicsPipeline::createDescriptorSetLayout()
-{
-    VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-    uboLayoutBinding.binding = 0;
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-    samplerLayoutBinding.binding = 1;
-    samplerLayoutBinding.descriptorCount = 1;
-    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    samplerLayoutBinding.pImmutableSamplers = nullptr;
-    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
-
-    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = bindings.size();
-    layoutInfo.pBindings = bindings.data();
-
-    if (vkCreateDescriptorSetLayout(swapChain->getDevice()->getDevice(), &layoutInfo, nullptr, &descriptorSetLayout) !=
-        VK_SUCCESS)
-    {
-        throw std::runtime_error("Failed to create descriptor set layout!");
-    }
-}
-
 void GraphicsPipeline::createPipelineLayout()
 {
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
     pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutCreateInfo.setLayoutCount = 1; // optional
-    pipelineLayoutCreateInfo.pSetLayouts = &descriptorSetLayout; // optional
-    pipelineLayoutCreateInfo.pushConstantRangeCount = 0; // optional
-    pipelineLayoutCreateInfo.pPushConstantRanges = nullptr; // optional
+    std::array<VkDescriptorSetLayout, 2> descriptorSetLayouts = {sceneDescriptorSetLayout, materialDescriptorSetLayout};
+    pipelineLayoutCreateInfo.pSetLayouts = descriptorSetLayouts.data();
+    pipelineLayoutCreateInfo.setLayoutCount = descriptorSetLayouts.size();
+
+    VkPushConstantRange pushConstantRange{};
+    pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    pushConstantRange.offset = 0;
+    pushConstantRange.size = sizeof(Transform);
+
+    pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+    pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
 
     if (vkCreatePipelineLayout(swapChain->getDevice()->getDevice(), &pipelineLayoutCreateInfo, nullptr,
                                &graphicsPipelineLayout) != VK_SUCCESS)
@@ -394,6 +382,106 @@ void GraphicsPipeline::createTextureSampler()
     {
         throw std::runtime_error("Failed to create texture sampler!");
     }
+}
+
+void GraphicsPipeline::createDescriptorPool()
+{
+    core::fs_uint32 max = 10;
+    std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[0].descriptorCount = max;
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[1].descriptorCount = max;
+
+    VkDescriptorPoolCreateInfo poolInfo = {};
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = poolSizes.size();
+    poolInfo.pPoolSizes = poolSizes.data();
+    poolInfo.maxSets = max + 1;
+
+    if (vkCreateDescriptorPool(swapChain->getDevice()->getDevice(), &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create descriptor pool!");
+    }
+}
+
+const SwapChain* GraphicsPipeline::getSwapChain() const
+{
+    return swapChain;
+}
+
+const VkDescriptorPool& GraphicsPipeline::getDescriptorPool() const
+{
+    return descriptorPool;
+}
+
+const std::vector<VkFramebuffer>& GraphicsPipeline::getFramebuffers() const
+{
+    return framebuffers;
+}
+
+const RenderPass* GraphicsPipeline::getRenderPass() const
+{
+    return renderPass.get();
+}
+
+const VkPipeline& GraphicsPipeline::getGraphicsPipeline() const
+{
+    return graphicsPipeline;
+}
+
+const VkPipelineLayout& GraphicsPipeline::getGraphicsPipelineLayout() const
+{
+    return graphicsPipelineLayout;
+}
+
+void GraphicsPipeline::createDescriptorSetLayouts()
+{
+
+    std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings;
+
+    // Set 0: Scene matrices
+    VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    setLayoutBindings.push_back(uboLayoutBinding);
+
+    VkDescriptorSetLayoutCreateInfo descriptorLayout = {};
+    descriptorLayout.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    descriptorLayout.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+    descriptorLayout.pBindings = setLayoutBindings.data();
+
+    if (vkCreateDescriptorSetLayout(swapChain->getDevice()->getDevice(), &descriptorLayout, nullptr,
+                                    &sceneDescriptorSetLayout) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create scene descriptor set layout!");
+    }
+
+    setLayoutBindings.clear();
+    VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+    samplerLayoutBinding.binding = 0;
+    samplerLayoutBinding.descriptorCount = 1;
+    samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerLayoutBinding.pImmutableSamplers = nullptr;
+    samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    setLayoutBindings.push_back(samplerLayoutBinding);
+    if (vkCreateDescriptorSetLayout(swapChain->getDevice()->getDevice(), &descriptorLayout, nullptr,
+                                    &materialDescriptorSetLayout) != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to create material descriptor set layout!");
+    }
+}
+
+const VkDescriptorSetLayout& GraphicsPipeline::getSceneDescriptorSetLayout() const
+{
+    return sceneDescriptorSetLayout;
+}
+
+const VkDescriptorSetLayout& GraphicsPipeline::getMaterialDescriptorSetLayout() const
+{
+    return materialDescriptorSetLayout;
 }
 
 }

@@ -42,11 +42,17 @@ public:
                 core::fs_uint64 size);
     void destroy() override;
 
-protected:
-    Buffer buffer;
+    const VkDescriptorImageInfo& getDescriptorImageInfo() const;
 
 protected:
-    void copyBufferToImage(core::fs_uint32 width, core::fs_uint32 height);
+    VkDescriptorImageInfo descriptorImageInfo = {};
+    VkSampler sampler = VK_NULL_HANDLE;
+    VkImageLayout imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+protected:
+    void copyBufferToImage(core::fs_uint32 width, core::fs_uint32 height, const Buffer& buffer);
+
+    void createSampler();
 };
 
 typedef std::unique_ptr<TextureImage> TextureImagePtr;

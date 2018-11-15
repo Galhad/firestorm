@@ -22,10 +22,13 @@
 
 #include "Buffer.hpp"
 
+#include <cstring>
+
 namespace fs::graphics
 {
 
-void Buffer::create(const Device& device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+void Buffer::create(const Device& device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+                    void* data)
 {
     this->device = &device;
 
@@ -35,51 +38,66 @@ void Buffer::create(const Device& device, VkDeviceSize size, VkBufferUsageFlags 
     bufferCreateInfo.usage = usage;
     bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateBuffer(static_cast<VkDevice>(device), &bufferCreateInfo, nullptr, &buffer) != VK_SUCCESS)
+    if (vkCreateBuffer(device.getDevice(), &bufferCreateInfo, nullptr, &buffer) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to create buffer!");
     }
 
     VkMemoryRequirements memoryRequirements;
-    vkGetBufferMemoryRequirements(static_cast<VkDevice>(device), buffer, &memoryRequirements);
+    vkGetBufferMemoryRequirements(device.getDevice(), buffer, &memoryRequirements);
 
     VkMemoryAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memoryRequirements.size;
     allocInfo.memoryTypeIndex = device.findMemoryType(memoryRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(static_cast<VkDevice>(device), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
+    if (vkAllocateMemory(device.getDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
     {
         throw std::runtime_error("Failed to allocate buffer memory!");
     }
 
-    vkBindBufferMemory(static_cast<VkDevice>(device), buffer, bufferMemory, 0);
+    if (data != nullptr)
+    {
+        void* mappedData;
+        vkMapMemory(device.getDevice(), bufferMemory, 0, size, 0, &mappedData);
+        memcpy(mappedData, data, size);
+
+        // If host coherency hasn't been requested, do a manual flush to make writes visible
+        if ((properties & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
+        {
+            VkMappedMemoryRange mappedMemoryRange{};
+            mappedMemoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+            mappedMemoryRange.memory = bufferMemory;
+            mappedMemoryRange.offset = 0;
+            mappedMemoryRange.size = size;
+            vkFlushMappedMemoryRanges(device.getDevice(), 1, &mappedMemoryRange);
+        }
+        vkUnmapMemory(device.getDevice(), bufferMemory);
+    }
+
+    vkBindBufferMemory(device.getDevice(), buffer, bufferMemory, 0);
 }
 
 void Buffer::destroy()
 {
-    vkFreeMemory(static_cast<VkDevice>(*device), bufferMemory, nullptr);
-    vkDestroyBuffer(static_cast<VkDevice>(*device), buffer, nullptr);
+    if (buffer != VK_NULL_HANDLE)
+    {
+        vkDestroyBuffer(static_cast<VkDevice>(*device), buffer, nullptr);
+    }
+    if (bufferMemory != VK_NULL_HANDLE)
+    {
+        vkFreeMemory(static_cast<VkDevice>(*device), bufferMemory, nullptr);
+    }
 
     device = nullptr;
 }
 
-Buffer::operator VkBuffer() const
+const VkBuffer& Buffer::getBuffer() const
 {
     return buffer;
 }
 
-Buffer::operator VkDeviceMemory() const
-{
-    return bufferMemory;
-}
-
-const VkBuffer Buffer::getBuffer() const
-{
-    return buffer;
-}
-
-const VkDeviceMemory Buffer::getBufferMemory() const
+const VkDeviceMemory& Buffer::getBufferMemory() const
 {
     return bufferMemory;
 }

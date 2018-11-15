@@ -20,60 +20,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#ifndef FIRESTORM_SCENE_HPP
+#define FIRESTORM_SCENE_HPP
 
-namespace fs::graphics
+#include "SceneNode.hpp"
+#include "graphics/vulkan/VulkanDriver.hpp"
+#include "graphics/vulkan/Buffer.hpp"
+
+#include <memory>
+
+namespace fs::scene
 {
-Window::~Window()
+class Scene
 {
-    destroy();
+public:
+    Scene() = default;
+    virtual ~Scene() = default;
+
+//    void create(const graphics::VulkanDriver& driver);
+    void create();
+    virtual void destroy();
+
+    void update(float deltaTime);
+    void render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet);
+
+    const std::vector<SceneNode*>& getNodes() const;
+    std::vector<SceneNode*>& getNodes();
+
+//    void createBuffers();
+
+
+//protected:
+//    void createBuffers();
+
+protected:
+//    const graphics::VulkanDriver* driver = nullptr;
+
+    std::string name;
+    std::vector<SceneNode*> nodes;
+
+//    graphics::Buffer vertexBuffer;
+//    graphics::Buffer indexBuffer;
+
+};
+
+typedef std::unique_ptr<Scene> ScenePtr;
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
-{
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
-}
-
-void Window::destroy()
-{
-    glfwDestroyWindow(window);
-}
-
-GLFWwindow* Window::getWindow() const
-{
-    return window;
-}
-
-const std::string& Window::getTitle() const
-{
-    return title;
-}
-
-void Window::setTitle(std::string& title)
-{
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
-}
-
-core::Vector2i Window::getPosition() const
-{
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
-}
-
-void Window::setPosition(core::Vector2i position)
-{
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
-}
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
-}
+#endif //FIRESTORM_SCENE_HPP

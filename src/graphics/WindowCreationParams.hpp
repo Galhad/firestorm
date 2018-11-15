@@ -31,8 +31,8 @@ namespace fs::graphics
 {
 struct WindowCreationParams
 {
-    core::Vector2i windowSize;
-    const std::string& windowTitle;
+    core::Vector2i windowSize = {800, 600};
+    std::string windowTitle = "Firestorm";
     core::fs_uint32 windowFlags = 0;
 };
 }

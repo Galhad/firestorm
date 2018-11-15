@@ -20,60 +20,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Window.hpp"
+#ifndef FIRESTORM_SPRITE_HPP
+#define FIRESTORM_SPRITE_HPP
+
+#include "Texture.hpp"
+#include "Mesh.hpp"
+#include "vulkan/GraphicsPipeline.hpp"
+
+#include <memory>
 
 namespace fs::graphics
 {
-Window::~Window()
+class Sprite
 {
-    destroy();
+public:
+    Sprite() = default;
+    virtual ~Sprite() = default;
+
+    void create(core::Recti rect, const Texture& texture, const GraphicsPipeline& graphicsPipeline);
+    virtual void destroy();
+
+    const Texture* getTexture() const;
+    const VkDescriptorSet getDescriptorSet() const;
+
+    Mesh& getMesh();
+    const Mesh& getMesh() const;
+
+private:
+    void createDescriptor();
+    void destroyDescriptor();
+
+    void createMesh();
+    void destroyMesh();
+
+private:
+    Mesh mesh;
+
+    core::Recti rect;
+    const Texture* texture = nullptr;
+
+    VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
+    VkWriteDescriptorSet writeDescriptorSet = {};
+    const GraphicsPipeline* pipeline = nullptr;
+
+};
+
+typedef std::unique_ptr<Sprite> SpritePtr;
 }
 
-void Window::create(core::Vector2i size, const std::string& title, core::fs_uint32 flags)
-{
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
-    Window::size = size;
-}
-
-void Window::destroy()
-{
-    glfwDestroyWindow(window);
-}
-
-GLFWwindow* Window::getWindow() const
-{
-    return window;
-}
-
-const std::string& Window::getTitle() const
-{
-    return title;
-}
-
-void Window::setTitle(std::string& title)
-{
-    this->title = title;
-    glfwSetWindowTitle(window, title.c_str());
-}
-
-core::Vector2i Window::getPosition() const
-{
-    core::Vector2i position{};
-    glfwGetWindowPos(window, (int*) &position.x, (int*) &position.y);
-    return position;
-}
-
-void Window::setPosition(core::Vector2i position)
-{
-    glfwSetWindowPos(window, static_cast<int>(position.x), static_cast<int>(position.y));
-}
-
-const core::Vector2i& Window::getSize() const
-{
-    return size;
-}
-
-}
+#endif //FIRESTORM_SPRITE_HPP

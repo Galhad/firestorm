@@ -61,8 +61,8 @@ void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT
 
 void
 Instance::create(const std::string& applicationName, core::fs_uint8 applicationVersionMajor,
-                       core::fs_uint8 applicationVersionMinor, core::fs_uint8 applicationVersionPath,
-                       bool enableValidationLayers)
+                 core::fs_uint8 applicationVersionMinor, core::fs_uint8 applicationVersionPath,
+                 bool enableValidationLayers)
 {
     this->validationLayersEnabled = enableValidationLayers;
     if (enableValidationLayers)
@@ -183,7 +183,7 @@ void Instance::printAvailableExtensions(const std::vector<VkExtensionProperties>
 }
 
 void Instance::validateRequiredExtensions(const std::vector<VkExtensionProperties>& availableExtensions,
-                                                const std::vector<const char*>& requiredExtensions) const
+                                          const std::vector<const char*>& requiredExtensions) const
 {
     for (const auto& requiredExtension : requiredExtensions)
     {
@@ -208,7 +208,7 @@ void Instance::validateRequiredExtensions(const std::vector<VkExtensionPropertie
 
 VkInstanceCreateInfo
 Instance::getInstanceCreateInfo(const VkApplicationInfo& appInfo,
-                                      const std::vector<const char*>& extensions) const
+                                const std::vector<const char*>& extensions) const
 {
     VkInstanceCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -243,8 +243,8 @@ void Instance::setupDebugCallback()
 }
 
 VkBool32 Instance::debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType,
-                                       uint64_t object, size_t location, int32_t code,
-                                       const char* layerPrefix, const char* message, void* userData)
+                                 uint64_t object, size_t location, int32_t code,
+                                 const char* layerPrefix, const char* message, void* userData)
 {
     // todo: Log
     std::cerr << "Validation layer: " << message << std::endl;
