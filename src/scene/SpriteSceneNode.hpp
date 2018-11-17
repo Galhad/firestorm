@@ -39,6 +39,16 @@ public:
     void destroy() override;
 
     void update(float deltaTime) override;
+    void
+    render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet scenedescriptorSet) override;
+
+    graphics::Sprite* getSprite();
+    const graphics::Sprite* getSprite() const;
+
+    void setSprite(graphics::Sprite* sprite);
+
+protected:
+    graphics::Sprite* sprite = nullptr;
 
 };
 

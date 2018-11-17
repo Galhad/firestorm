@@ -14,3 +14,6 @@ add_subdirectory(examples)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/resources)
 file(COPY ./resources/texture.png DESTINATION ${CMAKE_BINARY_DIR}/resources)
+file(COPY ./resources/bg.png DESTINATION ${CMAKE_BINARY_DIR}/resources)
+file(COPY ./resources/tiles_spritesheet.png DESTINATION ${CMAKE_BINARY_DIR}/resources)
+file(COPY ./resources/p1_spritesheet.png DESTINATION ${CMAKE_BINARY_DIR}/resources)

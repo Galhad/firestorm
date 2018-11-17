@@ -60,8 +60,8 @@ void Sprite::createDescriptor()
 
 void Sprite::createMesh()
 {
-    auto width = static_cast<core::fs_float32>(rect.width - rect.x) / texture->getPixelsPerUnit();
-    auto height = static_cast<core::fs_float32>(rect.height - rect.y) / texture->getPixelsPerUnit();
+    auto width = static_cast<core::fs_float32>(rect.width) / texture->getPixelsPerUnit();
+    auto height = static_cast<core::fs_float32>(rect.height) / texture->getPixelsPerUnit();
 
     core::Rectf textureRect{};
     textureRect.x = static_cast<core::fs_float32>(rect.x) / texture->getWidthPixels();

@@ -27,7 +27,6 @@
 #include <stb_image.h>
 
 #include <vector>
-#include <iostream>
 #include <set>
 
 namespace fs::graphics
@@ -163,12 +162,12 @@ void GraphicsManager::createVertexBuffers()
     std::vector<core::fs_uint32> indices;
     core::fs_uint32 indexBase = 0;
 
-    std::set<Sprite*> processedMaterials;
+    std::set<Sprite*> processedSprites;
     for (auto& spriteSheet : spriteSheets)
     {
         for (auto& sprite : spriteSheet.getSprites())
         {
-            if (processedMaterials.find(&sprite) != processedMaterials.end())
+            if (processedSprites.find(&sprite) != processedSprites.end())
             {
                 continue;
             }
@@ -180,7 +179,7 @@ void GraphicsManager::createVertexBuffers()
             indices.insert(indices.end(), mesh.getIndices().begin(), mesh.getIndices().end());
 
             indexBase += mesh.getVertices().size();
-            processedMaterials.insert(&sprite);
+            processedSprites.insert(&sprite);
         }
     }
 

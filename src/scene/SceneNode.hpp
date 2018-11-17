@@ -37,7 +37,7 @@ public:
     SceneNode() = default;
     virtual ~SceneNode() = default;
 
-    void create(graphics::Sprite& sprite, const graphics::Transform& transform = {});
+    void create(const graphics::Transform& transform = {});
     virtual void destroy();
 
     core::Vector2f getPosition() const;
@@ -59,16 +59,11 @@ public:
     virtual void
     render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet scenedescriptorSet);
 
-    graphics::Sprite* getSprite();
-    const graphics::Sprite* getSprite() const;
-
-    void setSprite(graphics::Sprite* sprite);
-
 protected:
     void calculateModelMatrix();
 
 protected:
-    graphics::Sprite* sprite = nullptr;
+
     graphics::Transform transform;
 
     core::Vector2f position;

@@ -36,23 +36,46 @@ SimpleApplication::SimpleApplication()
     create({windowCreationParams, graphicsCreationParams});
 
     auto textureResource = fileProvider->loadFile("../resources/texture.png");
+    auto spritesheetResource = fileProvider->loadFile("../resources/tiles_spritesheet.png");
+    auto bgResource = fileProvider->loadFile("../resources/bg.png");
+    auto playerResource = fileProvider->loadFile("../resources/p1_spritesheet.png");
 
     auto& vulkanDriver = graphicsManager->getVulkanDriver();
 
     scene = sceneManager->createScene();
     scene->create();
 
-    spriteSheet = graphicsManager->createSpriteSheet(textureResource);
-    sprite = spriteSheet->addSprite({0, 0, spriteSheet->getWidthPixels(), spriteSheet->getHeightPixels()});
+    bgSpriteSheet = graphicsManager->createSpriteSheet(bgResource);
+    bgSprite = bgSpriteSheet->addSprite({0, 0, bgSpriteSheet->getWidthPixels(), bgSpriteSheet->getHeightPixels()});
 
-    spriteSceneNode1.create(*sprite);
-    spriteSceneNode1.setLayer(0.5f);
-    scene->getNodes().push_back(&spriteSceneNode1);
+    tilesSpriteSheet = graphicsManager->createSpriteSheet(spritesheetResource);
+    grassLeftSprite = tilesSpriteSheet->addSprite({504, 648, 70, 70});
+    grassMidSprite = tilesSpriteSheet->addSprite({504, 576, 70, 70});
+    grassRightSprite = tilesSpriteSheet->addSprite({504, 504, 70, 70});
 
-    spriteSceneNode2.create(*sprite);
-    spriteSceneNode2.setPosition({0.f, -1.5f});
-    spriteSceneNode2.setLayer(0.0f);
-    scene->getNodes().push_back(&spriteSceneNode2);
+    playerSpriteSheet = graphicsManager->createSpriteSheet(playerResource);
+    playerStandSprite = playerSpriteSheet->addSprite({0, 196, 66, 92});
+
+    bgSceneNode.create(*bgSprite);
+    bgSceneNode.setPosition({-12.f, -12.f});
+    bgSceneNode.setLayer(-0.1f);
+    bgSceneNode.setScale(10.f, 10.f);
+    scene->getNodes().push_back(&bgSceneNode);
+
+    grassLeftSceneNode.create(*grassLeftSprite);
+    scene->getNodes().push_back(&grassLeftSceneNode);
+
+    grassMidSceneNode.create(*grassMidSprite);
+    grassMidSceneNode.setPosition({0.7f, 0.f});
+    scene->getNodes().push_back(&grassMidSceneNode);
+
+    grassRightSceneNode.create(*grassRightSprite);
+    grassRightSceneNode.setPosition({1.4f, 0.f});
+    scene->getNodes().push_back(&grassRightSceneNode);
+
+    playerSceneNode.create(*playerStandSprite);
+    playerSceneNode.setPosition({0.7f, -0.7f - 0.22f});
+    scene->getNodes().push_back(&playerSceneNode);
 
     sceneManager->setActiveScene(scene);
 
@@ -68,8 +91,8 @@ SimpleApplication::~SimpleApplication()
 
 void SimpleApplication::update(float deltaTimeMs)
 {
-    std::cout << "delta time [ms]: " << deltaTimeMs << std::endl;
-    constexpr float cameraSpeed = 0.001f;
+//    std::cout << "delta time [ms]: " << deltaTimeMs << std::endl;
+    constexpr float cameraSpeed = 0.01f;
     float cameraOffset = cameraSpeed * deltaTimeMs;
 
     core::Vector2f cameraPosition = camera.getPosition();

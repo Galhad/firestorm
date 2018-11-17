@@ -29,16 +29,50 @@ namespace fs::scene
 
 void SpriteSceneNode::create(graphics::Sprite& sprite, const graphics::Transform& transform)
 {
-    SceneNode::create(sprite, transform);
+    SceneNode::create(transform);
+
+    SpriteSceneNode::sprite = &sprite;
 }
 
 void SpriteSceneNode::destroy()
 {
+    sprite = nullptr;
+
     SceneNode::destroy();
 }
 
 void SpriteSceneNode::update(float deltaTime)
 {
 
+}
+
+void
+SpriteSceneNode::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout,
+                        VkDescriptorSet sceneDescriptorSet)
+{
+    SceneNode::render(commandBuffer, pipelineLayout, sceneDescriptorSet);
+
+    std::array<VkDescriptorSet, 2> descriptorSets = {sceneDescriptorSet, sprite->getDescriptorSet()};
+
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0,
+                            static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(), 0, nullptr);
+
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(sprite->getMesh().getIndices().size()), 1, 0,
+                     sprite->getMesh().getIndexBase(), 0);
+}
+
+graphics::Sprite* SpriteSceneNode::getSprite()
+{
+    return sprite;
+}
+
+const graphics::Sprite* SpriteSceneNode::getSprite() const
+{
+    return sprite;
+}
+
+void SpriteSceneNode::setSprite(graphics::Sprite* sprite)
+{
+    SpriteSceneNode::sprite = sprite;
 }
 }

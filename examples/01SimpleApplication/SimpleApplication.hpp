@@ -49,10 +49,22 @@ public:
 private:
     scene::Camera camera;
     scene::Scene* scene;
-    scene::SpriteSceneNode spriteSceneNode1;
-    scene::SpriteSceneNode spriteSceneNode2;
-    graphics::SpriteSheet* spriteSheet;
-    graphics::Sprite* sprite;
+
+    graphics::SpriteSheet* bgSpriteSheet;
+    graphics::Sprite* bgSprite;
+    scene::SpriteSceneNode bgSceneNode;
+
+    graphics::SpriteSheet* tilesSpriteSheet;
+    graphics::Sprite* grassLeftSprite;
+    graphics::Sprite* grassMidSprite;
+    graphics::Sprite* grassRightSprite;
+    scene::SpriteSceneNode grassLeftSceneNode;
+    scene::SpriteSceneNode grassMidSceneNode;
+    scene::SpriteSceneNode grassRightSceneNode;
+
+    graphics::SpriteSheet* playerSpriteSheet;
+    graphics::Sprite* playerStandSprite;
+    scene::SpriteSceneNode playerSceneNode;
 
 };
 typedef std::unique_ptr<SimpleApplication> SimpleApplicationPtr;

@@ -27,10 +27,8 @@
 namespace fs::scene
 {
 
-void SceneNode::create(graphics::Sprite& sprite, const graphics::Transform& transform)
+void SceneNode::create(const graphics::Transform& transform)
 {
-
-    SceneNode::sprite = &sprite;
     SceneNode::transform = transform;
     position = {0.f, 0.f};
     layer = 0.f;
@@ -40,45 +38,8 @@ void SceneNode::create(graphics::Sprite& sprite, const graphics::Transform& tran
 
 void SceneNode::destroy()
 {
-    sprite = nullptr;
-
     transform = {};
     geometryUpdated = true;
-}
-
-void
-SceneNode::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet)
-{
-    std::array<VkDescriptorSet, 2> descriptorSets = {sceneDescriptorSet, sprite->getDescriptorSet()};
-
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0,
-                            static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(), 0, nullptr);
-
-    if (geometryUpdated)
-    {
-        calculateModelMatrix();
-        geometryUpdated = false;
-    }
-    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(graphics::Transform),
-                       &transform);
-
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(sprite->getMesh().getIndices().size()), 1, 0,
-                     sprite->getMesh().getIndexBase(), 0);
-}
-
-graphics::Sprite* SceneNode::getSprite()
-{
-    return sprite;
-}
-
-const graphics::Sprite* SceneNode::getSprite() const
-{
-    return sprite;
-}
-
-void SceneNode::setSprite(graphics::Sprite* sprite)
-{
-    SceneNode::sprite = sprite;
 }
 
 core::Vector2f SceneNode::getPosition() const
@@ -147,6 +108,18 @@ void SceneNode::calculateModelMatrix()
     core::fs_mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, layer));
     core::fs_mat4 scale = glm::scale(glm::vec3(SceneNode::scale.x, SceneNode::scale.y, 1.0f));
     transform.model = translation * scale;
+}
+
+void
+SceneNode::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet)
+{
+    if (geometryUpdated)
+    {
+        calculateModelMatrix();
+        geometryUpdated = false;
+    }
+    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(graphics::Transform),
+                       &transform);
 }
 
 }

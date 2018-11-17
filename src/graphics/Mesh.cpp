@@ -58,7 +58,7 @@ void Mesh::setIndices(const std::vector<core::fs_uint32>& indices)
 
 core::fs_uint32 Mesh::getIndexBase() const
 {
-    return 0;
+    return indexBase;
 }
 
 void Mesh::setIndexBase(core::fs_uint32 indexBase)
