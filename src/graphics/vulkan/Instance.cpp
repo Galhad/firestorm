@@ -29,7 +29,6 @@
 #include <vector>
 #include <sstream>
 #include <cstring>
-#include <iostream>
 
 namespace fs::graphics
 {
@@ -64,11 +63,12 @@ Instance::create(const std::string& applicationName, core::fs_uint8 applicationV
                  core::fs_uint8 applicationVersionMinor, core::fs_uint8 applicationVersionPath,
                  bool enableValidationLayers)
 {
+    logger = spdlog::get(utils::CONSOLE_LOGGER_NAME);
+
     this->validationLayersEnabled = enableValidationLayers;
     if (enableValidationLayers)
     {
-        //todo: Log
-        std::cout << "Validation layers are enabled." << std::endl;
+        logger->info("Validation layers are enabled.");
 
         if (!checkValidationLayerSupport())
         {
@@ -174,11 +174,10 @@ std::vector<const char*> Instance::getRequiredExtensions() const
 
 void Instance::printAvailableExtensions(const std::vector<VkExtensionProperties>& extensions)
 {
-//    todo: log
-    std::cout << "Available Vulkan extensions:" << std::endl;
+    logger->debug("Available Vulkan extensions:");
     for (const auto& extension : extensions)
     {
-        std::cout << "\t" << extension.extensionName << std::endl;
+        logger->debug("\t {}", extension.extensionName);
     }
 }
 
@@ -235,6 +234,7 @@ void Instance::setupDebugCallback()
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
     createInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
     createInfo.pfnCallback = debugCallback;
+    createInfo.pUserData = logger.get();
 
     if (CreateDebugReportCallbackEXT(instance, &createInfo, nullptr, &callback) != VK_SUCCESS)
     {
@@ -246,8 +246,10 @@ VkBool32 Instance::debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjec
                                  uint64_t object, size_t location, int32_t code,
                                  const char* layerPrefix, const char* message, void* userData)
 {
-    // todo: Log
-    std::cerr << "Validation layer: " << message << std::endl;
+    if(userData != nullptr)
+    {
+        static_cast<utils::Logger*>(userData)->error("Validation layer: {}", message);
+    }
 
     return VK_FALSE;
 }

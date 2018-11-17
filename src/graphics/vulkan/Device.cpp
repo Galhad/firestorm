@@ -23,13 +23,14 @@
 #include "Device.hpp"
 
 #include <vector>
-#include <iostream>
 #include <set>
 
 namespace fs::graphics
 {
 void Device::create(const Instance& instance, const Window& window)
 {
+    logger = spdlog::get(utils::CONSOLE_LOGGER_NAME);
+
     this->instance = &instance;
     this->window = &window;
 
@@ -91,12 +92,9 @@ bool Device::pickDeviceIfSuitable(VkPhysicalDevice device)
     VkPhysicalDeviceFeatures deviceFeatures = {};
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-    // todo: Logs
-    std::cout << "Found device " << deviceProperties.deviceName << "(" << deviceProperties.deviceID
-              << ") with driver version " << deviceProperties.driverVersion << " vendor id "
-              << deviceProperties.vendorID << std::endl;
-
-    std::cout << "\tMaximum texture size: " << deviceProperties.limits.maxImageDimension2D << std::endl;
+    logger->debug("Found device {}{} with driver version {} vendor id {}", deviceProperties.deviceName, deviceProperties.deviceID,
+        deviceProperties.driverVersion, deviceProperties.vendorID);
+    logger->debug("Maximum texture size: {}", deviceProperties.limits.maxImageDimension2D);
 
     QueueFamilyIndices indices = findQueueFamilies(device);
     bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -110,7 +108,7 @@ bool Device::pickDeviceIfSuitable(VkPhysicalDevice device)
     if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader &&
         indices.isComplete() && extensionsSupported && swapChainAdequate && deviceFeatures.samplerAnisotropy)
     {
-        std::cout << "\tDevice is suitable" << std::endl;
+        logger->info("Device {} is suitable", deviceProperties.deviceName);
 
         physicalDevice = device;
         this->swapChainSupportDetails = swapChainSupportDetails;

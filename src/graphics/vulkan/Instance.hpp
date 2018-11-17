@@ -24,6 +24,7 @@
 #define FIRESTORM_INSTANCE_HPP
 
 #include "core/Types.hpp"
+#include "utils/Logger.hpp"
 
 #include <vulkan/vulkan.h>
 #include <memory>
@@ -49,6 +50,8 @@ public:
 
 
 private:
+    utils::LoggerPtr logger = spdlog::get(utils::CONSOLE_LOGGER_NAME);
+
     bool validationLayersEnabled = false;
 
     const std::vector<const char*> validationLayers = {"VK_LAYER_LUNARG_standard_validation"};

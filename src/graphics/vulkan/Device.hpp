@@ -27,6 +27,7 @@
 #include "SwapChainSupportDetails.hpp"
 #include "Instance.hpp"
 #include "graphics/Window.hpp"
+#include "utils/Logger.hpp"
 
 #include <vulkan/vulkan.h>
 #include <vector>
@@ -63,6 +64,8 @@ public:
     explicit operator VkPhysicalDevice() const;
 
 private:
+    utils::LoggerPtr logger;
+
     const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
     const Instance* instance = nullptr;

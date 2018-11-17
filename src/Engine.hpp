@@ -28,6 +28,7 @@
 #include "scene/SceneManager.hpp"
 #include "io/InputManager.hpp"
 #include "io/FileProvider.hpp"
+#include "utils/Logger.hpp"
 
 #include <memory>
 #include <functional>
@@ -51,6 +52,7 @@ public:
     scene::SceneManager& getSceneManager() const;
     io::InputManager& getInputManager() const;
     io::FileProvider& getFileProvider() const;
+    const utils::LoggerPtr& getLogger() const;
 
 protected:
     virtual void render(const VkCommandBuffer& commandBuffer,
@@ -62,6 +64,8 @@ protected:
     io::InputManagerPtr inputManager;
     io::FileProviderPtr fileProvider;
     scene::SceneManagerPtr sceneManager;
+
+    utils::LoggerPtr logger = spdlog::stdout_color_mt(utils::CONSOLE_LOGGER_NAME);
 };
 
 typedef std::unique_ptr<Engine> EnginePtr;

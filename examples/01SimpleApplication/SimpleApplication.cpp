@@ -33,7 +33,7 @@ SimpleApplication::SimpleApplication()
     graphicsCreationParams.applicationName = "01SimpleApplication";
     graphicsCreationParams.enableValidationLayers = true;
 
-    create({windowCreationParams, graphicsCreationParams});
+    create({windowCreationParams, graphicsCreationParams, spdlog::level::debug});
 
     auto textureResource = fileProvider->loadFile("../resources/texture.png");
     auto spritesheetResource = fileProvider->loadFile("../resources/tiles_spritesheet.png");

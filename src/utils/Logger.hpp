@@ -20,23 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_ENGINECREATIONPARAMS_HPP
-#define FIRESTORM_ENGINECREATIONPARAMS_HPP
+#ifndef FIRESTORM_LOGGER_HPP
+#define FIRESTORM_LOGGER_HPP
 
-#include "graphics/WindowCreationParams.hpp"
-#include "graphics/GraphicsCreationParams.hpp"
 #include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
+#include <memory>
 
-namespace fs
+namespace fs::utils
 {
+using Logger = spdlog::logger;
+using LoggerPtr = std::shared_ptr<spdlog::logger>;
 
-struct EngineCreationParams
-{
-    graphics::WindowCreationParams windowCreationParams;
-    graphics::GraphicsCreationParams grahicsCreationParams;
-    spdlog::level::level_enum loggingLevel = spdlog::level::info;
-};
-
+constexpr const char* CONSOLE_LOGGER_NAME = "console";
 }
 
-#endif //FIRESTORM_ENGINECREATIONPARAMS_HPP
+#endif //FIRESTORM_LOGGER_HPP

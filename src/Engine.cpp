@@ -29,13 +29,6 @@ namespace fs
 Engine::Engine() : graphicsManager(new graphics::GraphicsManager()), inputManager(new io::InputManager()),
                    fileProvider(new io::FileProvider()), sceneManager(new scene::SceneManager())
 {
-    graphicsManager->getVulkanDriver().setPerCommmandBufferCallback([&](const VkCommandBuffer& commandBuffer,
-                                                                        const VkPipelineLayout& pipelineLayout,
-                                                                        const VkDescriptorSet& uniformDescriptorSet)
-                                                                    {
-                                                                        render(commandBuffer, pipelineLayout,
-                                                                               uniformDescriptorSet);
-                                                                    });
 }
 
 Engine::~Engine()
@@ -45,8 +38,19 @@ Engine::~Engine()
 
 void Engine::create(const EngineCreationParams& creationParams)
 {
+    logger->set_level(creationParams.loggingLevel);
+    logger->info("Starting Firestorm engine");
+
     glfwInit();
     graphicsManager->create(creationParams.windowCreationParams, creationParams.grahicsCreationParams);
+    graphicsManager->getVulkanDriver().setPerCommmandBufferCallback([&](const VkCommandBuffer& commandBuffer,
+                                                                        const VkPipelineLayout& pipelineLayout,
+                                                                        const VkDescriptorSet& uniformDescriptorSet)
+                                                                    {
+                                                                        render(commandBuffer, pipelineLayout,
+                                                                               uniformDescriptorSet);
+                                                                    });
+
     sceneManager->create();
     inputManager->create(graphicsManager->getWindow());
     fileProvider->create();
@@ -117,6 +121,11 @@ void Engine::render(const VkCommandBuffer& commandBuffer,
 scene::SceneManager& Engine::getSceneManager() const
 {
     return *sceneManager;
+}
+
+const utils::LoggerPtr& Engine::getLogger() const
+{
+    return logger;
 }
 
 }
