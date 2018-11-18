@@ -33,25 +33,30 @@ void SwapChain::create(const Device& device)
 {
     this->device = &device;
 
+    if (swapChain != VK_NULL_HANDLE)
+    {
+        oldSwapChain = swapChain;
+    }
+
     createSwapChain();
+    if (oldSwapChain != VK_NULL_HANDLE)
+    {
+        destroy(oldSwapChain);
+    }
+
     createImageViews();
 }
 
 void SwapChain::destroy()
 {
-    for (const auto& imageView : swapChainImageViews)
-    {
-        vkDestroyImageView(device->getDevice(), imageView, nullptr);
-    }
-
-    vkDestroySwapchainKHR(device->getDevice(), swapChain, nullptr);
+    destroy(swapChain);
 
     device = nullptr;
 }
 
 void SwapChain::createSwapChain()
 {
-    const auto& swapChainSupport = device->getSwapChainSupportDetails();
+    auto swapChainSupport = device->querySwapChainSupport();
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
     swapChainImageFormat = surfaceFormat.format;
@@ -74,6 +79,7 @@ void SwapChain::createSwapChain()
     swapChainCreateInfo.imageExtent = swapChainExtent;
     swapChainCreateInfo.imageArrayLayers = 1;
     swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    swapChainCreateInfo.oldSwapchain = swapChain;
 
     const auto& indices = device->getQueueFamilyIndices();
     uint32_t queueFamilyIndices[] = {(uint32_t) indices.graphicsFamily, (uint32_t) indices.presentFamily};
@@ -95,7 +101,6 @@ void SwapChain::createSwapChain()
     swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     swapChainCreateInfo.presentMode = presentMode;
     swapChainCreateInfo.clipped = VK_TRUE;
-    swapChainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 
     if (vkCreateSwapchainKHR(device->getDevice(), &swapChainCreateInfo, nullptr, &swapChain) != VK_SUCCESS)
     {
@@ -229,6 +234,16 @@ const VkExtent2D& SwapChain::getSwapChainExtent() const
 const std::vector<VkImageView>& SwapChain::getSwapChainImageViews() const
 {
     return swapChainImageViews;
+}
+
+void SwapChain::destroy(VkSwapchainKHR swapchain)
+{
+    for (const auto& imageView : swapChainImageViews)
+    {
+        vkDestroyImageView(device->getDevice(), imageView, nullptr);
+    }
+
+    vkDestroySwapchainKHR(device->getDevice(), swapchain, nullptr);
 }
 
 }

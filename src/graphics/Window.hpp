@@ -30,10 +30,13 @@
 #include "core/Types.hpp"
 
 #include <string>
+#include <functional>
 #include <memory>
 
 namespace fs::graphics
 {
+
+using WindowResizedCallback = std::function< void(core::fs_int32 width, core::fs_int32 height)>;
 
 class Window
 {
@@ -54,10 +57,18 @@ public:
 
     GLFWwindow* getWindow() const;
 
+    const WindowResizedCallback& getWindowResizedCallback() const;
+    void setWindowResizedCallback(const WindowResizedCallback& windowResizedCallback);
+
+protected:
+    void onWindowResized(core::fs_int32 width, core::fs_int32 height);
+
 protected:
     GLFWwindow* window = nullptr;
     std::string title;
     core::Vector2i size;
+
+    WindowResizedCallback windowResizedCallback = {};
 };
 
 typedef std::unique_ptr<Window> WindowPtr;

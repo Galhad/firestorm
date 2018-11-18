@@ -54,6 +54,21 @@ void Engine::create(const EngineCreationParams& creationParams)
     sceneManager->create();
     inputManager->create(graphicsManager->getWindow());
     fileProvider->create();
+
+    graphicsManager->getWindow().setWindowResizedCallback([&](core::fs_int32 width, core::fs_int32 height)
+                                                          {
+                                                              graphicsManager->getVulkanDriver().recreateSwapChain();
+
+                                                              const auto& activeScene = sceneManager->getActiveScene();
+                                                              if (activeScene != nullptr)
+                                                              {
+                                                                  const auto& activeCamera = activeScene->getActiveCamera();
+                                                                  if (activeCamera != nullptr)
+                                                                  {
+                                                                      activeCamera->updateUniformData();
+                                                                  }
+                                                              }
+                                                          });
 }
 
 void Engine::destroy()

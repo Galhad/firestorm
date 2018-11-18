@@ -46,10 +46,10 @@ enum class KeyMode
 enum class Key
 {
     // The unknown key
-    Unknown = GLFW_KEY_UNKNOWN,
+        Unknown = GLFW_KEY_UNKNOWN,
 
     // Printable keys
-    Space = GLFW_KEY_SPACE,
+        Space = GLFW_KEY_SPACE,
     Apostgrophe = GLFW_KEY_APOSTROPHE,       /* ' */
     Comma = GLFW_KEY_COMMA,                  /* , */
     Minus = GLFW_KEY_MINUS,                  /* - */
@@ -101,7 +101,7 @@ enum class Key
     World2 = GLFW_KEY_WORLD_2,               /* non-US #2 */
 
     // Functional keys
-    Escape = GLFW_KEY_ESCAPE,
+        Escape = GLFW_KEY_ESCAPE,
     Enter = GLFW_KEY_ENTER,
     Tab = GLFW_KEY_TAB,
     Backspace = GLFW_KEY_BACKSPACE,

@@ -246,7 +246,7 @@ VkBool32 Instance::debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjec
                                  uint64_t object, size_t location, int32_t code,
                                  const char* layerPrefix, const char* message, void* userData)
 {
-    if(userData != nullptr)
+    if (userData != nullptr)
     {
         static_cast<utils::Logger*>(userData)->error("Validation layer: {}", message);
     }

@@ -47,6 +47,8 @@ public:
 
     const core::fs_uint32 findMemoryType(core::fs_uint32 typeFilter, VkMemoryPropertyFlags properties) const;
 
+    SwapChainSupportDetails querySwapChainSupport() const;
+
     const QueueFamilyIndices& getQueueFamilyIndices() const;
     const SwapChainSupportDetails& getSwapChainSupportDetails() const;
 
@@ -59,9 +61,6 @@ public:
     const VkQueue getGraphicsQueue() const;
     const VkQueue getPresentationQueue() const;
     const VkCommandPool getCommandPool() const;
-
-    explicit operator VkDevice() const;
-    explicit operator VkPhysicalDevice() const;
 
 private:
     utils::LoggerPtr logger;

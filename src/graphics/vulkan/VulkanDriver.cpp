@@ -37,8 +37,10 @@ VulkanDriver::VulkanDriver() : instance(new Instance()), device(new Device()),
 
 }
 
-void VulkanDriver::create(const GraphicsCreationParams& graphicsCreationParams, const Window& window)
+void VulkanDriver::create(const GraphicsCreationParams& graphicsCreationParams, Window& window)
 {
+    logger = spdlog::get(utils::CONSOLE_LOGGER_NAME);
+
     VulkanDriver::window = &window;
 
     instance->create(graphicsCreationParams.applicationName, graphicsCreationParams.applicationVersionMajor,
@@ -49,7 +51,18 @@ void VulkanDriver::create(const GraphicsCreationParams& graphicsCreationParams, 
 
     maxFramesInFlight = graphicsCreationParams.maxFramesInFlight;
 
+    std::vector<core::fs_int8> vertexShaderCode(vert_spv, vert_spv + vert_spv_len);
+    vertexShader->create(*device, vertexShaderCode, ShaderType::Vertex);
+
+    std::vector<core::fs_int8> fragmentShaderCode(frag_spv, frag_spv + frag_spv_len);
+    fragmentShader->create(*device, fragmentShaderCode, ShaderType::Fragment);
+
     createSwapChain();
+
+    graphicsPipeline->create(*vertexShader, *fragmentShader, *swapChain);
+
+    createBuffers();
+
     createSyncObjects();
 }
 
@@ -61,7 +74,14 @@ void VulkanDriver::destroy()
 
     destroySyncObjects();
 
+    destroyBuffers();
+
+    graphicsPipeline->destroy();
+
     destroySwapChain();
+
+    fragmentShader->destroy();
+    vertexShader->destroy();
 
     maxFramesInFlight = 0;
 
@@ -74,53 +94,47 @@ void VulkanDriver::destroy()
 void VulkanDriver::createSwapChain()
 {
     swapChain->create(*device);
-
-    std::vector<core::fs_int8> vertexShaderCode(vert_spv, vert_spv + vert_spv_len);
-    vertexShader->create(*device, vertexShaderCode, ShaderType::Vertex);
-
-    std::vector<core::fs_int8> fragmentShaderCode(frag_spv, frag_spv + frag_spv_len);
-    fragmentShader->create(*device, fragmentShaderCode, ShaderType::Fragment);
-
     depthImage->create(*swapChain);
-
-    graphicsPipeline->create(*vertexShader, *fragmentShader, *swapChain, *depthImage);
-
-    createUniformBuffers();
-
-    createDrawCommandBuffers();
 }
 
 void VulkanDriver::destroySwapChain()
 {
-    destroyDrawCommandBuffers();
-
-    destroyUniformBuffers();
-
-    graphicsPipeline->destroy();
-
     depthImage->destroy();
-
-    fragmentShader->destroy();
-    vertexShader->destroy();
-
     swapChain->destroy();
 }
 
-//void VulkanDriver::recreateSwapChain()
-//{
-//    int width = 0;
-//    int height = 0;
-//    while (width == 0 || height == 0)
-//    {
-//        glfwGetFramebufferSize(window->getWindow(), &width, &height);
-//        glfwWaitEvents();
-//    }
-//
-//    vkDeviceWaitIdle(device->getDevice());
-//
-//    destroySwapChain();
-//    createSwapChain();
-//}
+void VulkanDriver::recreateSwapChain()
+{
+    int width = 0;
+    int height = 0;
+    while (width == 0 || height == 0)
+    {
+        glfwGetFramebufferSize(window->getWindow(), &width, &height);
+        glfwWaitEvents();
+    }
+
+    auto start = std::chrono::high_resolution_clock::now();
+    waitIdle();
+
+    swapChain->create(*device);
+    depthImage->destroy();
+    depthImage->create(*swapChain);
+
+    destroyFramebuffers();
+    createFramebuffers();
+
+    destroyDrawCommandBuffers();
+    createDrawCommandBuffers();
+    recordCommandBuffers();
+
+    waitIdle();
+    auto end = std::chrono::high_resolution_clock::now();
+
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+    auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    logger->debug("Swapchain recreated in {}ms", durationMs);
+
+}
 
 void VulkanDriver::createSyncObjects()
 {
@@ -203,7 +217,7 @@ void VulkanDriver::destroyUniformBuffers()
 
 void VulkanDriver::createDrawCommandBuffers()
 {
-    commandBuffers.resize(graphicsPipeline->getFramebuffers().size());
+    commandBuffers.resize(framebuffers.size());
 
     VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
     commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -241,7 +255,7 @@ void VulkanDriver::draw()
                                             VK_NULL_HANDLE, &imageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
-//        recreateSwapChain();
+        recreateSwapChain();
         return;
     }
     else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -283,10 +297,9 @@ void VulkanDriver::draw()
     presentInfo.pResults = nullptr; // optional
 
     result = vkQueuePresentKHR(device->getPresentationQueue(), &presentInfo);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR/* || framebufferResized*/)
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
-        /*framebufferResized = false;*/
-//        recreateSwapChain();
+        recreateSwapChain();
     }
     else if (result != VK_SUCCESS)
     {
@@ -296,7 +309,7 @@ void VulkanDriver::draw()
     currentFrame = (currentFrame + 1) % maxFramesInFlight;
 }
 
-void VulkanDriver::recordCommandBuffers(/*const CommandBufferCallback& perCommmandBufferCallback*/)
+void VulkanDriver::recordCommandBuffers()
 {
     if (perCommmandBufferCallback == nullptr)
     {
@@ -325,27 +338,26 @@ void VulkanDriver::recordCommandBuffers(/*const CommandBufferCallback& perCommma
 
         vkBeginCommandBuffer(commandBuffers[i], &commandBufferBeginInfo);
 
-        renderPassBeginInfo.framebuffer = graphicsPipeline->getFramebuffers()[i];
+        renderPassBeginInfo.framebuffer = framebuffers[i];
 
         vkCmdBeginRenderPass(commandBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
         vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS,
                           graphicsPipeline->getGraphicsPipeline());
 
-//        todo: dynamic
-//        VkViewport viewport{};
-//        viewport.width = vulkanSwapChai         n->getSwapChainExtent().width;
-//        viewport.height = swapChain->getSwapChainExtent().height;
-//        viewport.minDepth = 0.0f;
-//        viewport.maxDepth = 1.0f;
-//        vkCmdSetViewport(commandBuffers[i], 0, 1, &viewport);
-//
-//        VkRect2D scissor{};
-//        scissor.extent.width = swapChain->getSwapChainExtent().width;
-//        scissor.extent.height = swapChain->getSwapChainExtent().height;
-//        scissor.offset.x = 0;
-//        scissor.offset.y = 0;
-//        vkCmdSetScissor(commandBuffers[i], 0, 1, &scissor);
+        VkViewport viewport{};
+        viewport.width = swapChain->getSwapChainExtent().width;
+        viewport.height = swapChain->getSwapChainExtent().height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(commandBuffers[i], 0, 1, &viewport);
+
+        VkRect2D scissor{};
+        scissor.extent.width = swapChain->getSwapChainExtent().width;
+        scissor.extent.height = swapChain->getSwapChainExtent().height;
+        scissor.offset.x = 0;
+        scissor.offset.y = 0;
+        vkCmdSetScissor(commandBuffers[i], 0, 1, &scissor);
 
         VkDeviceSize offsets[1] = {0};
         vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, &vertexBuffer.getBuffer(), offsets);
@@ -453,6 +465,57 @@ const VulkanDriver::CommandBufferCallback& VulkanDriver::getPerCommmandBufferCal
 void VulkanDriver::setPerCommmandBufferCallback(const CommandBufferCallback& callback)
 {
     perCommmandBufferCallback = callback;
+}
+
+void VulkanDriver::createFramebuffers()
+{
+    const auto& swapChainImageViews = swapChain->getSwapChainImageViews();
+    framebuffers.resize(swapChainImageViews.size());
+
+    for (size_t i = 0; i < swapChainImageViews.size(); ++i)
+    {
+        std::array<VkImageView, 2> attachments = {
+            swapChainImageViews[i],
+            depthImage->getImageView()
+        };
+
+        VkFramebufferCreateInfo framebufferCreateInfo = {};
+        framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferCreateInfo.renderPass = graphicsPipeline->getRenderPass()->getRenderPass();
+        framebufferCreateInfo.attachmentCount = attachments.size();
+        framebufferCreateInfo.pAttachments = attachments.data();
+        framebufferCreateInfo.width = swapChain->getSwapChainExtent().width;
+        framebufferCreateInfo.height = swapChain->getSwapChainExtent().height;
+        framebufferCreateInfo.layers = 1;
+
+        if (vkCreateFramebuffer(swapChain->getDevice()->getDevice(), &framebufferCreateInfo, nullptr,
+                                &framebuffers[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create framebuffer.");
+        }
+    }
+}
+
+void VulkanDriver::destroyFramebuffers()
+{
+    for (const auto& framebuffer : framebuffers)
+    {
+        vkDestroyFramebuffer(device->getDevice(), framebuffer, nullptr);
+    }
+}
+
+void VulkanDriver::createBuffers()
+{
+    createFramebuffers();
+    createUniformBuffers();
+    createDrawCommandBuffers();
+}
+
+void VulkanDriver::destroyBuffers()
+{
+    destroyDrawCommandBuffers();
+    destroyUniformBuffers();
+    destroyFramebuffers();
 }
 
 }

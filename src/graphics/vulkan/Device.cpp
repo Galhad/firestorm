@@ -92,8 +92,9 @@ bool Device::pickDeviceIfSuitable(VkPhysicalDevice device)
     VkPhysicalDeviceFeatures deviceFeatures = {};
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-    logger->debug("Found device {}{} with driver version {} vendor id {}", deviceProperties.deviceName, deviceProperties.deviceID,
-        deviceProperties.driverVersion, deviceProperties.vendorID);
+    logger->debug("Found device {}{} with driver version {} vendor id {}", deviceProperties.deviceName,
+                  deviceProperties.deviceID,
+                  deviceProperties.driverVersion, deviceProperties.vendorID);
     logger->debug("Maximum texture size: {}", deviceProperties.limits.maxImageDimension2D);
 
     QueueFamilyIndices indices = findQueueFamilies(device);
@@ -357,14 +358,10 @@ const core::fs_uint32 Device::findMemoryType(uint32_t typeFilter, VkMemoryProper
     throw std::runtime_error("Failed to find suitable memory type.");
 }
 
-Device::operator VkDevice() const
+SwapChainSupportDetails Device::querySwapChainSupport() const
 {
-    return device;
+    return querySwapChainSupport(physicalDevice);
 }
 
-Device::operator VkPhysicalDevice() const
-{
-    return physicalDevice;
-}
 
 }

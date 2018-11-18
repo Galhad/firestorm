@@ -30,29 +30,14 @@
 namespace fs::scene
 {
 
-void Scene::create(/*const graphics::VulkanDriver& driver*/)
+void Scene::create()
 {
-//    Scene::driver = &driver;
-
-//    std::vector<VkWriteDescriptorSet> writeDescriptorSets;
-//    writeDescriptorSets.push_back(vks::initializers::writeDescriptorSet(
-//        sceneDescriptorSet,
-//        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-//        0,
-//        &uniformBuffer.descriptor));
-//
-//    vkUpdateDescriptorSets(device->logicalDevice, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, NULL);
 }
 
 void Scene::destroy()
 {
-//    driver = nullptr;
-
     name.clear();
     nodes.clear();
-
-//    vertexBuffer.destroy();
-//    indexBuffer.destroy();
 }
 
 void Scene::update(float deltaTime)
@@ -65,92 +50,11 @@ void Scene::update(float deltaTime)
 
 void Scene::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet)
 {
-//    VkDeviceSize offsets[1] = {0};
-//
-//    // Bind scene vertex and index buffers
-//    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.getBuffer(), offsets);
-//    vkCmdBindIndexBuffer(commandBuffer, indexBuffer.getBuffer(), 0, VK_INDEX_TYPE_UINT32);
-
     for (auto& node : nodes)
     {
         node->render(commandBuffer, pipelineLayout, sceneDescriptorSet);
     }
 }
-
-//void Scene::createBuffers()
-//{
-//    std::vector<graphics::Vertex> vertices;
-//    std::vector<core::fs_uint32> indices;
-//    core::fs_uint32 indexBase = 0;
-//
-//    std::set<graphics::Material*> processedMaterials;
-//    for (auto& node : nodes)
-//    {
-//        graphics::Material* material = node->getMaterial();
-//
-//        if(material == nullptr || processedMaterials.find(material) != processedMaterials.end())
-//        {
-//            continue;
-//        }
-//
-//        auto& mesh = material->getMesh();
-//        mesh.setIndexBase(indexBase);
-//
-//        vertices.insert(vertices.end(), mesh.getVertices().begin(), mesh.getVertices().end());
-//        indices.insert(indices.end(), mesh.getIndices().begin(), mesh.getIndices().end());
-//
-//        indexBase += mesh.getVertices().size();
-//        processedMaterials.insert(material);
-//    }
-//
-//    // Create buffers
-//    // For better performance we only create one index and vertex buffer to keep number of memory allocations down
-//    size_t vertexDataSize = vertices.size() * sizeof(graphics::Vertex);
-//    size_t indexDataSize = indices.size() * sizeof(core::fs_uint32);
-//
-//    graphics::Buffer vertexStaging;
-//    vertexStaging.create(driver->getDevice(), static_cast<uint32_t>(vertexDataSize), VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-//                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, vertices.data());
-//
-//    vertexBuffer.create(driver->getDevice(), static_cast<uint32_t>(vertexDataSize),
-//                        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-//                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//
-//    graphics::Buffer indexStaging;
-//    indexStaging.create(driver->getDevice(), static_cast<uint32_t>(indexDataSize), VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-//                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, indices.data());
-//
-//    indexBuffer.create(driver->getDevice(), static_cast<uint32_t>(indexDataSize),
-//                       VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-//                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-//
-//    graphics::CommandBuffer commandBuffer;
-//    commandBuffer.create(driver->getDevice());
-//    commandBuffer.beginSingleTimeCommand();
-//
-//    VkBufferCopy copyRegion = {};
-//
-//    copyRegion.size = vertexDataSize;
-//    vkCmdCopyBuffer(
-//        commandBuffer.getCommandBuffer(),
-//        vertexStaging.getBuffer(),
-//        vertexBuffer.getBuffer(),
-//        1,
-//        &copyRegion);
-//
-//    copyRegion.size = indexDataSize;
-//    vkCmdCopyBuffer(
-//        commandBuffer.getCommandBuffer(),
-//        indexStaging.getBuffer(),
-//        indexBuffer.getBuffer(),
-//        1,
-//        &copyRegion);
-//
-//    commandBuffer.endSingleTimeCommand();
-//
-//    vertexStaging.destroy();
-//    indexStaging.destroy();
-//}
 
 const std::vector<SceneNode*>& Scene::getNodes() const
 {
@@ -160,6 +64,24 @@ const std::vector<SceneNode*>& Scene::getNodes() const
 std::vector<SceneNode*>& Scene::getNodes()
 {
     return nodes;
+}
+
+CameraSceneNode* Scene::getActiveCamera()
+{
+    return activeCamera;
+}
+
+void Scene::setActiveCamera(CameraSceneNode* activeCamera)
+{
+    // todo: check if activeCamera is managed by this scene (contained in nodes)
+
+    if (Scene::activeCamera != nullptr)
+    {
+        Scene::activeCamera->setActive(false);
+    }
+
+    Scene::activeCamera = activeCamera;
+    activeCamera->setActive(true);
 }
 
 }

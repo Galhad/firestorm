@@ -35,6 +35,12 @@ void Window::create(core::Vector2i size, const std::string& title, core::fs_uint
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), title.c_str(), nullptr, nullptr);
+    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height)
+    {
+        auto fsWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+        fsWindow->onWindowResized(width, height);
+    });
     Window::size = size;
 }
 
@@ -74,6 +80,24 @@ void Window::setPosition(core::Vector2i position)
 const core::Vector2i& Window::getSize() const
 {
     return size;
+}
+
+void Window::onWindowResized(core::fs_int32 width, core::fs_int32 height)
+{
+    size.x = static_cast<core::fs_uint64>(width);
+    size.y = static_cast<core::fs_uint64>(height);
+
+    windowResizedCallback(width, height);
+}
+
+const WindowResizedCallback& Window::getWindowResizedCallback() const
+{
+    return windowResizedCallback;
+}
+
+void Window::setWindowResizedCallback(const WindowResizedCallback& windowResizedCallback)
+{
+    Window::windowResizedCallback = windowResizedCallback;
 }
 
 }

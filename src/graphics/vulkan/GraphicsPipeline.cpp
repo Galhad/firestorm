@@ -33,11 +33,9 @@ GraphicsPipeline::GraphicsPipeline() : renderPass(new RenderPass())
 
 }
 
-void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragmentShader, const SwapChain& swapChain,
-                              const DepthImage& depthImage)
+void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragmentShader, const SwapChain& swapChain)
 {
     this->swapChain = &swapChain;
-    this->depthImage = &depthImage;
 
     renderPass->create(swapChain);
 
@@ -45,8 +43,6 @@ void GraphicsPipeline::create(const Shader& vertexShader, const Shader& fragment
 
     createPipelineLayout();
     createPipeline(vertexShader, fragmentShader);
-
-    createFramebuffers();
 
     createTextureSampler();
 
@@ -59,11 +55,6 @@ void GraphicsPipeline::destroy()
 
     vkDestroySampler(swapChain->getDevice()->getDevice(), textureSampler, nullptr);
 
-    for (const auto& framebuffer : framebuffers)
-    {
-        vkDestroyFramebuffer(swapChain->getDevice()->getDevice(), framebuffer, nullptr);
-    }
-
     vkDestroyPipeline(swapChain->getDevice()->getDevice(), graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(swapChain->getDevice()->getDevice(), graphicsPipelineLayout, nullptr);
 
@@ -71,9 +62,7 @@ void GraphicsPipeline::destroy()
     vkDestroyDescriptorSetLayout(swapChain->getDevice()->getDevice(), materialDescriptorSetLayout, nullptr);
 
     renderPass->destroy();
-    renderPass = nullptr;
 
-    depthImage = nullptr;
     swapChain = nullptr;
 }
 
@@ -99,15 +88,15 @@ GraphicsPipeline::createPipeline(const Shader& vertexShader, const Shader& fragm
 
     VkPipelineDepthStencilStateCreateInfo depthStencil = getDepthStencil();
 
-//    VkDynamicState dynamicStates[] = {
-//        VK_DYNAMIC_STATE_VIEWPORT,
-//        VK_DYNAMIC_STATE_LINE_WIDTH
-//    };
-//
-//    VkPipelineDynamicStateCreateInfo dynamicState = {};
-//    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-//    dynamicState.dynamicStateCount = 2;
-//    dynamicState.pDynamicStates = dynamicStates;
+    VkDynamicState dynamicStates[] = {
+        VK_DYNAMIC_STATE_VIEWPORT,
+        VK_DYNAMIC_STATE_SCISSOR
+    };
+
+    VkPipelineDynamicStateCreateInfo dynamicState = {};
+    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.dynamicStateCount = 2;
+    dynamicState.pDynamicStates = dynamicStates;
 
     VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {};
     graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -122,8 +111,7 @@ GraphicsPipeline::createPipeline(const Shader& vertexShader, const Shader& fragm
     graphicsPipelineCreateInfo.pMultisampleState = &multisample;
     graphicsPipelineCreateInfo.pDepthStencilState = &depthStencil; // optional
     graphicsPipelineCreateInfo.pColorBlendState = &colorBlendStateCreateInfo;
-//    graphicsPipelineCreateInfo.pDynamicState = &dynamicState; // optional
-    graphicsPipelineCreateInfo.pDynamicState = nullptr;
+    graphicsPipelineCreateInfo.pDynamicState = &dynamicState; // optional
     // graphicsPipeline layout
     graphicsPipelineCreateInfo.layout = graphicsPipelineLayout;
     // render passes
@@ -329,35 +317,6 @@ void GraphicsPipeline::createPipelineLayout()
     }
 }
 
-void GraphicsPipeline::createFramebuffers()
-{
-    const auto& swapChainImageViews = swapChain->getSwapChainImageViews();
-    framebuffers.resize(swapChainImageViews.size());
-
-    for (size_t i = 0; i < swapChainImageViews.size(); ++i)
-    {
-        std::array<VkImageView, 2> attachments = {
-            swapChainImageViews[i],
-            depthImage->getImageView()
-        };
-
-        VkFramebufferCreateInfo framebufferCreateInfo = {};
-        framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferCreateInfo.renderPass = renderPass->getRenderPass();
-        framebufferCreateInfo.attachmentCount = attachments.size();
-        framebufferCreateInfo.pAttachments = attachments.data();
-        framebufferCreateInfo.width = swapChain->getSwapChainExtent().width;
-        framebufferCreateInfo.height = swapChain->getSwapChainExtent().height;
-        framebufferCreateInfo.layers = 1;
-
-        if (vkCreateFramebuffer(swapChain->getDevice()->getDevice(), &framebufferCreateInfo, nullptr,
-                                &framebuffers[i]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to create framebuffer.");
-        }
-    }
-}
-
 void GraphicsPipeline::createTextureSampler()
 {
     VkSamplerCreateInfo samplerInfo = {};
@@ -413,11 +372,6 @@ const SwapChain* GraphicsPipeline::getSwapChain() const
 const VkDescriptorPool& GraphicsPipeline::getDescriptorPool() const
 {
     return descriptorPool;
-}
-
-const std::vector<VkFramebuffer>& GraphicsPipeline::getFramebuffers() const
-{
-    return framebuffers;
 }
 
 const RenderPass* GraphicsPipeline::getRenderPass() const

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Camera.hpp"
+#include "CameraSceneNode.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstring>
@@ -28,23 +28,22 @@
 namespace fs::scene
 {
 
-void Camera::create(const graphics::Window& window, const graphics::MappedMemoryBuffer& uniformBuffer, bool active)
+void CameraSceneNode::create(const graphics::Window& window, const graphics::MappedMemoryBuffer& uniformBuffer)
 {
-    Camera::window = &window;
-    Camera::active = active;
-    Camera::uniformBuffer = &uniformBuffer;
+    CameraSceneNode::window = &window;
+    CameraSceneNode::active = false;
+    CameraSceneNode::uniformBuffer = &uniformBuffer;
     zoom = 10.f;
 
     updateUniformData();
-    applyUniformData();
 }
 
-Camera::~Camera()
+CameraSceneNode::~CameraSceneNode()
 {
 
 }
 
-void Camera::destroy()
+void CameraSceneNode::destroy()
 {
     uniformBuffer = nullptr;
     window = nullptr;
@@ -53,85 +52,86 @@ void Camera::destroy()
     SceneNode::destroy();
 }
 
-bool Camera::isActive() const
+bool CameraSceneNode::isActive() const
 {
     return active;
 }
 
-void Camera::setActive(bool active)
+void CameraSceneNode::setActive(bool active)
 {
-    Camera::active = active;
+    CameraSceneNode::active = active;
+    if (active)
+    {
+        geometryUpdated = true;
+    }
 }
 
-void Camera::setPosition(core::fs_float32 x, core::fs_float32 y)
+void CameraSceneNode::setPosition(core::fs_float32 x, core::fs_float32 y)
 {
     SceneNode::setPosition(x, y);
 }
 
-void Camera::setPosition(core::Vector2f position)
+void CameraSceneNode::setPosition(core::Vector2f position)
 {
     SceneNode::setPosition(position);
 }
 
-void Camera::setRotation(core::fs_float32 rotation)
+void CameraSceneNode::setRotation(core::fs_float32 rotation)
 {
     SceneNode::setRotation(rotation);
 }
 
-void Camera::setRotation(core::Vector3f rotation)
+void CameraSceneNode::setRotation(core::Vector3f rotation)
 {
     SceneNode::setRotation(rotation);
 }
 
-core::fs_float32 Camera::getZoom() const
+core::fs_float32 CameraSceneNode::getZoom() const
 {
     return zoom;
 }
 
-void Camera::setZoom(core::fs_float32 zoom)
+void CameraSceneNode::setZoom(core::fs_float32 zoom)
 {
-    Camera::zoom = zoom;
+    CameraSceneNode::zoom = zoom;
     geometryUpdated = true;
 }
 
-const graphics::Window* Camera::getWindow() const
+const graphics::Window* CameraSceneNode::getWindow() const
 {
     return window;
 }
 
-void Camera::setWindow(const graphics::Window* window)
+void CameraSceneNode::setWindow(const graphics::Window* window)
 {
-    Camera::window = window;
+    CameraSceneNode::window = window;
     updateUniformData();
 }
 
-void Camera::applyUniformData()
+void CameraSceneNode::update(float deltaTime)
 {
+    if (geometryUpdated && active)
+    {
+        geometryUpdated = false;
+        updateUniformData();
+    }
+}
+
+void CameraSceneNode::updateUniformData()
+{
+    uniformData.view = glm::mat4(1.f);
+    uniformData.projection = glm::ortho(position.x, position.x + window->getSize().x / zoom,
+                                        position.y + window->getSize().y / zoom, position.y, -1.f, 1.f);
+    uniformData.projection[1][1] *= -1;
+
     if (uniformBuffer->getMappedData() != nullptr)
     {
         memcpy(uniformBuffer->getMappedData(), &uniformData, sizeof(graphics::UniformData));
     }
 }
 
-void Camera::update(float deltaTime)
-{
-    if (geometryUpdated && active)
-    {
-        geometryUpdated = false;
-        updateUniformData();
-        applyUniformData();
-    }
-}
-
-void Camera::updateUniformData()
-{
-    uniformData.view = glm::mat4(1.f);
-    uniformData.projection = glm::ortho(position.x, position.x + window->getSize().x / zoom,
-                                        position.y + window->getSize().y / zoom, position.y, -1.f, 1.f);
-    uniformData.projection[1][1] *= -1;
-}
-
-void Camera::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet scenedescriptorSet)
+void CameraSceneNode::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout,
+                             VkDescriptorSet scenedescriptorSet)
 {
 
 }

@@ -80,8 +80,8 @@ SimpleApplication::SimpleApplication()
     sceneManager->setActiveScene(scene);
 
     camera.create(graphicsManager->getWindow(), vulkanDriver.getUniformBuffer());
-    camera.setActive(true);
     scene->getNodes().push_back(&camera);
+    scene->setActiveCamera(&camera);
 }
 
 SimpleApplication::~SimpleApplication()

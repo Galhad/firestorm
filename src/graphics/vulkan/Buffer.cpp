@@ -82,11 +82,11 @@ void Buffer::destroy()
 {
     if (buffer != VK_NULL_HANDLE)
     {
-        vkDestroyBuffer(static_cast<VkDevice>(*device), buffer, nullptr);
+        vkDestroyBuffer(device->getDevice(), buffer, nullptr);
     }
     if (bufferMemory != VK_NULL_HANDLE)
     {
-        vkFreeMemory(static_cast<VkDevice>(*device), bufferMemory, nullptr);
+        vkFreeMemory(device->getDevice(), bufferMemory, nullptr);
     }
 
     device = nullptr;

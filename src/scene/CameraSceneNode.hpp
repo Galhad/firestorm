@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_CAMERA_HPP
-#define FIRESTORM_CAMERA_HPP
+#ifndef FIRESTORM_CAMERASCENENODE_HPP
+#define FIRESTORM_CAMERASCENENODE_HPP
 
 #include "SceneNode.hpp"
 #include "graphics/vulkan/MappedMemoryBuffer.hpp"
@@ -31,13 +31,13 @@
 
 namespace fs::scene
 {
-class Camera : public SceneNode
+class CameraSceneNode : public SceneNode
 {
 public:
-    Camera() = default;
-    ~Camera() override;
+    CameraSceneNode() = default;
+    ~CameraSceneNode() override;
 
-    void create(const graphics::Window& window, const graphics::MappedMemoryBuffer& uniformBuffer, bool active = false);
+    void create(const graphics::Window& window, const graphics::MappedMemoryBuffer& uniformBuffer);
     void destroy() override;
 
     void setPosition(core::fs_float32 x, core::fs_float32 y) override;
@@ -61,9 +61,6 @@ public:
     void updateUniformData();
 
 protected:
-    void applyUniformData();
-
-protected:
     bool active = false;
     const graphics::Window* window = nullptr;
     core::fs_float32 zoom = 10.f;
@@ -74,7 +71,7 @@ protected:
 
 };
 
-typedef std::unique_ptr<Camera> CameraPtr;
+typedef std::unique_ptr<CameraSceneNode> CameraSceneNodePtr;
 }
 
-#endif //FIRESTORM_CAMERA_HPP
+#endif //FIRESTORM_CAMERASCENENODE_HPP

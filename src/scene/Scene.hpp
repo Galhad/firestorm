@@ -24,8 +24,7 @@
 #define FIRESTORM_SCENE_HPP
 
 #include "SceneNode.hpp"
-#include "graphics/vulkan/VulkanDriver.hpp"
-#include "graphics/vulkan/Buffer.hpp"
+#include "CameraSceneNode.hpp"
 
 #include <memory>
 
@@ -37,7 +36,6 @@ public:
     Scene() = default;
     virtual ~Scene() = default;
 
-//    void create(const graphics::VulkanDriver& driver);
     void create();
     virtual void destroy();
 
@@ -47,20 +45,13 @@ public:
     const std::vector<SceneNode*>& getNodes() const;
     std::vector<SceneNode*>& getNodes();
 
-//    void createBuffers();
-
-
-//protected:
-//    void createBuffers();
+    CameraSceneNode* getActiveCamera();
+    void setActiveCamera(CameraSceneNode* activeCamera);
 
 protected:
-//    const graphics::VulkanDriver* driver = nullptr;
-
     std::string name;
     std::vector<SceneNode*> nodes;
-
-//    graphics::Buffer vertexBuffer;
-//    graphics::Buffer indexBuffer;
+    CameraSceneNode* activeCamera = nullptr;
 
 };
 

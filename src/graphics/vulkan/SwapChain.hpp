@@ -52,14 +52,16 @@ private:
     const Device* device = nullptr;
 
     VkSwapchainKHR swapChain = VK_NULL_HANDLE;
+    VkSwapchainKHR oldSwapChain = VK_NULL_HANDLE;
     std::vector<VkImage> swapChainImages;
     VkFormat swapChainImageFormat = VK_FORMAT_UNDEFINED;
     VkExtent2D swapChainExtent = {};
     std::vector<VkImageView> swapChainImageViews;
 
 private:
-
     void createSwapChain();
+    void destroy(VkSwapchainKHR swapchain);
+
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;

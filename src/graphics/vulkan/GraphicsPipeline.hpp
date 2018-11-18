@@ -39,15 +39,13 @@ public:
     GraphicsPipeline();
     virtual ~GraphicsPipeline() = default;
 
-    void create(const Shader& vertexShader, const Shader& fragmentShader, const SwapChain& swapChain,
-                const DepthImage& depthImage);
+    void create(const Shader& vertexShader, const Shader& fragmentShader, const SwapChain& swapChain);
     virtual void destroy();
 
     const SwapChain* getSwapChain() const;
     const VkDescriptorPool& getDescriptorPool() const;
     const VkDescriptorSetLayout& getSceneDescriptorSetLayout() const;
     const VkDescriptorSetLayout& getMaterialDescriptorSetLayout() const;
-    const std::vector<VkFramebuffer>& getFramebuffers() const;
     const RenderPass* getRenderPass() const;
     const VkPipeline& getGraphicsPipeline() const;
     const VkPipelineLayout& getGraphicsPipelineLayout() const;
@@ -56,7 +54,6 @@ private:
     RenderPassPtr renderPass;
 
     const SwapChain* swapChain = nullptr;
-    const DepthImage* depthImage = nullptr;
 
     VkPipelineLayout graphicsPipelineLayout = VK_NULL_HANDLE;
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
@@ -67,13 +64,10 @@ private:
 
     VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
 
-    std::vector<VkFramebuffer> framebuffers;
-
 private:
     void createDescriptorSetLayouts();
     void createPipelineLayout();
     void createPipeline(const Shader& vertexShader, const Shader& fragmentShader);
-    void createFramebuffers();
     void createTextureSampler();
 
     void createDescriptorPool();

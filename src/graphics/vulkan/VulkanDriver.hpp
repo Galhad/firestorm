@@ -33,6 +33,7 @@
 #include "GraphicsPipeline.hpp"
 #include "MappedMemoryBuffer.hpp"
 #include "Vertex.hpp"
+#include "utils/Logger.hpp"
 
 #include <memory>
 #include <functional>
@@ -49,12 +50,14 @@ public:
     VulkanDriver();
     virtual ~VulkanDriver() = default;
 
-    void create(const GraphicsCreationParams& graphicsCreationParams, const Window& window);
+    void create(const GraphicsCreationParams& graphicsCreationParams, Window& window);
     virtual void destroy();
 
     void draw();
     void recordCommandBuffers();
     void finish();
+
+    void recreateSwapChain();
 
     void createVertexBuffers(const std::vector<Vertex>& vertices, const std::vector<core::fs_uint32>& indices);
 
@@ -65,14 +68,15 @@ public:
     const CommandBufferCallback& getPerCommmandBufferCallback() const;
     void setPerCommmandBufferCallback(const CommandBufferCallback& callback);
 
-
 private:
     void createSwapChain();
     void destroySwapChain();
-//    void recreateSwapChain();
 
     void createSyncObjects();
     void destroySyncObjects();
+
+    void createFramebuffers();
+    void destroyFramebuffers();
 
     void createUniformBuffers();
     void destroyUniformBuffers();
@@ -82,9 +86,14 @@ private:
 
     void destroyVertexBuffers();
 
+    void createBuffers();
+    void destroyBuffers();
+
     void waitIdle();
 
 private:
+    utils::LoggerPtr logger;
+
     const Window* window = nullptr;
 
     InstancePtr instance;
@@ -98,6 +107,8 @@ private:
     std::vector<VkFence> inFlightFences;
     core::fs_uint32 currentFrame = 0;
     core::fs_uint8 maxFramesInFlight;
+
+    std::vector<VkFramebuffer> framebuffers;
 
     MappedMemoryBuffer uniformBuffer;
     VkDescriptorSet uniformDescriptorSet;

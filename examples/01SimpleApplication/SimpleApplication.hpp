@@ -32,7 +32,7 @@
 #include <Engine.hpp>
 
 #include <scene/SpriteSceneNode.hpp>
-#include <scene/Camera.hpp>
+#include <scene/CameraSceneNode.hpp>
 #include <iostream>
 #include <memory>
 
@@ -47,7 +47,7 @@ public:
     void update(float deltaTimeMs) override;
 
 private:
-    scene::Camera camera;
+    scene::CameraSceneNode camera;
     scene::Scene* scene;
 
     graphics::SpriteSheet* bgSpriteSheet;
@@ -67,6 +67,7 @@ private:
     scene::SpriteSceneNode playerSceneNode;
 
 };
+
 typedef std::unique_ptr<SimpleApplication> SimpleApplicationPtr;
 }
 
