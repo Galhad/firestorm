@@ -24,7 +24,7 @@
 #define FIRESTORM_LOGGER_HPP
 
 #include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_sinks.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 #include <memory>
 
 namespace fs::utils

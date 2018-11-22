@@ -46,7 +46,7 @@ public:
 
     void run();
 
-    virtual void update(float deltaTimeMs) = 0;
+    virtual void update(float deltaTime) = 0;
 
     graphics::GraphicsManager& getGraphicsManager() const;
     scene::SceneManager& getSceneManager() const;

@@ -89,11 +89,10 @@ SimpleApplication::~SimpleApplication()
 
 }
 
-void SimpleApplication::update(float deltaTimeMs)
+void SimpleApplication::update(float deltaTime)
 {
-//    std::cout << "delta time [ms]: " << deltaTimeMs << std::endl;
-    constexpr float cameraSpeed = 0.01f;
-    float cameraOffset = cameraSpeed * deltaTimeMs;
+    constexpr float cameraSpeed = 10.f;
+    float cameraOffset = cameraSpeed * deltaTime;
 
     core::Vector2f cameraPosition = camera.getPosition();
     if (inputManager->getKeyState(io::Key::Up) == io::KeyState::Pressed)

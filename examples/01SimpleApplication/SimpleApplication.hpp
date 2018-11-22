@@ -44,7 +44,7 @@ public:
     SimpleApplication();
     ~SimpleApplication() override;
 
-    void update(float deltaTimeMs) override;
+    void update(float deltaTime) override;
 
 private:
     scene::CameraSceneNode camera;

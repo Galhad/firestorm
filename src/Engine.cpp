@@ -104,18 +104,18 @@ void Engine::run()
     {
         glfwPollEvents();
         auto end = std::chrono::high_resolution_clock::now();
-        float deltaTimeMs =
+        float deltaTime =
             static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())
-            / 1'000'000.f;
+            / 1'000'000'000.f;
 
         start = end;
 
-        update(deltaTimeMs);
+        update(deltaTime);
 
         const auto& activeScene = sceneManager->getActiveScene();
         if (activeScene != nullptr)
         {
-            activeScene->update(deltaTimeMs);
+            activeScene->update(deltaTime);
             graphicsManager->draw();
         }
     }
