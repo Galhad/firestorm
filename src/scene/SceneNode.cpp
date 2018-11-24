@@ -26,9 +26,9 @@
 namespace fs::scene
 {
 
-void SceneNode::create(const graphics::Transform& transform)
+void SceneNode::create()
 {
-    SceneNode::transform = transform;
+    SceneNode::transform = {};
     position = {0.f, 0.f};
     rotation = {0.f, 0.f, 0.f};
     layer = 0.f;

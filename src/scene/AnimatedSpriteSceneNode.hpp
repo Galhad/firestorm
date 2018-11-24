@@ -20,38 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_SPRITESCENENODE_HPP
-#define FIRESTORM_SPRITESCENENODE_HPP
+#ifndef FIRESTORM_ANIMATEDSPRITESCENENODE_HPP
+#define FIRESTORM_ANIMATEDSPRITESCENENODE_HPP
 
-#include "SceneNode.hpp"
+#include "SpriteSceneNode.hpp"
 
 #include <memory>
+#include <vector>
 
 namespace fs::scene
 {
-class SpriteSceneNode : public SceneNode
+class AnimatedSpriteSceneNode : public SpriteSceneNode
 {
 public:
-    SpriteSceneNode() = default;
-    ~SpriteSceneNode() override = default;
+    using Animation = std::vector<const graphics::Sprite*>;
 
-    void create(const graphics::Sprite& sprite);
+public:
+    AnimatedSpriteSceneNode() = default;
+    virtual ~AnimatedSpriteSceneNode() = default;
+
+    void create(const Animation& animation, core::fs_float32 speedFps = 1.f);
     void destroy() override;
 
     void update(float deltaTime) override;
-    void
-    render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet scenedescriptorSet) override;
 
-    const graphics::Sprite* getSprite() const;
+    const Animation& getAnimation() const;
+    void setAnimation(const Animation& animation);
 
-    void setSprite(const graphics::Sprite& sprite);
+    core::fs_uint32 getCurrentFrame() const;
+    void setCurrentFrame(core::fs_uint32 currentFrame);
+
+    core::fs_float32 getSpeedFps() const;
+    void setSpeedFps(core::fs_float32 speedFps);
 
 protected:
-    const graphics::Sprite* sprite = nullptr;
+    const Animation* animation = nullptr;
+    core::fs_uint32 currentFrame;
+    core::fs_float32 speedFps;
+    core::fs_float32 elapsedTime;
 
 };
 
-typedef std::unique_ptr<SpriteSceneNode> SpriteSceneNodePtr;
+typedef std::unique_ptr<AnimatedSpriteSceneNode> AnimatedSpriteSceneNodePtr;
 }
 
-#endif //FIRESTORM_SPRITESCENENODE_HPP
+#endif //FIRESTORM_ANIMATEDSPRITESCENENODE_HPP

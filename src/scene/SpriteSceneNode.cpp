@@ -27,9 +27,9 @@
 namespace fs::scene
 {
 
-void SpriteSceneNode::create(graphics::Sprite& sprite, const graphics::Transform& transform)
+void SpriteSceneNode::create(const graphics::Sprite& sprite)
 {
-    SceneNode::create(transform);
+    SceneNode::create();
 
     SpriteSceneNode::sprite = &sprite;
 }
@@ -61,18 +61,13 @@ SpriteSceneNode::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipeline
                      sprite->getMesh().getIndexBase(), 0);
 }
 
-graphics::Sprite* SpriteSceneNode::getSprite()
-{
-    return sprite;
-}
-
 const graphics::Sprite* SpriteSceneNode::getSprite() const
 {
     return sprite;
 }
 
-void SpriteSceneNode::setSprite(graphics::Sprite* sprite)
+void SpriteSceneNode::setSprite(const graphics::Sprite& sprite)
 {
-    SpriteSceneNode::sprite = sprite;
+    SpriteSceneNode::sprite = &sprite;
 }
 }

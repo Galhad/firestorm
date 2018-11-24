@@ -37,7 +37,7 @@ public:
     SceneNode() = default;
     virtual ~SceneNode() = default;
 
-    void create(const graphics::Transform& transform = {});
+    void create();
     virtual void destroy();
 
     core::Vector2f getPosition() const;
@@ -65,7 +65,6 @@ protected:
     void calculateModelMatrix();
 
 protected:
-
     graphics::Transform transform;
 
     core::Vector2f position;

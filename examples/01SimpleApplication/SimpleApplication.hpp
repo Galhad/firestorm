@@ -26,6 +26,7 @@
 #include <Engine.hpp>
 
 #include <scene/SpriteSceneNode.hpp>
+#include <scene/AnimatedSpriteSceneNode.hpp>
 #include <scene/CameraSceneNode.hpp>
 #include <iostream>
 #include <memory>
@@ -59,6 +60,9 @@ private:
     graphics::SpriteSheet* playerSpriteSheet;
     graphics::Sprite* playerStandSprite;
     scene::SpriteSceneNode playerSceneNode;
+
+    scene::AnimatedSpriteSceneNode animatedSpriteSceneNode;
+    scene::AnimatedSpriteSceneNode::Animation animation;
 
 };
 
