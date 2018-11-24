@@ -44,8 +44,8 @@ using Vector2f = glm::vec2;
 using Vector3f = glm::vec3;
 using Vector4f = glm::vec4;
 
-using fs_float32 = glm::highp_float32;
-using fs_float64 = glm::highp_float64;
+using fs_float32 = float;
+using fs_float64 = double;
 
 using fs_mat4 = glm::mat4;
 using fs_mat3 = glm::mat3;

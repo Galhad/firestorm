@@ -20,9 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <iostream>
 #include "SceneNode.hpp"
-#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace fs::scene
 {
@@ -106,7 +105,7 @@ void SceneNode::setScale(core::Vector2f scale)
 void SceneNode::calculateModelMatrix()
 {
     core::fs_mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, layer));
-    core::fs_mat4 scale = glm::scale(glm::vec3(SceneNode::scale.x, SceneNode::scale.y, 1.0f));
+    core::fs_mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(SceneNode::scale.x, SceneNode::scale.y, 1.0f));
     transform.model = translation * scale;
 }
 
