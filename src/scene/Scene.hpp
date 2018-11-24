@@ -48,6 +48,8 @@ public:
     CameraSceneNode* getActiveCamera();
     void setActiveCamera(CameraSceneNode* activeCamera);
 
+    bool isGeometryUpdated() const;
+
 protected:
     std::string name;
     std::vector<SceneNode*> nodes;

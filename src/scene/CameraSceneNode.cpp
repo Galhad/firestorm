@@ -75,16 +75,16 @@ void CameraSceneNode::setPosition(core::Vector2f position)
 {
     SceneNode::setPosition(position);
 }
-
-void CameraSceneNode::setRotation(core::fs_float32 rotation)
-{
-    SceneNode::setRotation(rotation);
-}
-
-void CameraSceneNode::setRotation(core::Vector3f rotation)
-{
-    SceneNode::setRotation(rotation);
-}
+//
+//void CameraSceneNode::setRotation(core::fs_float32 rotation)
+//{
+//    SceneNode::setRotation(rotation);
+//}
+//
+//void CameraSceneNode::setRotation(core::Vector3f rotation)
+//{
+//    SceneNode::setRotation(rotation);
+//}
 
 core::fs_float32 CameraSceneNode::getZoom() const
 {

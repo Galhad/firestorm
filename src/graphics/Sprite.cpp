@@ -61,7 +61,9 @@ void Sprite::createDescriptor()
 void Sprite::createMesh()
 {
     auto width = static_cast<core::fs_float32>(rect.width) / texture->getPixelsPerUnit();
+    auto halfWidth = width / 2.f;
     auto height = static_cast<core::fs_float32>(rect.height) / texture->getPixelsPerUnit();
+    auto halfHeight = height / 2.f;
 
     core::Rectf textureRect{};
     textureRect.x = static_cast<core::fs_float32>(rect.x) / texture->getWidthPixels();
@@ -71,22 +73,22 @@ void Sprite::createMesh()
 
     std::vector<Vertex> vertices;
     vertices.push_back({
-                           {0.f,           0.f,  0.f},
+                           {-halfWidth,           -halfHeight,  0.f},
                            {1.0f,          0.0f, 0.0f},
                            {textureRect.x, textureRect.y}
                        });
     vertices.push_back({
-                           {width,                             0.f,  0.f},
+                           {halfWidth,                             -halfHeight,  0.f},
                            {0.0f,                              1.0f, 0.0f},
                            {textureRect.x + textureRect.width, textureRect.y}
                        });
     vertices.push_back({
-                           {width,                             height, 0.f},
+                           {halfWidth,                             halfHeight, 0.f},
                            {0.0f,                              0.0f,   1.0f},
                            {textureRect.x + textureRect.width, textureRect.y + textureRect.height}
                        });
     vertices.push_back({
-                           {0.f,           height, 0.f},
+                           {-halfWidth,           halfHeight, 0.f},
                            {1.0f,          1.0f,   1.0f},
                            {textureRect.x, textureRect.y + textureRect.height}
                        });

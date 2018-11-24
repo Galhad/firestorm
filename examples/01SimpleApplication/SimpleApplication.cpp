@@ -57,7 +57,7 @@ SimpleApplication::SimpleApplication()
     playerStandSprite = playerSpriteSheet->addSprite({0, 196, 66, 92});
 
     bgSceneNode.create(*bgSprite);
-    bgSceneNode.setPosition({-12.f, -12.f});
+    bgSceneNode.setPosition({0.f, 0.f});
     bgSceneNode.setLayer(-0.1f);
     bgSceneNode.setScale(10.f, 10.f);
     scene->getNodes().push_back(&bgSceneNode);
@@ -124,6 +124,12 @@ void SimpleApplication::update(float deltaTime)
     {
         camera.setZoom(camera.getZoom() - cameraOffset);
     }
+
+    constexpr float rotationSpeed = 36.0f;
+    auto rotation = bgSceneNode.getRotation();
+    rotation.z += rotationSpeed * deltaTime;
+    bgSceneNode.setRotation(rotation);
+
 }
 
 }

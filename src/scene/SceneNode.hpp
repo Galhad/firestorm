@@ -59,6 +59,8 @@ public:
     virtual void
     render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet scenedescriptorSet);
 
+    bool isGeometryUpdated() const;
+
 protected:
     void calculateModelMatrix();
 
@@ -67,6 +69,7 @@ protected:
     graphics::Transform transform;
 
     core::Vector2f position;
+    core::Vector3f rotation;
     core::fs_float32 layer;
     core::Vector2f scale;
     bool geometryUpdated = false;

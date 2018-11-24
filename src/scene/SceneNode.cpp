@@ -30,6 +30,7 @@ void SceneNode::create(const graphics::Transform& transform)
 {
     SceneNode::transform = transform;
     position = {0.f, 0.f};
+    rotation = {0.f, 0.f, 0.f};
     layer = 0.f;
     scale = {1.f, 1.f};
     geometryUpdated = true;
@@ -71,17 +72,19 @@ void SceneNode::setLayer(core::fs_float32 layer)
 
 core::Vector3f SceneNode::getRotation() const
 {
-    return {0.f, 0.f, 0.f};
+    return rotation;
 }
 
 void SceneNode::setRotation(core::fs_float32 rotation)
 {
-//    transform.rotation.z = rotation;
+    SceneNode::rotation.z = rotation;
+    geometryUpdated = true;
 }
 
 void SceneNode::setRotation(core::Vector3f rotation)
 {
-//    transform.rotation = rotation;
+    SceneNode::rotation = rotation;
+    geometryUpdated = true;
 }
 
 core::Vector2f SceneNode::getScale() const
@@ -105,8 +108,11 @@ void SceneNode::setScale(core::Vector2f scale)
 void SceneNode::calculateModelMatrix()
 {
     core::fs_mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, layer));
+    core::Vector3f rotationRad = core::Vector3f{glm::radians(rotation.x), glm::radians(rotation.y),
+                                                glm::radians(rotation.z)};
+    core::fs_mat4 rotation = glm::toMat4(core::Quaternion(rotationRad));
     core::fs_mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(SceneNode::scale.x, SceneNode::scale.y, 1.0f));
-    transform.model = translation * scale;
+    transform.model = translation * rotation * scale;
 }
 
 void
@@ -119,6 +125,11 @@ SceneNode::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout
     }
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(graphics::Transform),
                        &transform);
+}
+
+bool SceneNode::isGeometryUpdated() const
+{
+    return geometryUpdated;
 }
 
 }

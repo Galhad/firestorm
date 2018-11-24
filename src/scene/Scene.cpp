@@ -84,4 +84,16 @@ void Scene::setActiveCamera(CameraSceneNode* activeCamera)
     activeCamera->setActive(true);
 }
 
+bool Scene::isGeometryUpdated() const
+{
+    for (auto& node : nodes)
+    {
+       if(node->isGeometryUpdated())
+       {
+           return true;
+       }
+    }
+    return false;
+}
+
 }

@@ -23,12 +23,6 @@
 #ifndef FIRESTORM_SIMPLEAPPLICATION_HPP
 #define FIRESTORM_SIMPLEAPPLICATION_HPP
 
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <Engine.hpp>
 
 #include <scene/SpriteSceneNode.hpp>

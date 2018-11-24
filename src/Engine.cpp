@@ -116,7 +116,14 @@ void Engine::run()
         if (activeScene != nullptr)
         {
             activeScene->update(deltaTime);
+
             graphicsManager->draw();
+
+            if (activeScene->isGeometryUpdated())
+            {
+                graphicsManager->getVulkanDriver().finish();
+                graphicsManager->getVulkanDriver().recordCommandBuffers();
+            }
         }
     }
     graphicsManager->getVulkanDriver().finish();

@@ -23,7 +23,11 @@
 #ifndef FIRESTORM_TYPES_HPP
 #define FIRESTORM_TYPES_HPP
 
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <cstdint>
 
 namespace fs::core
@@ -43,6 +47,8 @@ using fs_int64 = int64_t;
 using Vector2f = glm::vec2;
 using Vector3f = glm::vec3;
 using Vector4f = glm::vec4;
+
+using Quaternion = glm::quat;
 
 using fs_float32 = float;
 using fs_float64 = double;

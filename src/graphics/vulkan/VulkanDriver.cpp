@@ -331,6 +331,8 @@ void VulkanDriver::recordCommandBuffers()
 
     for (size_t i = 0; i < commandBuffers.size(); ++i)
     {
+        vkResetCommandBuffer(commandBuffers[i], 0);
+
         VkCommandBufferBeginInfo commandBufferBeginInfo = {};
         commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;

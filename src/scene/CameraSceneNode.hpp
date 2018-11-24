@@ -42,8 +42,8 @@ public:
 
     void setPosition(core::fs_float32 x, core::fs_float32 y) override;
     void setPosition(core::Vector2f position) override;
-    void setRotation(core::fs_float32 rotation) override;
-    void setRotation(core::Vector3f rotation) override;
+//    void setRotation(core::fs_float32 rotation) override;
+//    void setRotation(core::Vector3f rotation) override;
 
     void update(float deltaTime) override;
     virtual void
