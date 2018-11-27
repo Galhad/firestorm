@@ -9,11 +9,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_BUILD_TYPE Debug)
 
+set(OpenGL_GL_PREFERENCE GLVND)
+set(BOX2D_BUILD_EXAMPLES OFF)
+
 add_subdirectory(src)
 add_subdirectory(examples)
 add_subdirectory(external/spdlog)
 add_subdirectory(external/glm)
 add_subdirectory(external/glfw)
+add_subdirectory(external/Box2D/Box2D)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/resources)
 file(COPY ./resources/texture.png DESTINATION ${CMAKE_BINARY_DIR}/resources)
