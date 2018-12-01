@@ -8,6 +8,6 @@ set(BOX2D_DIRECTORY ../external/Box2D/Box2D)
 
 file(GLOB_RECURSE STB_HEADERS "${STB_DIRECTORY}/*.h")
 
-add_library(firestorm ${SOURCES} ${STB_HEADERS} )
+add_library(firestorm ${SOURCES} ${STB_HEADERS})
 
 target_include_directories(firestorm PRIVATE ./ ${STB_DIRECTORY} ${SPDLOG_DIRECTORY} ${GLM_DIRECTORY} ${BOX2D_DIRECTORY} ${GLFW_DIRECTORY})

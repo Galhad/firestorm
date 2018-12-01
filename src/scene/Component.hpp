@@ -20,62 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_WINDOW_HPP
-#define FIRESTORM_WINDOW_HPP
+#ifndef FIRESTORM_COMPONENT_HPP
+#define FIRESTORM_COMPONENT_HPP
 
-#define GLFW_INCLUDE_VULKAN
-
-#include <GLFW/glfw3.h>
-
-#include "core/Types.hpp"
-
-#include <string>
-#include <functional>
 #include <memory>
 
-namespace fs::graphics
+namespace fs::scene
 {
-
-using WindowResizedCallback =
-std::function< void(core::fs_int32
-width,
-core::fs_int32 height
-)>;
-
-class Window
+class Component
 {
 public:
-    Window() = default;
-    virtual ~Window();
+    Component() = default;
+    virtual ~Component() = default;
 
-    void create(core::Vector2i size, const std::string& title, core::fs_uint32 flags = 0);
+    void create();
     virtual void destroy();
 
-    const std::string& getTitle() const;
-    void setTitle(std::string& title);
-
-    core::Vector2i getPosition() const;
-    void setPosition(core::Vector2i position);
-
-    const core::Vector2i& getSize() const;
-
-    GLFWwindow* getWindow() const;
-
-    const WindowResizedCallback& getWindowResizedCallback() const;
-    void setWindowResizedCallback(const WindowResizedCallback& windowResizedCallback);
-
-protected:
-    void onWindowResized(core::fs_int32 width, core::fs_int32 height);
-
-protected:
-    GLFWwindow* window = nullptr;
-    std::string title;
-    core::Vector2i size;
-
-    WindowResizedCallback windowResizedCallback = {};
 };
 
-typedef std::unique_ptr<Window> WindowPtr;
+typedef std::unique_ptr<Component> ComponentPtr;
 }
 
-#endif //FIRESTORM_WINDOW_HPP
+#endif //FIRESTORM_COMPONENT_HPP

@@ -20,37 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SpriteSceneNode.hpp"
-
-#include "graphics/vulkan/Vertex.hpp"
+#include "Component.hpp"
 
 namespace fs::scene
 {
 
-void SpriteSceneNode::create(const graphics::Sprite& sprite)
+void Component::create()
 {
-    SceneNode::create();
 
-    spriteRenderer = std::make_unique<SpriteRendererComponent>();
-    spriteRenderer->create(*transformation, sprite);
-    renderer = spriteRenderer.get();
 }
 
-void SpriteSceneNode::destroy()
+void Component::destroy()
 {
-    spriteRenderer->destroy();
 
-    SceneNode::destroy();
 }
-
-const SpriteRendererComponent* SpriteSceneNode::getSpriteRenderer() const
-{
-    return spriteRenderer.get();
-}
-
-SpriteRendererComponent* SpriteSceneNode::getSpriteRenderer()
-{
-    return spriteRenderer.get();
-}
-
 }

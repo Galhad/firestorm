@@ -24,6 +24,7 @@
 #define FIRESTORM_SPRITESCENENODE_HPP
 
 #include "SceneNode.hpp"
+#include "SpriteRendererComponent.hpp"
 
 #include <memory>
 
@@ -38,17 +39,11 @@ public:
     void create(const graphics::Sprite& sprite);
     void destroy() override;
 
-    void update(float deltaTime) override;
-    void
-    render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet scenedescriptorSet) override;
-
-    const graphics::Sprite* getSprite() const;
-
-    void setSprite(const graphics::Sprite& sprite);
+    const SpriteRendererComponent* getSpriteRenderer() const;
+    SpriteRendererComponent* getSpriteRenderer();
 
 protected:
-    const graphics::Sprite* sprite = nullptr;
-
+    SpriteRendererComponentPtr spriteRenderer;
 };
 
 typedef std::unique_ptr<SpriteSceneNode> SpriteSceneNodePtr;

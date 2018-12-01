@@ -28,108 +28,38 @@ namespace fs::scene
 
 void SceneNode::create()
 {
-    SceneNode::transform = {};
-    position = {0.f, 0.f};
-    rotation = {0.f, 0.f, 0.f};
-    layer = 0.f;
-    scale = {1.f, 1.f};
-    geometryUpdated = true;
+    transformation = std::make_unique<TransformationComponent>();
+    transformation->create();
 }
 
 void SceneNode::destroy()
 {
-    transform = {};
-    geometryUpdated = true;
+    transformation->destroy();
 }
 
-core::Vector2f SceneNode::getPosition() const
+void SceneNode::update(float deltaTime)
 {
-    return position;
+
 }
 
-void SceneNode::setPosition(core::fs_float32 x, core::fs_float32 y)
+const TransformationComponent& SceneNode::getTransformation() const
 {
-    position.x = x;
-    position.y = y;
+    return *transformation;
 }
 
-void SceneNode::setPosition(core::Vector2f position)
+TransformationComponent& SceneNode::getTransformation()
 {
-    SceneNode::position = position;
-    geometryUpdated = true;
+    return *transformation;
 }
 
-core::fs_float32 SceneNode::getLayer() const
+const RendererComponent* SceneNode::getRenderer() const
 {
-    return layer;
+    return renderer;
 }
 
-void SceneNode::setLayer(core::fs_float32 layer)
+RendererComponent* SceneNode::getRenderer()
 {
-    SceneNode::layer = layer;
-    geometryUpdated = true;
-}
-
-core::Vector3f SceneNode::getRotation() const
-{
-    return rotation;
-}
-
-void SceneNode::setRotation(core::fs_float32 rotation)
-{
-    SceneNode::rotation.z = rotation;
-    geometryUpdated = true;
-}
-
-void SceneNode::setRotation(core::Vector3f rotation)
-{
-    SceneNode::rotation = rotation;
-    geometryUpdated = true;
-}
-
-core::Vector2f SceneNode::getScale() const
-{
-    return scale;
-}
-
-void SceneNode::setScale(core::fs_float32 x, core::fs_float32 y)
-{
-    scale.x = x;
-    scale.y = y;
-    geometryUpdated = true;
-}
-
-void SceneNode::setScale(core::Vector2f scale)
-{
-    SceneNode::scale = scale;
-    geometryUpdated = true;
-}
-
-void SceneNode::calculateModelMatrix()
-{
-    core::fs_mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, layer));
-    core::Vector3f rotationRad = core::Vector3f{glm::radians(rotation.x), glm::radians(rotation.y),
-                                                glm::radians(rotation.z)};
-    core::fs_mat4 rotation = glm::toMat4(core::Quaternion(rotationRad));
-    core::fs_mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(SceneNode::scale.x, SceneNode::scale.y, 1.0f));
-    transform.model = translation * rotation * scale;
-}
-
-void
-SceneNode::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet)
-{
-    if (geometryUpdated)
-    {
-        calculateModelMatrix();
-        geometryUpdated = false;
-    }
-    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(graphics::Transform),
-                       &transform);
-}
-
-bool SceneNode::isGeometryUpdated() const
-{
-    return geometryUpdated;
+    return renderer;
 }
 
 }

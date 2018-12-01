@@ -30,17 +30,14 @@ namespace fs::scene
 
 void CameraSceneNode::create(const graphics::Window& window, const graphics::MappedMemoryBuffer& uniformBuffer)
 {
+    SceneNode::create();
+
     CameraSceneNode::window = &window;
     CameraSceneNode::active = false;
     CameraSceneNode::uniformBuffer = &uniformBuffer;
     zoom = 10.f;
 
     updateUniformData();
-}
-
-CameraSceneNode::~CameraSceneNode()
-{
-
 }
 
 void CameraSceneNode::destroy()
@@ -62,29 +59,9 @@ void CameraSceneNode::setActive(bool active)
     CameraSceneNode::active = active;
     if (active)
     {
-        geometryUpdated = true;
+        transformation->setGeometryUpdated(true);
     }
 }
-
-void CameraSceneNode::setPosition(core::fs_float32 x, core::fs_float32 y)
-{
-    SceneNode::setPosition(x, y);
-}
-
-void CameraSceneNode::setPosition(core::Vector2f position)
-{
-    SceneNode::setPosition(position);
-}
-//
-//void CameraSceneNode::setRotation(core::fs_float32 rotation)
-//{
-//    SceneNode::setRotation(rotation);
-//}
-//
-//void CameraSceneNode::setRotation(core::Vector3f rotation)
-//{
-//    SceneNode::setRotation(rotation);
-//}
 
 core::fs_float32 CameraSceneNode::getZoom() const
 {
@@ -94,7 +71,7 @@ core::fs_float32 CameraSceneNode::getZoom() const
 void CameraSceneNode::setZoom(core::fs_float32 zoom)
 {
     CameraSceneNode::zoom = zoom;
-    geometryUpdated = true;
+    transformation->setGeometryUpdated(true);
 }
 
 const graphics::Window* CameraSceneNode::getWindow() const
@@ -110,15 +87,16 @@ void CameraSceneNode::setWindow(const graphics::Window* window)
 
 void CameraSceneNode::update(float deltaTime)
 {
-    if (geometryUpdated && active)
+    if (transformation->isGeometryUpdated() && active)
     {
-        geometryUpdated = false;
+        transformation->setGeometryUpdated(false);
         updateUniformData();
     }
 }
 
 void CameraSceneNode::updateUniformData()
 {
+    const auto& position = transformation->getPosition();
     uniformData.view = glm::mat4(1.f);
     uniformData.projection = glm::ortho(position.x, position.x + window->getSize().x / zoom,
                                         position.y + window->getSize().y / zoom, position.y, -1.f, 1.f);
@@ -128,12 +106,6 @@ void CameraSceneNode::updateUniformData()
     {
         memcpy(uniformBuffer->getMappedData(), &uniformData, sizeof(graphics::UniformData));
     }
-}
-
-void CameraSceneNode::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout,
-                             VkDescriptorSet scenedescriptorSet)
-{
-
 }
 
 }

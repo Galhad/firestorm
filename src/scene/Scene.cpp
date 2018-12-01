@@ -52,7 +52,11 @@ void Scene::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayou
 {
     for (auto& node : nodes)
     {
-        node->render(commandBuffer, pipelineLayout, sceneDescriptorSet);
+        auto* renderer = node->getRenderer();
+        if (renderer != nullptr)
+        {
+            renderer->render(commandBuffer, pipelineLayout, sceneDescriptorSet);
+        }
     }
 }
 
@@ -88,10 +92,10 @@ bool Scene::isGeometryUpdated() const
 {
     for (auto& node : nodes)
     {
-       if(node->isGeometryUpdated())
-       {
-           return true;
-       }
+        if (node->getTransformation().isGeometryUpdated())
+        {
+            return true;
+        }
     }
     return false;
 }

@@ -46,14 +46,14 @@ void AnimatedSpriteSceneNode::update(float deltaTime)
     elapsedTime += deltaTime;
     if (1.f / elapsedTime >= speedFps)
     {
-        geometryUpdated = true;
+        transformation->setGeometryUpdated(true);
         ++currentFrame;
         if (currentFrame >= animation->size())
         {
             currentFrame = 0;
         }
 
-        setSprite(*animation->at(currentFrame));
+        spriteRenderer->setSprite(*animation->at(currentFrame));
         elapsedTime -= speedFps;
     }
 

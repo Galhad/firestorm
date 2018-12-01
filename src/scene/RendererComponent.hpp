@@ -20,62 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_WINDOW_HPP
-#define FIRESTORM_WINDOW_HPP
+#ifndef FIRESTORM_RENDERERCOMPONENT_HPP
+#define FIRESTORM_RENDERERCOMPONENT_HPP
 
-#define GLFW_INCLUDE_VULKAN
+#include "Component.hpp"
+#include "graphics/Sprite.hpp"
+#include "graphics/vulkan/Vertex.hpp"
+#include "TransformationComponent.hpp"
 
-#include <GLFW/glfw3.h>
-
-#include "core/Types.hpp"
-
-#include <string>
-#include <functional>
 #include <memory>
 
-namespace fs::graphics
+namespace fs::scene
 {
-
-using WindowResizedCallback =
-std::function< void(core::fs_int32
-width,
-core::fs_int32 height
-)>;
-
-class Window
+class RendererComponent : public Component
 {
 public:
-    Window() = default;
-    virtual ~Window();
+    RendererComponent() = default;
+    ~RendererComponent() override = default;
 
-    void create(core::Vector2i size, const std::string& title, core::fs_uint32 flags = 0);
-    virtual void destroy();
+    void create(TransformationComponent& transformation);
+    void destroy() override;
 
-    const std::string& getTitle() const;
-    void setTitle(std::string& title);
-
-    core::Vector2i getPosition() const;
-    void setPosition(core::Vector2i position);
-
-    const core::Vector2i& getSize() const;
-
-    GLFWwindow* getWindow() const;
-
-    const WindowResizedCallback& getWindowResizedCallback() const;
-    void setWindowResizedCallback(const WindowResizedCallback& windowResizedCallback);
+    virtual void
+    render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet) = 0;
 
 protected:
-    void onWindowResized(core::fs_int32 width, core::fs_int32 height);
+    void pushTransform(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
 
 protected:
-    GLFWwindow* window = nullptr;
-    std::string title;
-    core::Vector2i size;
+    TransformationComponent* transformation = nullptr;
 
-    WindowResizedCallback windowResizedCallback = {};
 };
 
-typedef std::unique_ptr<Window> WindowPtr;
+typedef std::unique_ptr<RendererComponent> RendererComponentPtr;
 }
 
-#endif //FIRESTORM_WINDOW_HPP
+#endif //FIRESTORM_RENDERERCOMPONENT_HPP

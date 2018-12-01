@@ -115,7 +115,7 @@ void Engine::run()
 
         elapsedTime += deltaTime;
         auto steps = static_cast<core::fs_int32>(elapsedTime / physicsManager->getTimeStep());
-        if(steps > 0)
+        if (steps > 0)
         {
             physicsManager->step(steps);
             elapsedTime -= physicsManager->getTimeStep() * steps;

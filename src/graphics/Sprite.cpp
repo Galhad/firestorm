@@ -73,23 +73,23 @@ void Sprite::createMesh()
 
     std::vector<Vertex> vertices;
     vertices.push_back({
-                           {-halfWidth,           -halfHeight,  0.f},
-                           {1.0f,          0.0f, 0.0f},
+                           {-halfWidth,    -halfHeight, 0.f},
+                           {1.0f,          0.0f,        0.0f},
                            {textureRect.x, textureRect.y}
                        });
     vertices.push_back({
-                           {halfWidth,                             -halfHeight,  0.f},
-                           {0.0f,                              1.0f, 0.0f},
+                           {halfWidth,                         -halfHeight, 0.f},
+                           {0.0f,                              1.0f,        0.0f},
                            {textureRect.x + textureRect.width, textureRect.y}
                        });
     vertices.push_back({
-                           {halfWidth,                             halfHeight, 0.f},
-                           {0.0f,                              0.0f,   1.0f},
+                           {halfWidth,                         halfHeight, 0.f},
+                           {0.0f,                              0.0f,       1.0f},
                            {textureRect.x + textureRect.width, textureRect.y + textureRect.height}
                        });
     vertices.push_back({
-                           {-halfWidth,           halfHeight, 0.f},
-                           {1.0f,          1.0f,   1.0f},
+                           {-halfWidth,    halfHeight, 0.f},
+                           {1.0f,          1.0f,       1.0f},
                            {textureRect.x, textureRect.y + textureRect.height}
                        });
 

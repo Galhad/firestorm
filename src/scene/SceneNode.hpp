@@ -23,9 +23,8 @@
 #ifndef FIRESTORM_SCENENODE_HPP
 #define FIRESTORM_SCENENODE_HPP
 
-#include "graphics/Transform.hpp"
-#include "graphics/Sprite.hpp"
-#include "graphics/vulkan/Vertex.hpp"
+#include "TransformationComponent.hpp"
+#include "RendererComponent.hpp"
 
 #include <memory>
 
@@ -40,39 +39,17 @@ public:
     void create();
     virtual void destroy();
 
-    core::Vector2f getPosition() const;
-    virtual void setPosition(core::fs_float32 x, core::fs_float32 y);
-    virtual void setPosition(core::Vector2f position);
+    virtual void update(float deltaTime);
 
-    core::fs_float32 getLayer() const;
-    void setLayer(core::fs_float32 layer);
+    const TransformationComponent& getTransformation() const;
+    TransformationComponent& getTransformation();
 
-    core::Vector3f getRotation() const;
-    virtual void setRotation(core::fs_float32 rotation);
-    virtual void setRotation(core::Vector3f rotation);
-
-    core::Vector2f getScale() const;
-    void setScale(core::fs_float32 x, core::fs_float32 y);
-    void setScale(core::Vector2f scale);
-
-    virtual void update(float deltaTime) = 0;
-    virtual void
-    render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet scenedescriptorSet);
-
-    bool isGeometryUpdated() const;
+    const RendererComponent* getRenderer() const;
+    RendererComponent* getRenderer();
 
 protected:
-    void calculateModelMatrix();
-
-protected:
-    graphics::Transform transform;
-
-    core::Vector2f position;
-    core::Vector3f rotation;
-    core::fs_float32 layer;
-    core::Vector2f scale;
-    bool geometryUpdated = false;
-
+    TransformationComponentPtr transformation = nullptr;
+    RendererComponent* renderer = nullptr;
 };
 
 typedef std::unique_ptr<SceneNode> SceneNodePtr;

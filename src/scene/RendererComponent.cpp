@@ -20,37 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SpriteSceneNode.hpp"
-
-#include "graphics/vulkan/Vertex.hpp"
+#include "RendererComponent.hpp"
 
 namespace fs::scene
 {
 
-void SpriteSceneNode::create(const graphics::Sprite& sprite)
+void RendererComponent::create(TransformationComponent& transformation)
 {
-    SceneNode::create();
-
-    spriteRenderer = std::make_unique<SpriteRendererComponent>();
-    spriteRenderer->create(*transformation, sprite);
-    renderer = spriteRenderer.get();
+    Component::create();
+    RendererComponent::transformation = &transformation;
 }
 
-void SpriteSceneNode::destroy()
+void RendererComponent::destroy()
 {
-    spriteRenderer->destroy();
-
-    SceneNode::destroy();
+    transformation = nullptr;
+    Component::destroy();
 }
 
-const SpriteRendererComponent* SpriteSceneNode::getSpriteRenderer() const
+void RendererComponent::pushTransform(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout)
 {
-    return spriteRenderer.get();
-}
 
-SpriteRendererComponent* SpriteSceneNode::getSpriteRenderer()
-{
-    return spriteRenderer.get();
+    if (transformation->isGeometryUpdated())
+    {
+        transformation->updateTransform();
+    }
+
+    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(graphics::Transform),
+                       &transformation->getTransform());
 }
 
 }

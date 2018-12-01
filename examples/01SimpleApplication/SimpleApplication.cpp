@@ -57,31 +57,31 @@ SimpleApplication::SimpleApplication()
     playerStandSprite = playerSpriteSheet->addSprite({0, 196, 66, 92});
 
     bgSceneNode.create(*bgSprite);
-    bgSceneNode.setPosition({0.f, 0.f});
-    bgSceneNode.setLayer(-0.1f);
-    bgSceneNode.setScale(10.f, 10.f);
+    bgSceneNode.getTransformation().setPosition({0.f, 0.f});
+    bgSceneNode.getTransformation().setLayer(-0.1f);
+    bgSceneNode.getTransformation().setScale(10.f, 10.f);
     scene->getNodes().push_back(&bgSceneNode);
 
     grassLeftSceneNode.create(*grassLeftSprite);
     scene->getNodes().push_back(&grassLeftSceneNode);
 
     grassMidSceneNode.create(*grassMidSprite);
-    grassMidSceneNode.setPosition({0.7f, 0.f});
+    grassMidSceneNode.getTransformation().setPosition({0.7f, 0.f});
     scene->getNodes().push_back(&grassMidSceneNode);
 
     grassRightSceneNode.create(*grassRightSprite);
-    grassRightSceneNode.setPosition({1.4f, 0.f});
+    grassRightSceneNode.getTransformation().setPosition({1.4f, 0.f});
     scene->getNodes().push_back(&grassRightSceneNode);
 
     playerSceneNode.create(*playerStandSprite);
-    playerSceneNode.setPosition({0.7f, -0.7f - 0.22f});
+    playerSceneNode.getTransformation().setPosition({0.7f, -0.7f - 0.22f});
     scene->getNodes().push_back(&playerSceneNode);
 
     animation.push_back(grassLeftSprite);
     animation.push_back(grassMidSprite);
     animation.push_back(grassRightSprite);
     animatedSpriteSceneNode.create(animation);
-    animatedSpriteSceneNode.setPosition({-1.4f, -1.4f});
+    animatedSpriteSceneNode.getTransformation().setPosition({-1.4f, -1.4f});
     scene->getNodes().push_back(&animatedSpriteSceneNode);
 
     sceneManager->setActiveScene(scene);
@@ -101,7 +101,7 @@ void SimpleApplication::update(float deltaTime)
     constexpr float cameraSpeed = 10.f;
     float cameraOffset = cameraSpeed * deltaTime;
 
-    core::Vector2f cameraPosition = camera.getPosition();
+    core::Vector2f cameraPosition = camera.getTransformation().getPosition();
     if (inputManager->getKeyState(io::Key::Up) == io::KeyState::Pressed)
     {
         cameraPosition.y += cameraOffset;
@@ -118,9 +118,9 @@ void SimpleApplication::update(float deltaTime)
     {
         cameraPosition.x -= cameraOffset;
     }
-    if (camera.getPosition() != cameraPosition)
+    if (camera.getTransformation().getPosition() != cameraPosition)
     {
-        camera.setPosition(cameraPosition);
+        camera.getTransformation().setPosition(cameraPosition);
     }
 
     if (inputManager->getButtonState(io::Button::Left) == io::KeyState::Pressed)
@@ -133,9 +133,9 @@ void SimpleApplication::update(float deltaTime)
     }
 
     constexpr float rotationSpeed = 36.0f;
-    auto rotation = bgSceneNode.getRotation();
+    auto rotation = bgSceneNode.getTransformation().getRotation();
     rotation.z += rotationSpeed * deltaTime;
-    bgSceneNode.setRotation(rotation);
+    bgSceneNode.getTransformation().setRotation(rotation);
 
 }
 

@@ -35,19 +35,12 @@ class CameraSceneNode : public SceneNode
 {
 public:
     CameraSceneNode() = default;
-    ~CameraSceneNode() override;
+    ~CameraSceneNode() override = default;
 
     void create(const graphics::Window& window, const graphics::MappedMemoryBuffer& uniformBuffer);
     void destroy() override;
 
-    void setPosition(core::fs_float32 x, core::fs_float32 y) override;
-    void setPosition(core::Vector2f position) override;
-//    void setRotation(core::fs_float32 rotation) override;
-//    void setRotation(core::Vector3f rotation) override;
-
     void update(float deltaTime) override;
-    virtual void
-    render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet scenedescriptorSet) override;
 
     bool isActive() const;
     void setActive(bool active);
