@@ -20,23 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_ENGINECREATIONPARAMS_HPP
-#define FIRESTORM_ENGINECREATIONPARAMS_HPP
+#ifndef FIRESTORM_PHYSICSCREATIONPARAMS_HPP
+#define FIRESTORM_PHYSICSCREATIONPARAMS_HPP
 
-#include "graphics/WindowCreationParams.hpp"
-#include "graphics/GraphicsCreationParams.hpp"
-#include "spdlog/spdlog.h"
+#include "core/Types.hpp"
 
-namespace fs
+namespace fs::physics
 {
-
-struct EngineCreationParams
+struct PhysicsCreationParams
 {
-    graphics::WindowCreationParams windowCreationParams;
-    graphics::GraphicsCreationParams graphicsCreationParams;
-    spdlog::level::level_enum loggingLevel = spdlog::level::info;
+    core::Vector2f gravity = {0.f, -9.8f};
+    core::fs_int32 velocityIterations = 8; // suggested by Box2D
+    core::fs_int32 positionIterations = 3; // suggested by Box2D
+    core::fs_float32 timeStep = 1.f / 60.f; // suggested by Box2D
 };
 
 }
 
-#endif //FIRESTORM_ENGINECREATIONPARAMS_HPP
+#endif //FIRESTORM_PHYSICSCREATIONPARAMS_HPP

@@ -20,23 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_ENGINECREATIONPARAMS_HPP
-#define FIRESTORM_ENGINECREATIONPARAMS_HPP
+#ifndef FIRESTORM_PHYSICSMANAGER_HPP
+#define FIRESTORM_PHYSICSMANAGER_HPP
 
-#include "graphics/WindowCreationParams.hpp"
-#include "graphics/GraphicsCreationParams.hpp"
-#include "spdlog/spdlog.h"
+#include "PhysicsCreationParams.hpp"
 
-namespace fs
+#include "Box2D/Box2D.h"
+
+#include <memory>
+
+namespace fs::physics
 {
-
-struct EngineCreationParams
+class PhysicsManager
 {
-    graphics::WindowCreationParams windowCreationParams;
-    graphics::GraphicsCreationParams graphicsCreationParams;
-    spdlog::level::level_enum loggingLevel = spdlog::level::info;
+public:
+    PhysicsManager() = default;
+    virtual ~PhysicsManager() = default;
+
+    void create(const PhysicsCreationParams& creationParams);
+    virtual void destroy();
+
+//    virtual void updatePhysics(float deltaTime);
+    void step(core::fs_int32 times = 1);
+
+    const b2World* getWorld() const;
+
+    core::fs_float32 getTimeStep() const;
+    void setTimeStep(core::fs_float32 timeStep);
+
+protected:
+    std::unique_ptr<b2World> world = nullptr;
+
+    core::fs_float32 timeStep;
+    core::fs_int32 velocityIterations;
+    core::fs_int32 positionIterations;
+
 };
 
+typedef std::unique_ptr<PhysicsManager> PhysicsManagerPtr;
 }
 
-#endif //FIRESTORM_ENGINECREATIONPARAMS_HPP
+#endif //FIRESTORM_PHYSICSMANAGER_HPP

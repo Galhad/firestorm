@@ -26,6 +26,7 @@
 #include "EngineCreationParams.hpp"
 #include "graphics/GraphicsManager.hpp"
 #include "scene/SceneManager.hpp"
+#include "physics/PhysicsManager.hpp"
 #include "io/InputManager.hpp"
 #include "io/FileProvider.hpp"
 #include "utils/Logger.hpp"
@@ -64,6 +65,7 @@ protected:
     io::InputManagerPtr inputManager;
     io::FileProviderPtr fileProvider;
     scene::SceneManagerPtr sceneManager;
+    physics::PhysicsManagerPtr physicsManager;
 
     utils::LoggerPtr logger = spdlog::stdout_color_mt(utils::CONSOLE_LOGGER_NAME);
 };

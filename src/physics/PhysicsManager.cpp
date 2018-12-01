@@ -20,23 +20,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_ENGINECREATIONPARAMS_HPP
-#define FIRESTORM_ENGINECREATIONPARAMS_HPP
+#include "PhysicsManager.hpp"
 
-#include "graphics/WindowCreationParams.hpp"
-#include "graphics/GraphicsCreationParams.hpp"
-#include "spdlog/spdlog.h"
-
-namespace fs
+namespace fs::physics
 {
 
-struct EngineCreationParams
+void PhysicsManager::create(const PhysicsCreationParams& creationParams)
 {
-    graphics::WindowCreationParams windowCreationParams;
-    graphics::GraphicsCreationParams graphicsCreationParams;
-    spdlog::level::level_enum loggingLevel = spdlog::level::info;
-};
+    world = std::make_unique<b2World>(b2Vec2(creationParams.gravity.x, creationParams.gravity.y));
 
+    timeStep = creationParams.timeStep;
+    velocityIterations = creationParams.velocityIterations;
+    positionIterations = creationParams.positionIterations;
 }
 
-#endif //FIRESTORM_ENGINECREATIONPARAMS_HPP
+void PhysicsManager::destroy()
+{
+    velocityIterations = 0;
+    positionIterations = 0;
+    timeStep = 0;
+
+    world = nullptr;
+}
+
+//void PhysicsManager::updatePhysics(float deltaTime)
+//{
+//
+//}
+
+void PhysicsManager::step(core::fs_int32 times)
+{
+    world->Step(timeStep * times, velocityIterations, positionIterations);
+}
+
+const b2World* PhysicsManager::getWorld() const
+{
+    return world.get();
+}
+
+
+core::fs_float32 PhysicsManager::getTimeStep() const
+{
+    return timeStep;
+}
+
+void PhysicsManager::setTimeStep(core::fs_float32 timeStep)
+{
+    PhysicsManager::timeStep = timeStep;
+}
+
+}

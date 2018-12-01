@@ -27,7 +27,8 @@
 namespace fs
 {
 Engine::Engine() : graphicsManager(new graphics::GraphicsManager()), inputManager(new io::InputManager()),
-                   fileProvider(new io::FileProvider()), sceneManager(new scene::SceneManager())
+                   fileProvider(new io::FileProvider()), sceneManager(new scene::SceneManager()),
+                   physicsManager(new physics::PhysicsManager())
 {
 }
 
@@ -42,7 +43,7 @@ void Engine::create(const EngineCreationParams& creationParams)
     logger->info("Starting Firestorm engine");
 
     glfwInit();
-    graphicsManager->create(creationParams.windowCreationParams, creationParams.grahicsCreationParams);
+    graphicsManager->create(creationParams.windowCreationParams, creationParams.graphicsCreationParams);
     graphicsManager->getVulkanDriver().setPerCommmandBufferCallback([&](const VkCommandBuffer& commandBuffer,
                                                                         const VkPipelineLayout& pipelineLayout,
                                                                         const VkDescriptorSet& uniformDescriptorSet)
@@ -100,6 +101,8 @@ void Engine::run()
 {
     auto start = std::chrono::high_resolution_clock::now();
 
+    float elapsedTime = 0.f;
+
     while (!glfwWindowShouldClose(graphicsManager->getWindow().getWindow()))
     {
         glfwPollEvents();
@@ -110,7 +113,13 @@ void Engine::run()
 
         start = end;
 
-        update(deltaTime);
+        elapsedTime += deltaTime;
+        auto steps = static_cast<core::fs_int32>(elapsedTime / physicsManager->getTimeStep());
+        if(steps > 0)
+        {
+            physicsManager->step(steps);
+            elapsedTime -= physicsManager->getTimeStep() * steps;
+        }
 
         const auto& activeScene = sceneManager->getActiveScene();
         if (activeScene != nullptr)
@@ -125,6 +134,8 @@ void Engine::run()
                 graphicsManager->getVulkanDriver().recordCommandBuffers();
             }
         }
+
+        update(deltaTime);
     }
     graphicsManager->getVulkanDriver().finish();
 }

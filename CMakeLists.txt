@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.11)
 project(firestorm)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -11,6 +11,8 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(OpenGL_GL_PREFERENCE GLVND)
 set(BOX2D_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_TESTS OFF)
 
 add_subdirectory(src)
 add_subdirectory(examples)
