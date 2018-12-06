@@ -35,7 +35,7 @@ void PlayerSceneNode::create(const fs::scene::AnimatedSpriteSceneNode::Animation
     body = physicsManager.getWorld()->CreateBody(&bodyDef);
 
     bodyComponent = std::make_unique<BodyComponent>();
-    bodyComponent->create(*transformation, *body);
+    bodyComponent->create(*this, *transformation, *body);
 
     SceneNode::body = bodyComponent.get();
 }
@@ -64,7 +64,7 @@ void PlayerSceneNode::physicsUpdate()
     if (jumping)
     {
         body->ApplyLinearImpulse(b2Vec2(0.f, -jumpForce), body->GetWorldCenter(), true);
-        jumping  = false;
+        jumping = false;
     }
 }
 

@@ -23,6 +23,7 @@
 #ifndef FIRESTORM_TRANSFORMATIONCOMPONENT_HPP
 #define FIRESTORM_TRANSFORMATIONCOMPONENT_HPP
 
+#include "Component.hpp"
 #include "core/Types.hpp"
 #include "graphics/Transform.hpp"
 
@@ -30,14 +31,14 @@
 
 namespace fs::scene
 {
-class TransformationComponent
+class TransformationComponent : public Component
 {
 public:
     TransformationComponent() = default;
     virtual ~TransformationComponent() = default;
 
-    void create();
-    virtual void destroy();
+    void create(SceneNode& sceneNode);
+    void destroy() override;
 
     core::Vector2f getPosition() const;
     virtual void setPosition(core::fs_float32 x, core::fs_float32 y);

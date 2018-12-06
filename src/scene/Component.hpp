@@ -27,14 +27,22 @@
 
 namespace fs::scene
 {
+class SceneNode;
+
 class Component
 {
 public:
     Component() = default;
     virtual ~Component() = default;
 
-    void create();
+    void create(SceneNode& sceneNode);
     virtual void destroy();
+
+    SceneNode* getSceneNode() const;
+    void setSceneNode(SceneNode& sceneNode);
+
+protected:
+    SceneNode* sceneNode = nullptr;
 
 };
 

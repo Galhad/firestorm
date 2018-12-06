@@ -42,7 +42,7 @@ public:
     BodyComponent() = default;
     ~BodyComponent() override = default;
 
-    void create(TransformationComponent& transformation, b2Body& body);
+    void create(SceneNode& sceneNode, TransformationComponent& transformation, b2Body& body);
     void destroy() override;
 
     virtual void applyPhysicsStep();

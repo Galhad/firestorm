@@ -36,7 +36,7 @@ public:
     SpriteRendererComponent() = default;
     ~SpriteRendererComponent() override = default;
 
-    void create(TransformationComponent& transformation, const graphics::Sprite& sprite);
+    void create(SceneNode& sceneNode, TransformationComponent& transformation, const graphics::Sprite& sprite);
     void destroy() override;
 
     void

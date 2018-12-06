@@ -38,7 +38,7 @@ public:
     RendererComponent() = default;
     ~RendererComponent() override = default;
 
-    void create(TransformationComponent& transformation);
+    void create(SceneNode& sceneNode, TransformationComponent& transformation);
     void destroy() override;
 
     virtual void

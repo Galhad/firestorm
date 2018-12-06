@@ -31,6 +31,12 @@
 
 namespace fs::scene
 {
+
+//class Component;
+//class BodyComponent;
+//class RendererComponent;
+//class TransformationComponent;
+
 class SceneNode
 {
 public:

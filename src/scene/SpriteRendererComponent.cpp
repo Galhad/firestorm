@@ -24,10 +24,10 @@
 
 namespace fs::scene
 {
-void SpriteRendererComponent::create(TransformationComponent& transformation,
+void SpriteRendererComponent::create(SceneNode& sceneNode, TransformationComponent& transformation,
                                      const graphics::Sprite& sprite)
 {
-    RendererComponent::create(transformation);
+    RendererComponent::create(sceneNode, transformation);
     SpriteRendererComponent::sprite = &sprite;
 }
 

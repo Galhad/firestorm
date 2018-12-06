@@ -29,7 +29,7 @@ namespace fs::scene
 void SceneNode::create()
 {
     transformation = std::make_unique<TransformationComponent>();
-    transformation->create();
+    transformation->create(*this);
 }
 
 void SceneNode::destroy()

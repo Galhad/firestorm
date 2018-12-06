@@ -44,7 +44,7 @@ void GroundBrick::create(const graphics::Sprite& sprite, physics::PhysicsManager
     body->CreateFixture(&shape, 1.0f);
 
     bodyComponent = std::make_unique<BodyComponent>();
-    bodyComponent->create(*transformation, *body);
+    bodyComponent->create(*this, *transformation, *body);
 
     SceneNode::body = bodyComponent.get();
 }

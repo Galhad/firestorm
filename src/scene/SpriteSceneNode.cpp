@@ -32,7 +32,7 @@ void SpriteSceneNode::create(const graphics::Sprite& sprite)
     SceneNode::create();
 
     spriteRenderer = std::make_unique<SpriteRendererComponent>();
-    spriteRenderer->create(*transformation, sprite);
+    spriteRenderer->create(*this, *transformation, sprite);
     renderer = spriteRenderer.get();
 }
 

@@ -25,8 +25,10 @@
 
 namespace fs::scene
 {
-void TransformationComponent::create()
+void TransformationComponent::create(SceneNode& sceneNode)
 {
+    Component::create(sceneNode);
+
     TransformationComponent::transform = {};
     position = {0.f, 0.f};
     rotation = {0.f, 0.f, 0.f};
@@ -39,6 +41,8 @@ void TransformationComponent::destroy()
 {
     transform = {};
     geometryUpdated = true;
+
+    Component::destroy();
 }
 
 core::Vector2f TransformationComponent::getPosition() const

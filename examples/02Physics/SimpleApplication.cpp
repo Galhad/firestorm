@@ -134,7 +134,7 @@ void SimpleApplication::update(float deltaTime)
         playerSceneNode.move(0.f);
     }
 
-    if(inputManager->getKeyState(io::Key::W) == io::KeyState::Pressed)
+    if (inputManager->getKeyState(io::Key::W) == io::KeyState::Pressed)
     {
         playerSceneNode.jump();
     }

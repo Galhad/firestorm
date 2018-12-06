@@ -26,9 +26,9 @@
 namespace fs::scene
 {
 
-void BodyComponent::create(TransformationComponent& transformation, b2Body& body)
+void BodyComponent::create(SceneNode& sceneNode, TransformationComponent& transformation, b2Body& body)
 {
-    Component::create();
+    Component::create(sceneNode);
 
     BodyComponent::transformation = &transformation;
     BodyComponent::body = &body;
@@ -50,7 +50,7 @@ void BodyComponent::destroy()
 
 void BodyComponent::beginCollision(const BodyComponent& other) const
 {
-    if(beginCollisionCallback != nullptr)
+    if (beginCollisionCallback != nullptr)
     {
         (*beginCollisionCallback)(other);
     }
@@ -58,7 +58,7 @@ void BodyComponent::beginCollision(const BodyComponent& other) const
 
 void BodyComponent::endCollision(const BodyComponent& other) const
 {
-    if(endCollisionCallback != nullptr)
+    if (endCollisionCallback != nullptr)
     {
         (*endCollisionCallback)(other);
     }
@@ -76,11 +76,11 @@ void BodyComponent::setEndCollisionCallback(const CollisionCallback& endCollisio
 
 void BodyComponent::applyPhysicsStep()
 {
-        const auto& simulatedPosition = body->GetPosition();
-        auto simulatedRotation = body->GetAngle();
+    const auto& simulatedPosition = body->GetPosition();
+    auto simulatedRotation = body->GetAngle();
 
-        transformation->setPosition(simulatedPosition.x, simulatedPosition.y);
-        transformation->setRotation(simulatedRotation);
+    transformation->setPosition(simulatedPosition.x, simulatedPosition.y);
+    transformation->setRotation(simulatedRotation);
 }
 
 b2Body* BodyComponent::getBody()

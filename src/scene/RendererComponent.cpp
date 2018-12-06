@@ -25,9 +25,9 @@
 namespace fs::scene
 {
 
-void RendererComponent::create(TransformationComponent& transformation)
+void RendererComponent::create(SceneNode& sceneNode, TransformationComponent& transformation)
 {
-    Component::create();
+    Component::create(sceneNode);
     RendererComponent::transformation = &transformation;
 }
 
