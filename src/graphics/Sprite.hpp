@@ -46,6 +46,9 @@ public:
     Mesh& getMesh();
     const Mesh& getMesh() const;
 
+    core::fs_float32 getWidthUnits() const;
+    core::fs_float32 getHeightUnits() const;
+
 private:
     void createDescriptor();
     void destroyDescriptor();
@@ -58,6 +61,9 @@ private:
 
     core::Recti rect;
     const Texture* texture = nullptr;
+
+    core::fs_float32 widthUnits = 0.f;
+    core::fs_float32 heightUnits = 0.f;
 
     VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
     VkWriteDescriptorSet writeDescriptorSet = {};

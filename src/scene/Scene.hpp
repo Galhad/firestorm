@@ -40,7 +40,9 @@ public:
     virtual void destroy();
 
     void update(float deltaTime);
+    void physicsUpdate();
     void render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet);
+    void applyPhysicsStep();
 
     const std::vector<SceneNode*>& getNodes() const;
     std::vector<SceneNode*>& getNodes();

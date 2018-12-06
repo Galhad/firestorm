@@ -20,45 +20,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_SCENENODE_HPP
-#define FIRESTORM_SCENENODE_HPP
+#ifndef FIRESTORM_BODYCOMPONENT_HPP
+#define FIRESTORM_BODYCOMPONENT_HPP
 
+#include "Component.hpp"
 #include "TransformationComponent.hpp"
-#include "RendererComponent.hpp"
-#include "BodyComponent.hpp"
+
+#include "Box2D/Box2D.h"
 
 #include <memory>
+#include <functional>
 
 namespace fs::scene
 {
-class SceneNode
+class BodyComponent : public Component
 {
 public:
-    SceneNode() = default;
-    virtual ~SceneNode() = default;
+    using CollisionCallback = std::function<void(const BodyComponent& other)>;
 
-    void create();
-    virtual void destroy();
+public:
+    BodyComponent() = default;
+    ~BodyComponent() override = default;
 
-    virtual void update(float deltaTime);
-    virtual void physicsUpdate();
+    void create(TransformationComponent& transformation, b2Body& body);
+    void destroy() override;
 
-    const TransformationComponent& getTransformation() const;
-    TransformationComponent& getTransformation();
+    virtual void applyPhysicsStep();
 
-    const RendererComponent* getRenderer() const;
-    RendererComponent* getRenderer();
+    void beginCollision(const BodyComponent& other) const;
+    void endCollision(const BodyComponent& other) const;
 
-    const BodyComponent* getBody() const;
-    BodyComponent* getBody();
+    void setBeginCollisionCallback(const CollisionCallback& beginCollisionCallback);
+    void setEndCollisionCallback(const CollisionCallback& endCollisionCallback);
+
+    b2Body* getBody();
 
 protected:
-    TransformationComponentPtr transformation = nullptr;
-    RendererComponent* renderer = nullptr;
-    BodyComponent* body = nullptr;
+    TransformationComponent* transformation = nullptr;
+    b2Body* body = nullptr;
+
+    const CollisionCallback* beginCollisionCallback = nullptr;
+    const CollisionCallback* endCollisionCallback = nullptr;
+
 };
 
-typedef std::unique_ptr<SceneNode> SceneNodePtr;
+typedef std::unique_ptr<BodyComponent> BodyComponentPtr;
 }
 
-#endif //FIRESTORM_SCENENODE_HPP
+#endif //FIRESTORM_BODYCOMPONENT_HPP

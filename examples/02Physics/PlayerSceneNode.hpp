@@ -20,45 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_SCENENODE_HPP
-#define FIRESTORM_SCENENODE_HPP
+#ifndef FIRESTORM_PLAYERSCENENODE_HPP
+#define FIRESTORM_PLAYERSCENENODE_HPP
 
-#include "TransformationComponent.hpp"
-#include "RendererComponent.hpp"
-#include "BodyComponent.hpp"
+#include "scene/AnimatedSpriteSceneNode.hpp"
+#include "physics/PhysicsManager.hpp"
 
 #include <memory>
 
 namespace fs::scene
 {
-class SceneNode
+class PlayerSceneNode : public AnimatedSpriteSceneNode
 {
 public:
-    SceneNode() = default;
-    virtual ~SceneNode() = default;
+    PlayerSceneNode() = default;
+    ~PlayerSceneNode() override = default;
 
-    void create();
-    virtual void destroy();
+    void create(const Animation& animation, physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef);
+    void destroy() override;
 
-    virtual void update(float deltaTime);
-    virtual void physicsUpdate();
+    void physicsUpdate() override;
 
-    const TransformationComponent& getTransformation() const;
-    TransformationComponent& getTransformation();
-
-    const RendererComponent* getRenderer() const;
-    RendererComponent* getRenderer();
-
-    const BodyComponent* getBody() const;
-    BodyComponent* getBody();
+    void move(core::fs_float32 direction);
+    void jump();
 
 protected:
-    TransformationComponentPtr transformation = nullptr;
-    RendererComponent* renderer = nullptr;
-    BodyComponent* body = nullptr;
+    BodyComponentPtr bodyComponent = nullptr;
+    physics::PhysicsManager* physicsManager = nullptr;
+    b2Body* body = nullptr;
+
+    core::fs_float32 speed = 1.f;
+    core::fs_float32 moving = 0.f;
+
+    core::fs_float32 jumpForce = 1.f;
+    bool jumping = false;
+
 };
 
-typedef std::unique_ptr<SceneNode> SceneNodePtr;
+typedef std::unique_ptr<PlayerSceneNode> PlayerSceneNodePtr;
 }
 
-#endif //FIRESTORM_SCENENODE_HPP
+#endif //FIRESTORM_PLAYERSCENENODE_HPP

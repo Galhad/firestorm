@@ -60,10 +60,10 @@ void Sprite::createDescriptor()
 
 void Sprite::createMesh()
 {
-    auto width = static_cast<core::fs_float32>(rect.width) / texture->getPixelsPerUnit();
-    auto halfWidth = width / 2.f;
-    auto height = static_cast<core::fs_float32>(rect.height) / texture->getPixelsPerUnit();
-    auto halfHeight = height / 2.f;
+    widthUnits = static_cast<core::fs_float32>(rect.width) / texture->getPixelsPerUnit();
+    auto halfWidth = widthUnits / 2.f;
+    heightUnits = static_cast<core::fs_float32>(rect.height) / texture->getPixelsPerUnit();
+    auto halfHeight = heightUnits / 2.f;
 
     core::Rectf textureRect{};
     textureRect.x = static_cast<core::fs_float32>(rect.x) / texture->getWidthPixels();
@@ -137,5 +137,15 @@ Mesh& Sprite::getMesh()
 const Mesh& Sprite::getMesh() const
 {
     return mesh;
+}
+
+core::fs_float32 Sprite::getWidthUnits() const
+{
+    return widthUnits;
+}
+
+core::fs_float32 Sprite::getHeightUnits() const
+{
+    return heightUnits;
 }
 }

@@ -20,45 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_SCENENODE_HPP
-#define FIRESTORM_SCENENODE_HPP
+#ifndef FIRESTORM_GROUNDBRICK_HPP
+#define FIRESTORM_GROUNDBRICK_HPP
 
-#include "TransformationComponent.hpp"
-#include "RendererComponent.hpp"
-#include "BodyComponent.hpp"
+#include "scene/SpriteSceneNode.hpp"
+#include "physics/PhysicsManager.hpp"
 
 #include <memory>
 
 namespace fs::scene
 {
-class SceneNode
+class GroundBrick : public SpriteSceneNode
 {
 public:
-    SceneNode() = default;
-    virtual ~SceneNode() = default;
+    GroundBrick() = default;
+    virtual ~GroundBrick() = default;
 
-    void create();
-    virtual void destroy();
-
-    virtual void update(float deltaTime);
-    virtual void physicsUpdate();
-
-    const TransformationComponent& getTransformation() const;
-    TransformationComponent& getTransformation();
-
-    const RendererComponent* getRenderer() const;
-    RendererComponent* getRenderer();
-
-    const BodyComponent* getBody() const;
-    BodyComponent* getBody();
+    void create(const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager);
+    void destroy() override;
 
 protected:
-    TransformationComponentPtr transformation = nullptr;
-    RendererComponent* renderer = nullptr;
-    BodyComponent* body = nullptr;
+    BodyComponentPtr bodyComponent = nullptr;
+    physics::PhysicsManager* physicsManager = nullptr;
+    b2Body* body = nullptr;
+
 };
 
-typedef std::unique_ptr<SceneNode> SceneNodePtr;
+typedef std::unique_ptr<GroundBrick> GroundBrickPtr;
 }
 
-#endif //FIRESTORM_SCENENODE_HPP
+#endif //FIRESTORM_GROUNDBRICK_HPP

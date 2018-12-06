@@ -20,61 +20,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SceneNode.hpp"
-#include <glm/gtc/matrix_transform.hpp>
+#include "PlayerSceneNode.hpp"
 
 namespace fs::scene
 {
-
-void SceneNode::create()
+void PlayerSceneNode::create(const fs::scene::AnimatedSpriteSceneNode::Animation& animation,
+                             fs::physics::PhysicsManager& physicsManager,
+                             const b2BodyDef& bodyDef)
 {
-    transformation = std::make_unique<TransformationComponent>();
-    transformation->create();
+    AnimatedSpriteSceneNode::create(animation);
+
+    PlayerSceneNode::physicsManager = &physicsManager;
+
+    body = physicsManager.getWorld()->CreateBody(&bodyDef);
+
+    bodyComponent = std::make_unique<BodyComponent>();
+    bodyComponent->create(*transformation, *body);
+
+    SceneNode::body = bodyComponent.get();
 }
 
-void SceneNode::destroy()
+void PlayerSceneNode::destroy()
 {
-    transformation->destroy();
+    physicsManager->getWorld()->DestroyBody(body);
+    body = nullptr;
+
+    physicsManager = nullptr;
+
+    AnimatedSpriteSceneNode::destroy();
 }
 
-void SceneNode::update(float deltaTime)
+void PlayerSceneNode::move(core::fs_float32 direction)
 {
-
+    moving = direction;
 }
 
-const TransformationComponent& SceneNode::getTransformation() const
+void PlayerSceneNode::physicsUpdate()
 {
-    return *transformation;
+    auto velocity = body->GetLinearVelocity();
+    velocity.x = moving * speed;
+    body->SetLinearVelocity(velocity);
+
+    if (jumping)
+    {
+        body->ApplyLinearImpulse(b2Vec2(0.f, -jumpForce), body->GetWorldCenter(), true);
+        jumping  = false;
+    }
 }
 
-TransformationComponent& SceneNode::getTransformation()
+void PlayerSceneNode::jump()
 {
-    return *transformation;
+    jumping = true;
 }
-
-const RendererComponent* SceneNode::getRenderer() const
-{
-    return renderer;
-}
-
-RendererComponent* SceneNode::getRenderer()
-{
-    return renderer;
-}
-
-const BodyComponent* SceneNode::getBody() const
-{
-    return body;
-}
-
-BodyComponent* SceneNode::getBody()
-{
-    return body;
-}
-
-void SceneNode::physicsUpdate()
-{
-
-}
-
 }

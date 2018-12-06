@@ -70,10 +70,13 @@ void Engine::create(const EngineCreationParams& creationParams)
                                                                   }
                                                               }
                                                           });
+
+    physicsManager->create(creationParams.physicsCreationParams);
 }
 
 void Engine::destroy()
 {
+    physicsManager->destroy();
     fileProvider->destroy();
     inputManager->destroy();
     sceneManager->destroy();
@@ -110,21 +113,29 @@ void Engine::run()
         float deltaTime =
             static_cast<float>(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count())
             / 1'000'000'000.f;
-
         start = end;
-
         elapsedTime += deltaTime;
+
+        update(deltaTime);
+
+        const auto& activeScene = sceneManager->getActiveScene();
+
         auto steps = static_cast<core::fs_int32>(elapsedTime / physicsManager->getTimeStep());
         if (steps > 0)
         {
+            if(activeScene != nullptr)
+            {
+                activeScene->physicsUpdate();
+            }
+
             physicsManager->step(steps);
             elapsedTime -= physicsManager->getTimeStep() * steps;
         }
 
-        const auto& activeScene = sceneManager->getActiveScene();
         if (activeScene != nullptr)
         {
             activeScene->update(deltaTime);
+            activeScene->applyPhysicsStep();
 
             graphicsManager->draw();
 
@@ -135,7 +146,6 @@ void Engine::run()
             }
         }
 
-        update(deltaTime);
     }
     graphicsManager->getVulkanDriver().finish();
 }

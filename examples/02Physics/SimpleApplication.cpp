@@ -26,14 +26,19 @@ namespace fs
 {
 SimpleApplication::SimpleApplication()
 {
+    EngineCreationParams engineCreationParams{};
+    engineCreationParams.loggingLevel = spdlog::level::debug;
+
     graphics::WindowCreationParams windowCreationParams;
-    windowCreationParams.windowTitle = "01SimpleApplication";
+    windowCreationParams.windowTitle = "02Physics";
+    engineCreationParams.windowCreationParams = windowCreationParams;
 
     graphics::GraphicsCreationParams graphicsCreationParams;
-    graphicsCreationParams.applicationName = "01SimpleApplication";
+    graphicsCreationParams.applicationName = "02Physics";
     graphicsCreationParams.enableValidationLayers = true;
+    engineCreationParams.graphicsCreationParams = graphicsCreationParams;
 
-    create({windowCreationParams, graphicsCreationParams, spdlog::level::debug});
+    create(engineCreationParams);
 
     auto textureResource = fileProvider->loadFile("../resources/texture.png");
     auto spritesheetResource = fileProvider->loadFile("../resources/tiles_spritesheet.png");
@@ -54,7 +59,6 @@ SimpleApplication::SimpleApplication()
     grassRightSprite = tilesSpriteSheet->addSprite({504, 504, 70, 70});
 
     playerSpriteSheet = graphicsManager->createSpriteSheet(playerResource);
-    playerStandSprite = playerSpriteSheet->addSprite({0, 196, 66, 92});
 
     bgSceneNode.create(*bgSprite);
     bgSceneNode.getTransformation().setPosition({0.f, 0.f});
@@ -62,31 +66,25 @@ SimpleApplication::SimpleApplication()
     bgSceneNode.getTransformation().setScale(10.f, 10.f);
     scene->getNodes().push_back(&bgSceneNode);
 
-    grassLeftSceneNode.create(*grassLeftSprite);
+    grassLeftSceneNode.create(*grassLeftSprite, *physicsManager);
     scene->getNodes().push_back(&grassLeftSceneNode);
 
-    grassMidSceneNode.create(*grassMidSprite);
-    grassMidSceneNode.getTransformation().setPosition({0.7f, 0.f});
+    grassMidSceneNode.create(*grassMidSprite, *physicsManager);
+    grassMidSceneNode.getBody()->getBody()->SetTransform({0.7f, 0.f}, 0.f);
     scene->getNodes().push_back(&grassMidSceneNode);
 
-    grassRightSceneNode.create(*grassRightSprite);
-    grassRightSceneNode.getTransformation().setPosition({1.4f, 0.f});
+    grassRightSceneNode.create(*grassRightSprite, *physicsManager);
+    grassRightSceneNode.getBody()->getBody()->SetTransform({1.4f, 0.f}, 0.f);
     scene->getNodes().push_back(&grassRightSceneNode);
 
-    playerSceneNode.create(*playerStandSprite);
-    playerSceneNode.getTransformation().setPosition({0.7f, -0.7f - 0.22f});
+    playerSceneNode.create(*playerSpriteSheet, *physicsManager);
     scene->getNodes().push_back(&playerSceneNode);
-
-    animation.push_back(grassLeftSprite);
-    animation.push_back(grassMidSprite);
-    animation.push_back(grassRightSprite);
-    animatedSpriteSceneNode.create(animation);
-    animatedSpriteSceneNode.getTransformation().setPosition({-1.4f, -1.4f});
-    scene->getNodes().push_back(&animatedSpriteSceneNode);
 
     sceneManager->setActiveScene(scene);
 
     camera.create(graphicsManager->getWindow(), vulkanDriver.getUniformBuffer());
+    camera.getTransformation().setPosition(-9.2f, -5.2f);
+    camera.setZoom(41.5f);
     scene->getNodes().push_back(&camera);
     scene->setActiveCamera(&camera);
 }
@@ -123,6 +121,24 @@ void SimpleApplication::update(float deltaTime)
         camera.getTransformation().setPosition(cameraPosition);
     }
 
+    if (inputManager->getKeyState(io::Key::A) == io::KeyState::Pressed)
+    {
+        playerSceneNode.move(-1.f);
+    }
+    else if (inputManager->getKeyState(io::Key::D) == io::KeyState::Pressed)
+    {
+        playerSceneNode.move(1.f);
+    }
+    else
+    {
+        playerSceneNode.move(0.f);
+    }
+
+    if(inputManager->getKeyState(io::Key::W) == io::KeyState::Pressed)
+    {
+        playerSceneNode.jump();
+    }
+
     if (inputManager->getButtonState(io::Button::Left) == io::KeyState::Pressed)
     {
         camera.setZoom(camera.getZoom() + cameraOffset);
@@ -131,12 +147,6 @@ void SimpleApplication::update(float deltaTime)
     {
         camera.setZoom(camera.getZoom() - cameraOffset);
     }
-
-    constexpr float rotationSpeed = 36.0f;
-    auto rotation = bgSceneNode.getTransformation().getRotation();
-    rotation.z += rotationSpeed * deltaTime;
-    bgSceneNode.getTransformation().setRotation(rotation);
-
 }
 
 }

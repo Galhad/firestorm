@@ -26,14 +26,19 @@ namespace fs
 {
 SimpleApplication::SimpleApplication()
 {
+    EngineCreationParams engineCreationParams{};
+    engineCreationParams.loggingLevel = spdlog::level::debug;
+
     graphics::WindowCreationParams windowCreationParams;
     windowCreationParams.windowTitle = "01SimpleApplication";
+    engineCreationParams.windowCreationParams = windowCreationParams;
 
     graphics::GraphicsCreationParams graphicsCreationParams;
     graphicsCreationParams.applicationName = "01SimpleApplication";
     graphicsCreationParams.enableValidationLayers = true;
+    engineCreationParams.graphicsCreationParams = graphicsCreationParams;
 
-    create({windowCreationParams, graphicsCreationParams, spdlog::level::debug});
+    create(engineCreationParams);
 
     auto textureResource = fileProvider->loadFile("../resources/texture.png");
     auto spritesheetResource = fileProvider->loadFile("../resources/tiles_spritesheet.png");

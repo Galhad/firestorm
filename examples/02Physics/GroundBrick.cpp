@@ -20,45 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_SCENENODE_HPP
-#define FIRESTORM_SCENENODE_HPP
-
-#include "TransformationComponent.hpp"
-#include "RendererComponent.hpp"
-#include "BodyComponent.hpp"
-
-#include <memory>
+#include "GroundBrick.hpp"
 
 namespace fs::scene
 {
-class SceneNode
+void GroundBrick::create(const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager)
 {
-public:
-    SceneNode() = default;
-    virtual ~SceneNode() = default;
+    SpriteSceneNode::create(sprite);
 
-    void create();
-    virtual void destroy();
+    GroundBrick::physicsManager = &physicsManager;
 
-    virtual void update(float deltaTime);
-    virtual void physicsUpdate();
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_staticBody;
 
-    const TransformationComponent& getTransformation() const;
-    TransformationComponent& getTransformation();
+    body = physicsManager.getWorld()->CreateBody(&bodyDef);
 
-    const RendererComponent* getRenderer() const;
-    RendererComponent* getRenderer();
+    core::fs_float32 halfWidth = sprite.getWidthUnits() / 2.f;
+    core::fs_float32 halfHeight = sprite.getHeightUnits() / 2.f;
 
-    const BodyComponent* getBody() const;
-    BodyComponent* getBody();
+    b2EdgeShape shape;
+    shape.Set(b2Vec2(-halfWidth / 2.f, -halfHeight), b2Vec2(halfWidth, -halfHeight));
 
-protected:
-    TransformationComponentPtr transformation = nullptr;
-    RendererComponent* renderer = nullptr;
-    BodyComponent* body = nullptr;
-};
+    body->CreateFixture(&shape, 1.0f);
 
-typedef std::unique_ptr<SceneNode> SceneNodePtr;
+    bodyComponent = std::make_unique<BodyComponent>();
+    bodyComponent->create(*transformation, *body);
+
+    SceneNode::body = bodyComponent.get();
 }
 
-#endif //FIRESTORM_SCENENODE_HPP
+void GroundBrick::destroy()
+{
+    physicsManager->getWorld()->DestroyBody(body);
+    body = nullptr;
+
+    physicsManager = nullptr;
+
+    SpriteSceneNode::destroy();
+}
+}

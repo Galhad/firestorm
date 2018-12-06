@@ -28,6 +28,9 @@
 #include <scene/SpriteSceneNode.hpp>
 #include <scene/AnimatedSpriteSceneNode.hpp>
 #include <scene/CameraSceneNode.hpp>
+#include "Alien.hpp"
+#include "GroundBrick.hpp"
+
 #include <iostream>
 #include <memory>
 
@@ -53,17 +56,12 @@ private:
     graphics::Sprite* grassLeftSprite;
     graphics::Sprite* grassMidSprite;
     graphics::Sprite* grassRightSprite;
-    scene::SpriteSceneNode grassLeftSceneNode;
-    scene::SpriteSceneNode grassMidSceneNode;
-    scene::SpriteSceneNode grassRightSceneNode;
+    scene::GroundBrick grassLeftSceneNode;
+    scene::GroundBrick grassMidSceneNode;
+    scene::GroundBrick grassRightSceneNode;
 
-    graphics::SpriteSheet* playerSpriteSheet;
-    graphics::Sprite* playerStandSprite;
-    scene::SpriteSceneNode playerSceneNode;
-
-    scene::AnimatedSpriteSceneNode animatedSpriteSceneNode;
-    scene::AnimatedSpriteSceneNode::Animation animation;
-
+    graphics::SpriteSheet* playerSpriteSheet = nullptr;
+    Alien playerSceneNode;
 };
 
 typedef std::unique_ptr<SimpleApplication> SimpleApplicationPtr;

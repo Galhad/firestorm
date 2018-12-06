@@ -20,45 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_SCENENODE_HPP
-#define FIRESTORM_SCENENODE_HPP
+#include "Alien.hpp"
 
-#include "TransformationComponent.hpp"
-#include "RendererComponent.hpp"
-#include "BodyComponent.hpp"
-
-#include <memory>
-
-namespace fs::scene
+namespace fs
 {
-class SceneNode
+
+void Alien::create(graphics::SpriteSheet& playerSpriteSheet, physics::PhysicsManager& physicsManager)
 {
-public:
-    SceneNode() = default;
-    virtual ~SceneNode() = default;
+    Alien::playerSpriteSheet = &playerSpriteSheet;
 
-    void create();
-    virtual void destroy();
+    standingSprite = playerSpriteSheet.addSprite({67, 196, 66, 92});
+    standingAnimation.push_back(standingSprite);
 
-    virtual void update(float deltaTime);
-    virtual void physicsUpdate();
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position = {0.7f, -1.7f - 0.22f};
 
-    const TransformationComponent& getTransformation() const;
-    TransformationComponent& getTransformation();
+    PlayerSceneNode::create(standingAnimation, physicsManager, bodyDef);
 
-    const RendererComponent* getRenderer() const;
-    RendererComponent* getRenderer();
+    b2PolygonShape shape;
+    shape.SetAsBox(standingSprite->getWidthUnits() / 2.f, standingSprite->getHeightUnits() / 2.f);
 
-    const BodyComponent* getBody() const;
-    BodyComponent* getBody();
-
-protected:
-    TransformationComponentPtr transformation = nullptr;
-    RendererComponent* renderer = nullptr;
-    BodyComponent* body = nullptr;
-};
-
-typedef std::unique_ptr<SceneNode> SceneNodePtr;
+    body->CreateFixture(&shape, 0.0f);
 }
 
-#endif //FIRESTORM_SCENENODE_HPP
+void Alien::destroy()
+{
+    playerSpriteSheet = nullptr;
+
+    PlayerSceneNode::destroy();
+}
+}

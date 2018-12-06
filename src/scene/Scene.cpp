@@ -48,6 +48,26 @@ void Scene::update(float deltaTime)
     }
 }
 
+void Scene::physicsUpdate()
+{
+    for (auto& node : nodes)
+    {
+        node->physicsUpdate();
+    }
+}
+
+void Scene::applyPhysicsStep()
+{
+    for (auto& node : nodes)
+    {
+        auto* body = node->getBody();
+        if (body != nullptr)
+        {
+            body->applyPhysicsStep();
+        }
+    }
+}
+
 void Scene::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet)
 {
     for (auto& node : nodes)
