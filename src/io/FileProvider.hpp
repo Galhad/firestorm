@@ -25,6 +25,7 @@
 
 #include "Resource.hpp"
 
+#include <future>
 #include <memory>
 
 namespace fs::io
@@ -39,6 +40,7 @@ public:
     virtual void destroy();
 
     Resource loadFile(const std::string& filename) const;
+    std::future<Resource> loadFileAsync(const std::string& filename) const;
 
 };
 

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SimpleApplication.hpp"
+#include "PhysicsApplication.hpp"
 #include <iostream>
 
 using namespace fs;
@@ -29,7 +29,7 @@ int main(int arg, char** argv)
 {
     try
     {
-        fs::SimpleApplicationPtr simpleApplication(new fs::SimpleApplication());
+        fs::SimpleApplicationPtr simpleApplication(new fs::PhysicsApplication());
         simpleApplication->run();
     }
     catch (std::exception& e)

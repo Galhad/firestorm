@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SimpleApplication.hpp"
+#include "PhysicsApplication.hpp"
 
 namespace fs
 {
-SimpleApplication::SimpleApplication()
+PhysicsApplication::PhysicsApplication()
 {
     EngineCreationParams engineCreationParams{};
     engineCreationParams.loggingLevel = spdlog::level::debug;
@@ -40,10 +40,7 @@ SimpleApplication::SimpleApplication()
 
     create(engineCreationParams);
 
-    auto textureResource = fileProvider->loadFile("../resources/texture.png");
-    auto spritesheetResource = fileProvider->loadFile("../resources/tiles_spritesheet.png");
-    auto bgResource = fileProvider->loadFile("../resources/bg.png");
-    auto playerResource = fileProvider->loadFile("../resources/p1_spritesheet.png");
+    loadResources();
 
     auto& vulkanDriver = graphicsManager->getVulkanDriver();
 
@@ -91,11 +88,28 @@ SimpleApplication::SimpleApplication()
     scene->setActiveCamera(&camera);
 }
 
-SimpleApplication::~SimpleApplication()
+PhysicsApplication::~PhysicsApplication()
 {
 
 }
 
-void SimpleApplication::update(float deltaTime)
+void PhysicsApplication::update(float deltaTime)
 {
+}
+
+void PhysicsApplication::loadResources()
+{
+    auto spritesheetResourceFuture = fileProvider->loadFileAsync("../resources/tiles_spritesheet.png");
+    auto bgResourceFuture = fileProvider->loadFileAsync("../resources/bg.png");
+    auto playerResourceFuture = fileProvider->loadFileAsync("../resources/p1_spritesheet.png");
+
+    spritesheetResourceFuture.wait();
+    bgResourceFuture.wait();
+    playerResourceFuture.wait();
+
+    spritesheetResource = spritesheetResourceFuture.get();
+    bgResource = bgResourceFuture.get();
+    playerResource = playerResourceFuture.get();
+}
+
 }

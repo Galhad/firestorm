@@ -34,7 +34,7 @@ int main(int arg, char** argv)
     }
     catch (std::exception& e)
     {
-        std::cerr << "Unknwon error: " << e.what() << std::endl;
+        std::cerr << "Unknown error: " << e.what() << std::endl;
     }
 
     return 0;

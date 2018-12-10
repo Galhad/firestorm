@@ -56,4 +56,12 @@ Resource FileProvider::loadFile(const std::string& filename) const
     resource.create(filename, std::move(data));
     return resource;
 }
+
+std::future<Resource> FileProvider::loadFileAsync(const std::string& filename) const
+{
+    return std::async(std::launch::async, [this, filename]
+    {
+        return loadFile(filename);
+    });
+}
 }

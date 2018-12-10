@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_SIMPLEAPPLICATION_HPP
-#define FIRESTORM_SIMPLEAPPLICATION_HPP
+#ifndef FIRESTORM_PHYSICSAPPLICATION_HPP
+#define FIRESTORM_PHYSICSAPPLICATION_HPP
 
 #include <Engine.hpp>
 
@@ -37,15 +37,22 @@
 
 namespace fs
 {
-class SimpleApplication : public fs::Engine
+class PhysicsApplication : public fs::Engine
 {
 public:
-    SimpleApplication();
-    ~SimpleApplication() override;
+    PhysicsApplication();
+    ~PhysicsApplication() override;
 
     void update(float deltaTime) override;
 
 private:
+    void loadResources();
+
+private:
+    io::Resource spritesheetResource;
+    io::Resource bgResource;
+    io::Resource playerResource;
+
     scene::CameraSceneNode camera;
     scene::Scene* scene;
 
@@ -66,7 +73,7 @@ private:
     scene::LevelEnd levelEnd;
 };
 
-typedef std::unique_ptr<SimpleApplication> SimpleApplicationPtr;
+typedef std::unique_ptr<PhysicsApplication> SimpleApplicationPtr;
 }
 
-#endif //FIRESTORM_SIMPLEAPPLICATION_HPP
+#endif //FIRESTORM_PHYSICSAPPLICATION_HPP

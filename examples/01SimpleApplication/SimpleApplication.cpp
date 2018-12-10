@@ -40,7 +40,6 @@ SimpleApplication::SimpleApplication()
 
     create(engineCreationParams);
 
-    auto textureResource = fileProvider->loadFile("../resources/texture.png");
     auto spritesheetResource = fileProvider->loadFile("../resources/tiles_spritesheet.png");
     auto bgResource = fileProvider->loadFile("../resources/bg.png");
     auto playerResource = fileProvider->loadFile("../resources/p1_spritesheet.png");
