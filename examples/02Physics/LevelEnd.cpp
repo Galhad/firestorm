@@ -20,52 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_CAMERASCENENODE_HPP
-#define FIRESTORM_CAMERASCENENODE_HPP
-
-#include "SceneNode.hpp"
-#include "graphics/vulkan/MappedMemoryBuffer.hpp"
-#include "graphics/UniformData.hpp"
-
-#include <memory>
+#include "LevelEnd.hpp"
+#include "Labels.hpp"
 
 namespace fs::scene
 {
-class CameraSceneNode : public SceneNode
+void LevelEnd::create(io::InputManager& inputManager, fs::physics::PhysicsManager& physicsManager, const core::Vector2f& point1,
+                      const core::Vector2f& point2)
 {
-public:
-    CameraSceneNode() = default;
-    ~CameraSceneNode() override = default;
+    SceneNode::create(inputManager);
 
-    void create(io::InputManager& inputManager, const graphics::Window& window,
-                const graphics::MappedMemoryBuffer& uniformBuffer);
-    void destroy() override;
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_staticBody;
 
-    void update(float deltaTime) override;
+    b2EdgeShape shape;
+    shape.Set(b2Vec2(point1.x, point1.y), b2Vec2(point2.x, point2.y));
 
-    bool isActive() const;
-    void setActive(bool active);
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &shape;
 
-    core::fs_float32 getZoom() const;
-    void setZoom(core::fs_float32 zoom);
+    createBodyComponent(physicsManager, bodyDef, fixtureDef);
 
-    const graphics::Window* getWindow() const;
-    void setWindow(const graphics::Window* window);
-
-    void updateUniformData();
-
-protected:
-    bool active = false;
-    const graphics::Window* window = nullptr;
-    core::fs_float32 zoom = 10.f;
-
-    const graphics::MappedMemoryBuffer* uniformBuffer = nullptr;
-
-    graphics::UniformData uniformData = {};
-
-};
-
-typedef std::unique_ptr<CameraSceneNode> CameraSceneNodePtr;
+    labels.insert(LABEL_LEVEL_END);
 }
 
-#endif //FIRESTORM_CAMERASCENENODE_HPP
+void LevelEnd::destroy()
+{
+    SceneNode::destroy();
+}
+}

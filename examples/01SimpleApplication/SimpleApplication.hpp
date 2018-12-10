@@ -25,6 +25,8 @@
 
 #include <Engine.hpp>
 
+#include "ControlledCamera.hpp"
+
 #include <scene/SpriteSceneNode.hpp>
 #include <scene/AnimatedSpriteSceneNode.hpp>
 #include <scene/CameraSceneNode.hpp>
@@ -42,7 +44,7 @@ public:
     void update(float deltaTime) override;
 
 private:
-    scene::CameraSceneNode camera;
+    ControlledCamera camera;
     scene::Scene* scene;
 
     graphics::SpriteSheet* bgSpriteSheet;

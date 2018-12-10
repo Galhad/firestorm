@@ -20,56 +20,138 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include "PlayerSceneNode.hpp"
+#include "Labels.hpp"
 
 namespace fs::scene
 {
-void PlayerSceneNode::create(const fs::scene::AnimatedSpriteSceneNode::Animation& animation,
-                             fs::physics::PhysicsManager& physicsManager,
-                             const b2BodyDef& bodyDef)
+void PlayerSceneNode::create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
+                             const b2FixtureDef& fixtureDef, const Animation& standingAnimation,
+                             const Animation& walkingAnimation,
+                             const Animation& jumpingAnimation)
 {
-    AnimatedSpriteSceneNode::create(animation);
+    AnimatedSpriteSceneNode::create(inputManager, standingAnimation);
 
-    PlayerSceneNode::physicsManager = &physicsManager;
+    PlayerSceneNode::standingAnimation = standingAnimation;
+    PlayerSceneNode::walkingAnimation = walkingAnimation;
+    PlayerSceneNode::jumpingAnimation = jumpingAnimation;
 
-    body = physicsManager.getWorld()->CreateBody(&bodyDef);
+    createBodyComponent(physicsManager, bodyDef, fixtureDef);
 
-    bodyComponent = std::make_unique<BodyComponent>();
-    bodyComponent->create(*this, *transformation, *body);
-
-    SceneNode::body = bodyComponent.get();
+    labels.insert(LABEL_PLAYER);
 }
 
 void PlayerSceneNode::destroy()
 {
-    physicsManager->getWorld()->DestroyBody(body);
-    body = nullptr;
-
-    physicsManager = nullptr;
-
     AnimatedSpriteSceneNode::destroy();
 }
 
-void PlayerSceneNode::move(core::fs_float32 direction)
+void PlayerSceneNode::update(float deltaTimeMs)
 {
-    moving = direction;
+    lastMoving = moving;
+    if (inputManager->getKeyState(io::Key::A) == io::KeyState::Pressed)
+    {
+        moving = -1.f;
+    }
+    else if (inputManager->getKeyState(io::Key::D) == io::KeyState::Pressed)
+    {
+        moving = 1.f;
+    }
+    else
+    {
+        moving = 0.f;
+    }
+
+    if (inputManager->getKeyState(io::Key::W) == io::KeyState::Pressed)
+    {
+        jumping = true;
+    }
+
+    if (moving != lastMoving && groundCollisions > 0)
+    {
+        if (moving < 0.f || moving > 0.f)
+        {
+            setAnimation(walkingAnimation);
+        }
+        else
+        {
+            setAnimation(standingAnimation);
+        }
+    }
+
+    if(!lastInAir && inAir)
+    {
+        setAnimation(jumpingAnimation);
+    }
+    else if(lastInAir && !inAir)
+    {
+        setAnimation(standingAnimation);
+    }
+    lastInAir = inAir;
+
+    AnimatedSpriteSceneNode::update(deltaTimeMs);
 }
 
 void PlayerSceneNode::physicsUpdate()
 {
-    auto velocity = body->GetLinearVelocity();
+    auto velocity = body->getBody()->GetLinearVelocity();
     velocity.x = moving * speed;
-    body->SetLinearVelocity(velocity);
+    body->getBody()->SetLinearVelocity(velocity);
 
-    if (jumping)
+    if (jumping && groundCollisions > 0)
     {
-        body->ApplyLinearImpulse(b2Vec2(0.f, -jumpForce), body->GetWorldCenter(), true);
+        body->getBody()->ApplyLinearImpulse(b2Vec2(0.f, -jumpForce), body->getBody()->GetWorldCenter(), true);
         jumping = false;
+    }
+
+    if (resettingPosition)
+    {
+        resetPosition();
+        resettingPosition = false;
     }
 }
 
-void PlayerSceneNode::jump()
+void PlayerSceneNode::beginCollision(const BodyComponent& other)
 {
-    jumping = true;
+    const auto& labels = other.getSceneNode()->getLabels();
+
+    if (labels.find(LABEL_LEVEL_END) != labels.end())
+    {
+        resettingPosition = true;
+    }
+    else if (labels.find(LABEL_GROUND) != labels.end())
+    {
+        ++groundCollisions;
+
+        if(groundCollisions > 0)
+        {
+            inAir = false;
+        }
+    }
 }
+
+void PlayerSceneNode::endCollision(const BodyComponent& other)
+{
+    const auto& labels = other.getSceneNode()->getLabels();
+
+    if (labels.find(LABEL_GROUND) != labels.end())
+    {
+        --groundCollisions;
+
+        if(groundCollisions == 0)
+        {
+            inAir = true;
+        }
+    }
+}
+
+void PlayerSceneNode::resetPosition()
+{
+    body->getBody()->SetLinearVelocity(b2Vec2(0.f, 0.f));
+    jumping = false;
+
+    body->getBody()->SetTransform(b2Vec2(startingPosition.x, startingPosition.y), 0.f);
+}
+
 }

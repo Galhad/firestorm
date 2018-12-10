@@ -24,13 +24,14 @@
 
 namespace fs::scene
 {
-void AnimatedSpriteSceneNode::create(const AnimatedSpriteSceneNode::Animation& animation,
-                                     core::fs_float32 speedFps)
+void
+AnimatedSpriteSceneNode::create(io::InputManager& inputManager, const AnimatedSpriteSceneNode::Animation& animation,
+                                core::fs_float32 speedFps)
 {
-    SpriteSceneNode::create(*animation.front());
+    SpriteSceneNode::create(inputManager, *animation.front());
     AnimatedSpriteSceneNode::animation = &animation;
     currentFrame = 0;
-    AnimatedSpriteSceneNode::speedFps = speedFps;
+    setSpeedFps(speedFps);
     elapsedTime = 0.f;
 }
 
@@ -44,7 +45,7 @@ void AnimatedSpriteSceneNode::destroy()
 void AnimatedSpriteSceneNode::update(float deltaTime)
 {
     elapsedTime += deltaTime;
-    if (1.f / elapsedTime >= speedFps)
+    if (elapsedTime >= frameTime)
     {
         transformation->setGeometryUpdated(true);
         ++currentFrame;
@@ -54,7 +55,7 @@ void AnimatedSpriteSceneNode::update(float deltaTime)
         }
 
         spriteRenderer->setSprite(*animation->at(currentFrame));
-        elapsedTime -= speedFps;
+        elapsedTime -= frameTime;
     }
 
     SpriteSceneNode::update(deltaTime);
@@ -68,6 +69,8 @@ const AnimatedSpriteSceneNode::Animation& AnimatedSpriteSceneNode::getAnimation(
 void AnimatedSpriteSceneNode::setAnimation(const AnimatedSpriteSceneNode::Animation& animation)
 {
     AnimatedSpriteSceneNode::animation = &animation;
+    currentFrame = 0;
+    elapsedTime = 0.f;
 }
 
 core::fs_uint32 AnimatedSpriteSceneNode::getCurrentFrame() const
@@ -88,6 +91,7 @@ core::fs_float32 AnimatedSpriteSceneNode::getSpeedFps() const
 void AnimatedSpriteSceneNode::setSpeedFps(core::fs_float32 speedFps)
 {
     AnimatedSpriteSceneNode::speedFps = speedFps;
+    frameTime = 1 / speedFps;
 }
 
 }

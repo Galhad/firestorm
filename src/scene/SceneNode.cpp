@@ -26,14 +26,19 @@
 namespace fs::scene
 {
 
-void SceneNode::create()
+void SceneNode::create(io::InputManager& inputManager)
 {
     transformation = std::make_unique<TransformationComponent>();
     transformation->create(*this);
+    body = nullptr;
+
+    SceneNode::inputManager = &inputManager;
 }
 
 void SceneNode::destroy()
 {
+    inputManager = nullptr;
+    body = nullptr;
     transformation->destroy();
 }
 
@@ -64,15 +69,47 @@ RendererComponent* SceneNode::getRenderer()
 
 const BodyComponent* SceneNode::getBody() const
 {
-    return body;
+    return body.get();
 }
 
 BodyComponent* SceneNode::getBody()
 {
-    return body;
+    return body.get();
 }
 
 void SceneNode::physicsUpdate()
+{
+
+}
+
+const std::set<std::string>& SceneNode::getLabels() const
+{
+    return labels;
+}
+
+std::set<std::string>& SceneNode::getLabels()
+{
+    return labels;
+}
+
+void SceneNode::setLabels(const std::set<std::string>& labels)
+{
+    SceneNode::labels = labels;
+}
+
+void SceneNode::createBodyComponent(physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
+                                    const b2FixtureDef& fixtureDef)
+{
+    body = std::make_unique<BodyComponent>();
+    body->create(*this, physicsManager, bodyDef, fixtureDef);
+}
+
+void SceneNode::beginCollision(const BodyComponent& other)
+{
+
+}
+
+void SceneNode::endCollision(const BodyComponent& other)
 {
 
 }

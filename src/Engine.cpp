@@ -128,6 +128,7 @@ void Engine::run()
                 activeScene->physicsUpdate();
             }
 
+//            logger->debug("Stepping physics {} times (1 steps = {}ms)", steps, physicsManager->getTimeStep());
             physicsManager->step(steps);
             elapsedTime -= physicsManager->getTimeStep() * steps;
         }

@@ -60,29 +60,31 @@ SimpleApplication::SimpleApplication()
 
     playerSpriteSheet = graphicsManager->createSpriteSheet(playerResource);
 
-    bgSceneNode.create(*bgSprite);
+    bgSceneNode.create(*inputManager, *bgSprite);
     bgSceneNode.getTransformation().setPosition({0.f, 0.f});
     bgSceneNode.getTransformation().setLayer(-0.1f);
     bgSceneNode.getTransformation().setScale(10.f, 10.f);
     scene->getNodes().push_back(&bgSceneNode);
 
-    grassLeftSceneNode.create(*grassLeftSprite, *physicsManager);
+    grassLeftSceneNode.create(*inputManager, *grassLeftSprite, *physicsManager);
     scene->getNodes().push_back(&grassLeftSceneNode);
 
-    grassMidSceneNode.create(*grassMidSprite, *physicsManager);
+    grassMidSceneNode.create(*inputManager, *grassMidSprite, *physicsManager);
     grassMidSceneNode.getBody()->getBody()->SetTransform({0.7f, 0.f}, 0.f);
     scene->getNodes().push_back(&grassMidSceneNode);
 
-    grassRightSceneNode.create(*grassRightSprite, *physicsManager);
+    grassRightSceneNode.create(*inputManager, *grassRightSprite, *physicsManager);
     grassRightSceneNode.getBody()->getBody()->SetTransform({1.4f, 0.f}, 0.f);
     scene->getNodes().push_back(&grassRightSceneNode);
 
-    playerSceneNode.create(*playerSpriteSheet, *physicsManager);
+    playerSceneNode.create(*inputManager, *playerSpriteSheet, *physicsManager);
     scene->getNodes().push_back(&playerSceneNode);
+
+    levelEnd.create(*inputManager, *physicsManager, core::Vector2f(-10.f, 1.f), core::Vector2f(10.f, 1.f));
 
     sceneManager->setActiveScene(scene);
 
-    camera.create(graphicsManager->getWindow(), vulkanDriver.getUniformBuffer());
+    camera.create(*inputManager, graphicsManager->getWindow(), vulkanDriver.getUniformBuffer());
     camera.getTransformation().setPosition(-9.2f, -5.2f);
     camera.setZoom(41.5f);
     scene->getNodes().push_back(&camera);
@@ -96,57 +98,4 @@ SimpleApplication::~SimpleApplication()
 
 void SimpleApplication::update(float deltaTime)
 {
-    constexpr float cameraSpeed = 10.f;
-    float cameraOffset = cameraSpeed * deltaTime;
-
-    core::Vector2f cameraPosition = camera.getTransformation().getPosition();
-    if (inputManager->getKeyState(io::Key::Up) == io::KeyState::Pressed)
-    {
-        cameraPosition.y += cameraOffset;
-    }
-    else if (inputManager->getKeyState(io::Key::Down) == io::KeyState::Pressed)
-    {
-        cameraPosition.y -= cameraOffset;
-    }
-    if (inputManager->getKeyState(io::Key::Right) == io::KeyState::Pressed)
-    {
-        cameraPosition.x += cameraOffset;
-    }
-    else if (inputManager->getKeyState(io::Key::Left) == io::KeyState::Pressed)
-    {
-        cameraPosition.x -= cameraOffset;
-    }
-    if (camera.getTransformation().getPosition() != cameraPosition)
-    {
-        camera.getTransformation().setPosition(cameraPosition);
-    }
-
-    if (inputManager->getKeyState(io::Key::A) == io::KeyState::Pressed)
-    {
-        playerSceneNode.move(-1.f);
-    }
-    else if (inputManager->getKeyState(io::Key::D) == io::KeyState::Pressed)
-    {
-        playerSceneNode.move(1.f);
-    }
-    else
-    {
-        playerSceneNode.move(0.f);
-    }
-
-    if (inputManager->getKeyState(io::Key::W) == io::KeyState::Pressed)
-    {
-        playerSceneNode.jump();
-    }
-
-    if (inputManager->getButtonState(io::Button::Left) == io::KeyState::Pressed)
-    {
-        camera.setZoom(camera.getZoom() + cameraOffset);
-    }
-    else if (inputManager->getButtonState(io::Button::Right) == io::KeyState::Pressed)
-    {
-        camera.setZoom(camera.getZoom() - cameraOffset);
-    }
-}
-
 }

@@ -36,14 +36,15 @@ public:
     Alien() = default;
     ~Alien() override = default;
 
-    void create(graphics::SpriteSheet& playerSpriteSheet, physics::PhysicsManager& physicsManager);
+    void create(io::InputManager& inputManager, graphics::SpriteSheet& playerSpriteSheet, physics::PhysicsManager& physicsManager);
     void destroy() override;
+
+private:
+    void createWalkingAnimation();
 
 protected:
     graphics::SpriteSheet* playerSpriteSheet = nullptr;
     graphics::Sprite* standingSprite = nullptr;
-
-    scene::AnimatedSpriteSceneNode::Animation standingAnimation;
 
 };
 

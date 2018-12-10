@@ -25,6 +25,8 @@
 
 #include "Component.hpp"
 #include "TransformationComponent.hpp"
+#include "physics/PhysicsManager.hpp"
+#include "SceneNode.hpp"
 
 #include "Box2D/Box2D.h"
 
@@ -42,7 +44,8 @@ public:
     BodyComponent() = default;
     ~BodyComponent() override = default;
 
-    void create(SceneNode& sceneNode, TransformationComponent& transformation, b2Body& body);
+    void create(SceneNode& sceneNode, physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
+                const b2FixtureDef& fixtureDef);
     void destroy() override;
 
     virtual void applyPhysicsStep();
@@ -57,6 +60,8 @@ public:
 
 protected:
     TransformationComponent* transformation = nullptr;
+
+    physics::PhysicsManager* physicsManager = nullptr;
     b2Body* body = nullptr;
 
     const CollisionCallback* beginCollisionCallback = nullptr;

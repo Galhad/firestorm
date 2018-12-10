@@ -24,38 +24,13 @@
 
 namespace fs::graphics
 {
-void Sprite::create(core::Recti rect, const Texture& texture, const GraphicsPipeline& graphicsPipeline)
+void Sprite::create(core::Recti rect, const Texture& texture, const VkDescriptorSet& descriptorSet)
 {
-    this->rect = rect;
-    this->texture = &texture;
-    this->pipeline = &graphicsPipeline;
-
-    createDescriptor();
+    Sprite::rect = rect;
+    Sprite::texture = &texture;
+    Sprite::descriptorSet = descriptorSet;
 
     createMesh();
-}
-
-void Sprite::createDescriptor()
-{
-    VkDescriptorSetAllocateInfo allocInfo = {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = pipeline->getDescriptorPool();
-    allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &pipeline->getMaterialDescriptorSetLayout();
-
-    vkAllocateDescriptorSets(pipeline->getSwapChain()->getDevice()->getDevice(), &allocInfo, &descriptorSet);
-
-    writeDescriptorSet = {};
-    writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    writeDescriptorSet.dstSet = descriptorSet;
-    writeDescriptorSet.dstBinding = 0;
-    writeDescriptorSet.dstArrayElement = 0;
-    writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    writeDescriptorSet.descriptorCount = 1;
-    writeDescriptorSet.pImageInfo = &texture->getTextureImage().getDescriptorImageInfo();
-
-    vkUpdateDescriptorSets(pipeline->getSwapChain()->getDevice()->getDevice(), 1, &writeDescriptorSet, 0,
-                           nullptr);
 }
 
 void Sprite::createMesh()
@@ -102,21 +77,13 @@ void Sprite::destroy()
 {
     destroyMesh();
 
-    destroyDescriptor();
-
     texture = nullptr;
-    pipeline = nullptr;
+    descriptorSet = VK_NULL_HANDLE;
 }
 
 void Sprite::destroyMesh()
 {
     mesh.destroy();
-}
-
-void Sprite::destroyDescriptor()
-{
-    descriptorSet = VK_NULL_HANDLE;
-    writeDescriptorSet = {};
 }
 
 const VkDescriptorSet Sprite::getDescriptorSet() const

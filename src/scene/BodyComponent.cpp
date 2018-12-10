@@ -25,14 +25,17 @@
 
 namespace fs::scene
 {
-
-void BodyComponent::create(SceneNode& sceneNode, TransformationComponent& transformation, b2Body& body)
+void BodyComponent::create(SceneNode& sceneNode, physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
+                           const b2FixtureDef& fixtureDef)
 {
     Component::create(sceneNode);
 
-    BodyComponent::transformation = &transformation;
-    BodyComponent::body = &body;
-    body.SetUserData(this);
+    BodyComponent::transformation = &sceneNode.getTransformation();
+    BodyComponent::physicsManager = &physicsManager;
+
+    body = physicsManager.getWorld()->CreateBody(&bodyDef);
+    body->CreateFixture(&fixtureDef);
+    body->SetUserData(this);
 
     beginCollisionCallback = nullptr;
     endCollisionCallback = nullptr;
@@ -43,8 +46,10 @@ void BodyComponent::destroy()
     beginCollisionCallback = nullptr;
     endCollisionCallback = nullptr;
 
+    physicsManager->getWorld()->DestroyBody(body);
     body = nullptr;
     transformation = nullptr;
+    physicsManager = nullptr;
     Component::destroy();
 }
 
@@ -54,6 +59,7 @@ void BodyComponent::beginCollision(const BodyComponent& other) const
     {
         (*beginCollisionCallback)(other);
     }
+    sceneNode->beginCollision(other);
 }
 
 void BodyComponent::endCollision(const BodyComponent& other) const
@@ -62,6 +68,7 @@ void BodyComponent::endCollision(const BodyComponent& other) const
     {
         (*endCollisionCallback)(other);
     }
+    sceneNode->endCollision(other);
 }
 
 void BodyComponent::setBeginCollisionCallback(const CollisionCallback& beginCollisionCallback)

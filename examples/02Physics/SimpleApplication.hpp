@@ -30,6 +30,7 @@
 #include <scene/CameraSceneNode.hpp>
 #include "Alien.hpp"
 #include "GroundBrick.hpp"
+#include "LevelEnd.hpp"
 
 #include <iostream>
 #include <memory>
@@ -62,6 +63,7 @@ private:
 
     graphics::SpriteSheet* playerSpriteSheet = nullptr;
     Alien playerSceneNode;
+    scene::LevelEnd levelEnd;
 };
 
 typedef std::unique_ptr<SimpleApplication> SimpleApplicationPtr;

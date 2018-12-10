@@ -39,7 +39,7 @@ public:
     AnimatedSpriteSceneNode() = default;
     virtual ~AnimatedSpriteSceneNode() = default;
 
-    void create(const Animation& animation, core::fs_float32 speedFps = 1.f);
+    void create(io::InputManager& inputManager, const Animation& animation, core::fs_float32 speedFps = 1.f);
     void destroy() override;
 
     void update(float deltaTime) override;
@@ -57,6 +57,7 @@ protected:
     const Animation* animation = nullptr;
     core::fs_uint32 currentFrame;
     core::fs_float32 speedFps;
+    core::fs_float32 frameTime;
     core::fs_float32 elapsedTime;
 
 };

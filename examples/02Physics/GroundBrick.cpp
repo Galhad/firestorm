@@ -21,41 +21,33 @@
 // SOFTWARE.
 
 #include "GroundBrick.hpp"
+#include "Labels.hpp"
 
 namespace fs::scene
 {
-void GroundBrick::create(const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager)
+void GroundBrick::create(io::InputManager& inputManager, const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager)
 {
-    SpriteSceneNode::create(sprite);
-
-    GroundBrick::physicsManager = &physicsManager;
+    SpriteSceneNode::create(inputManager, sprite);
 
     b2BodyDef bodyDef;
     bodyDef.type = b2_staticBody;
-
-    body = physicsManager.getWorld()->CreateBody(&bodyDef);
 
     core::fs_float32 halfWidth = sprite.getWidthUnits() / 2.f;
     core::fs_float32 halfHeight = sprite.getHeightUnits() / 2.f;
 
     b2EdgeShape shape;
-    shape.Set(b2Vec2(-halfWidth / 2.f, -halfHeight), b2Vec2(halfWidth, -halfHeight));
+    shape.Set(b2Vec2(-halfWidth , -halfHeight), b2Vec2(halfWidth, -halfHeight));
 
-    body->CreateFixture(&shape, 1.0f);
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &shape;
 
-    bodyComponent = std::make_unique<BodyComponent>();
-    bodyComponent->create(*this, *transformation, *body);
+    createBodyComponent(physicsManager, bodyDef, fixtureDef);
 
-    SceneNode::body = bodyComponent.get();
+    labels.insert(LABEL_GROUND);
 }
 
 void GroundBrick::destroy()
 {
-    physicsManager->getWorld()->DestroyBody(body);
-    body = nullptr;
-
-    physicsManager = nullptr;
-
     SpriteSceneNode::destroy();
 }
 }

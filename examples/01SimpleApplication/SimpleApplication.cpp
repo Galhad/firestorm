@@ -61,37 +61,37 @@ SimpleApplication::SimpleApplication()
     playerSpriteSheet = graphicsManager->createSpriteSheet(playerResource);
     playerStandSprite = playerSpriteSheet->addSprite({0, 196, 66, 92});
 
-    bgSceneNode.create(*bgSprite);
+    bgSceneNode.create(*inputManager, *bgSprite);
     bgSceneNode.getTransformation().setPosition({0.f, 0.f});
     bgSceneNode.getTransformation().setLayer(-0.1f);
     bgSceneNode.getTransformation().setScale(10.f, 10.f);
     scene->getNodes().push_back(&bgSceneNode);
 
-    grassLeftSceneNode.create(*grassLeftSprite);
+    grassLeftSceneNode.create(*inputManager, *grassLeftSprite);
     scene->getNodes().push_back(&grassLeftSceneNode);
 
-    grassMidSceneNode.create(*grassMidSprite);
+    grassMidSceneNode.create(*inputManager, *grassMidSprite);
     grassMidSceneNode.getTransformation().setPosition({0.7f, 0.f});
     scene->getNodes().push_back(&grassMidSceneNode);
 
-    grassRightSceneNode.create(*grassRightSprite);
+    grassRightSceneNode.create(*inputManager, *grassRightSprite);
     grassRightSceneNode.getTransformation().setPosition({1.4f, 0.f});
     scene->getNodes().push_back(&grassRightSceneNode);
 
-    playerSceneNode.create(*playerStandSprite);
+    playerSceneNode.create(*inputManager, *playerStandSprite);
     playerSceneNode.getTransformation().setPosition({0.7f, -0.7f - 0.22f});
     scene->getNodes().push_back(&playerSceneNode);
 
     animation.push_back(grassLeftSprite);
     animation.push_back(grassMidSprite);
     animation.push_back(grassRightSprite);
-    animatedSpriteSceneNode.create(animation);
+    animatedSpriteSceneNode.create(*inputManager, animation);
     animatedSpriteSceneNode.getTransformation().setPosition({-1.4f, -1.4f});
     scene->getNodes().push_back(&animatedSpriteSceneNode);
 
     sceneManager->setActiveScene(scene);
 
-    camera.create(graphicsManager->getWindow(), vulkanDriver.getUniformBuffer());
+    camera.create(*inputManager, graphicsManager->getWindow(), vulkanDriver.getUniformBuffer());
     scene->getNodes().push_back(&camera);
     scene->setActiveCamera(&camera);
 }
@@ -103,40 +103,6 @@ SimpleApplication::~SimpleApplication()
 
 void SimpleApplication::update(float deltaTime)
 {
-    constexpr float cameraSpeed = 10.f;
-    float cameraOffset = cameraSpeed * deltaTime;
-
-    core::Vector2f cameraPosition = camera.getTransformation().getPosition();
-    if (inputManager->getKeyState(io::Key::Up) == io::KeyState::Pressed)
-    {
-        cameraPosition.y += cameraOffset;
-    }
-    else if (inputManager->getKeyState(io::Key::Down) == io::KeyState::Pressed)
-    {
-        cameraPosition.y -= cameraOffset;
-    }
-    if (inputManager->getKeyState(io::Key::Right) == io::KeyState::Pressed)
-    {
-        cameraPosition.x += cameraOffset;
-    }
-    else if (inputManager->getKeyState(io::Key::Left) == io::KeyState::Pressed)
-    {
-        cameraPosition.x -= cameraOffset;
-    }
-    if (camera.getTransformation().getPosition() != cameraPosition)
-    {
-        camera.getTransformation().setPosition(cameraPosition);
-    }
-
-    if (inputManager->getButtonState(io::Button::Left) == io::KeyState::Pressed)
-    {
-        camera.setZoom(camera.getZoom() + cameraOffset);
-    }
-    else if (inputManager->getButtonState(io::Button::Right) == io::KeyState::Pressed)
-    {
-        camera.setZoom(camera.getZoom() - cameraOffset);
-    }
-
     constexpr float rotationSpeed = 36.0f;
     auto rotation = bgSceneNode.getTransformation().getRotation();
     rotation.z += rotationSpeed * deltaTime;

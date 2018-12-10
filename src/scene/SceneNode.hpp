@@ -27,15 +27,18 @@
 #include "RendererComponent.hpp"
 #include "BodyComponent.hpp"
 
+#include "io/InputManager.hpp"
+#include "physics/PhysicsManager.hpp"
+
+#include <set>
 #include <memory>
 
 namespace fs::scene
 {
 
-//class Component;
-//class BodyComponent;
-//class RendererComponent;
-//class TransformationComponent;
+class BodyComponent;
+
+typedef std::unique_ptr<BodyComponent> BodyComponentPtr;
 
 class SceneNode
 {
@@ -43,11 +46,14 @@ public:
     SceneNode() = default;
     virtual ~SceneNode() = default;
 
-    void create();
+    void create(io::InputManager& inputManager);
     virtual void destroy();
 
     virtual void update(float deltaTime);
+
     virtual void physicsUpdate();
+    virtual void beginCollision(const BodyComponent& other);
+    virtual void endCollision(const BodyComponent& other);
 
     const TransformationComponent& getTransformation() const;
     TransformationComponent& getTransformation();
@@ -58,10 +64,22 @@ public:
     const BodyComponent* getBody() const;
     BodyComponent* getBody();
 
+    const std::set<std::string>& getLabels() const;
+    std::set<std::string>& getLabels();
+    void setLabels(const std::set<std::string>& labels);
+
+protected:
+    void createBodyComponent(physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
+                             const b2FixtureDef& fixtureDef);
+
 protected:
     TransformationComponentPtr transformation = nullptr;
     RendererComponent* renderer = nullptr;
-    BodyComponent* body = nullptr;
+    BodyComponentPtr body = nullptr;
+
+    io::InputManager* inputManager = nullptr;
+
+    std::set<std::string> labels;
 };
 
 typedef std::unique_ptr<SceneNode> SceneNodePtr;

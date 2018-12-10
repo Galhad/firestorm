@@ -20,53 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_SPRITE_HPP
-#define FIRESTORM_SPRITE_HPP
+#ifndef FIRESTORM_LABELS_HPP
+#define FIRESTORM_LABELS_HPP
 
-#include "Texture.hpp"
-#include "Mesh.hpp"
-#include "vulkan/GraphicsPipeline.hpp"
+#define LABEL_PLAYER "player"
+#define LABEL_GROUND "ground"
+#define LABEL_LEVEL_END "level-end"
 
-#include <memory>
-
-namespace fs::graphics
-{
-class Sprite
-{
-public:
-    Sprite() = default;
-    virtual ~Sprite() = default;
-
-    void create(core::Recti rect, const Texture& texture, const VkDescriptorSet& descriptorSet);
-    virtual void destroy();
-
-    const Texture* getTexture() const;
-    const VkDescriptorSet getDescriptorSet() const;
-
-    Mesh& getMesh();
-    const Mesh& getMesh() const;
-
-    core::fs_float32 getWidthUnits() const;
-    core::fs_float32 getHeightUnits() const;
-
-private:
-    void createMesh();
-    void destroyMesh();
-
-private:
-    Mesh mesh;
-
-    core::Recti rect;
-    const Texture* texture = nullptr;
-
-    core::fs_float32 widthUnits = 0.f;
-    core::fs_float32 heightUnits = 0.f;
-
-    VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
-
-};
-
-typedef std::unique_ptr<Sprite> SpritePtr;
-}
-
-#endif //FIRESTORM_SPRITE_HPP
+#endif //FIRESTORM_LABELS_HPP

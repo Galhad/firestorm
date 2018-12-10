@@ -34,15 +34,12 @@ class GroundBrick : public SpriteSceneNode
 {
 public:
     GroundBrick() = default;
-    virtual ~GroundBrick() = default;
+    ~GroundBrick() override = default;
 
-    void create(const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager);
+    void create(io::InputManager& inputManager, const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager);
     void destroy() override;
 
 protected:
-    BodyComponentPtr bodyComponent = nullptr;
-    physics::PhysicsManager* physicsManager = nullptr;
-    b2Body* body = nullptr;
 
 };
 

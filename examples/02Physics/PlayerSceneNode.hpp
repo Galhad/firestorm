@@ -36,24 +36,40 @@ public:
     PlayerSceneNode() = default;
     ~PlayerSceneNode() override = default;
 
-    void create(const Animation& animation, physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef);
+    void create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
+                const b2FixtureDef& fixtureDef, const Animation& standingAnimation, const Animation& walkingAnimation,
+                const Animation& jumpingAnimation);
     void destroy() override;
 
+    void update(float deltaTimeMs) override;
     void physicsUpdate() override;
 
-    void move(core::fs_float32 direction);
-    void jump();
+    void beginCollision(const BodyComponent& other) override;
+    void endCollision(const BodyComponent& other) override;
 
 protected:
-    BodyComponentPtr bodyComponent = nullptr;
-    physics::PhysicsManager* physicsManager = nullptr;
-    b2Body* body = nullptr;
+    void resetPosition();
 
-    core::fs_float32 speed = 1.f;
+protected:
+    core::fs_float32 speed = 1.5f;
     core::fs_float32 moving = 0.f;
+    core::fs_float32 lastMoving = 0.f;
 
-    core::fs_float32 jumpForce = 1.f;
+    bool inAir = false;
+    bool lastInAir = false;
+
+    core::fs_float32 jumpForce = 2.5f;
     bool jumping = false;
+
+    core::fs_uint8 groundCollisions = 0;
+
+    bool resettingPosition = false;
+
+    core::Vector2f startingPosition;
+
+    scene::AnimatedSpriteSceneNode::Animation standingAnimation;
+    scene::AnimatedSpriteSceneNode::Animation walkingAnimation;
+    scene::AnimatedSpriteSceneNode::Animation jumpingAnimation;
 
 };
 

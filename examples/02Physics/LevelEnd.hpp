@@ -20,55 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_SPRITESHEET_HPP
-#define FIRESTORM_SPRITESHEET_HPP
+#ifndef FIRESTORM_LEVELEND_HPP
+#define FIRESTORM_LEVELEND_HPP
 
-#include "Texture.hpp"
-#include "Sprite.hpp"
+#include "scene/SceneNode.hpp"
 
 #include <memory>
-#include <list>
 
-namespace fs::graphics
+namespace fs::scene
 {
-class SpriteSheet : public Texture
+class LevelEnd : public SceneNode
 {
 public:
-    SpriteSheet() = default;
-    ~SpriteSheet() override = default;
+    LevelEnd() = default;
+    ~LevelEnd() override = default;
 
-    void
-    create(const fs::graphics::GraphicsPipeline& graphicsPipeline, TextureImage textureImage, core::fs_uint32 width,
-           core::fs_uint32 height,
-           core::fs_uint32 pixelsPerUnit = 100, core::fs_uint32 channels = 4);
+    void create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const core::Vector2f& point1, const core::Vector2f& point2);
     void destroy() override;
-
-    Sprite* addSprite(core::Recti rect);
-    bool removeSprite(Sprite* sprite);
-    void clearSprites();
-
-    const std::list<Sprite>& getSprites() const;
-    std::list<Sprite>& getSprites();
-
-    bool areSpritesChanged() const;
-    void setSpritesChanged(bool spritesChanged);
-
-private:
-    void createDescriptor();
-    void destroyDescriptor();
-
-private:
-    const fs::graphics::GraphicsPipeline* graphicsPipeline = nullptr;
-
-    std::list<Sprite> sprites;
-    bool spritesChanged = true;
-
-    VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
-    VkWriteDescriptorSet writeDescriptorSet = {};
 
 };
 
-typedef std::unique_ptr<SpriteSheet> SpriteSheetPtr;
+typedef std::unique_ptr<LevelEnd> LevelEndPtr;
 }
 
-#endif //FIRESTORM_SPRITESHEET_HPP
+#endif //FIRESTORM_LEVELEND_HPP

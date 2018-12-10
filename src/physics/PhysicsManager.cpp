@@ -29,6 +29,7 @@ namespace fs::physics
 void PhysicsManager::create(const PhysicsCreationParams& creationParams)
 {
     world = std::make_unique<b2World>(b2Vec2(creationParams.gravity.x, creationParams.gravity.y));
+    world->SetContactListener(this);
 
     timeStep = creationParams.timeStep;
     velocityIterations = creationParams.velocityIterations;

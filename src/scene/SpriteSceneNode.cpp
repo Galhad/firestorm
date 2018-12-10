@@ -27,9 +27,9 @@
 namespace fs::scene
 {
 
-void SpriteSceneNode::create(const graphics::Sprite& sprite)
+void SpriteSceneNode::create(io::InputManager& inputManager, const graphics::Sprite& sprite)
 {
-    SceneNode::create();
+    SceneNode::create(inputManager);
 
     spriteRenderer = std::make_unique<SpriteRendererComponent>();
     spriteRenderer->create(*this, *transformation, sprite);

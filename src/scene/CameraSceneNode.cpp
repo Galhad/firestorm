@@ -28,9 +28,10 @@
 namespace fs::scene
 {
 
-void CameraSceneNode::create(const graphics::Window& window, const graphics::MappedMemoryBuffer& uniformBuffer)
+void CameraSceneNode::create(io::InputManager& inputManager, const graphics::Window& window,
+                             const graphics::MappedMemoryBuffer& uniformBuffer)
 {
-    SceneNode::create();
+    SceneNode::create(inputManager);
 
     CameraSceneNode::window = &window;
     CameraSceneNode::active = false;

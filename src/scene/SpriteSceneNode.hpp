@@ -36,7 +36,7 @@ public:
     SpriteSceneNode() = default;
     ~SpriteSceneNode() override = default;
 
-    void create(const graphics::Sprite& sprite);
+    void create(io::InputManager& inputManager, const graphics::Sprite& sprite);
     void destroy() override;
 
     const SpriteRendererComponent* getSpriteRenderer() const;
