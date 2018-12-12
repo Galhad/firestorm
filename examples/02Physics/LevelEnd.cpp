@@ -25,7 +25,8 @@
 
 namespace fs::scene
 {
-void LevelEnd::create(io::InputManager& inputManager, fs::physics::PhysicsManager& physicsManager, const core::Vector2f& point1,
+void LevelEnd::create(io::InputManager& inputManager, fs::physics::PhysicsManager& physicsManager,
+                      const core::Vector2f& point1,
                       const core::Vector2f& point2)
 {
     SceneNode::create(inputManager);

@@ -25,7 +25,8 @@
 namespace fs
 {
 
-void Alien::create(io::InputManager& inputManager, graphics::SpriteSheet& playerSpriteSheet, physics::PhysicsManager& physicsManager)
+void Alien::create(io::InputManager& inputManager, graphics::SpriteSheet& playerSpriteSheet,
+                   physics::PhysicsManager& physicsManager)
 {
     Alien::playerSpriteSheet = &playerSpriteSheet;
 
@@ -48,7 +49,8 @@ void Alien::create(io::InputManager& inputManager, graphics::SpriteSheet& player
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &shape;
 
-    PlayerSceneNode::create(inputManager, physicsManager, bodyDef, fixtureDef, standingAnimation, walkingAnimation, jumpingAnimation);
+    PlayerSceneNode::create(inputManager, physicsManager, bodyDef, fixtureDef, standingAnimation, walkingAnimation,
+                            jumpingAnimation);
     setSpeedFps(10.f);
 }
 

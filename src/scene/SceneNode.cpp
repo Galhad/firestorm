@@ -30,6 +30,7 @@ void SceneNode::create(io::InputManager& inputManager)
 {
     transformation = std::make_unique<TransformationComponent>();
     transformation->create(*this);
+    renderer = nullptr;
     body = nullptr;
 
     SceneNode::inputManager = &inputManager;
@@ -39,6 +40,10 @@ void SceneNode::destroy()
 {
     inputManager = nullptr;
     body = nullptr;
+    if (renderer != nullptr)
+    {
+        renderer->destroy();
+    }
     transformation->destroy();
 }
 
@@ -59,12 +64,12 @@ TransformationComponent& SceneNode::getTransformation()
 
 const RendererComponent* SceneNode::getRenderer() const
 {
-    return renderer;
+    return renderer.get();
 }
 
 RendererComponent* SceneNode::getRenderer()
 {
-    return renderer;
+    return renderer.get();
 }
 
 const BodyComponent* SceneNode::getBody() const
@@ -112,6 +117,19 @@ void SceneNode::beginCollision(const BodyComponent& other)
 void SceneNode::endCollision(const BodyComponent& other)
 {
 
+}
+
+io::InputManager* SceneNode::getInputManager() const
+{
+    return inputManager;
+}
+
+void SceneNode::applyPhysicsStep()
+{
+    if (body != nullptr)
+    {
+        body->applyPhysicsStep();
+    }
 }
 
 }

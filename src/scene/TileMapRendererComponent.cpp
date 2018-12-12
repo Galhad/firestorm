@@ -20,28 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LEVELEND_HPP
-#define FIRESTORM_LEVELEND_HPP
-
-#include "scene/SceneNode.hpp"
-
-#include <memory>
+#include "TileMapRendererComponent.hpp"
 
 namespace fs::scene
 {
-class LevelEnd : public SceneNode
+void TileMapRendererComponent::create(TileMapSceneNode& tileMap,
+                                      TransformationComponent& transformation)
 {
-public:
-    LevelEnd() = default;
-    ~LevelEnd() override = default;
-
-    void create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const core::Vector2f& point1,
-                const core::Vector2f& point2);
-    void destroy() override;
-
-};
-
-typedef std::unique_ptr<LevelEnd> LevelEndPtr;
+    RendererComponent::create(tileMap, transformation);
 }
 
-#endif //FIRESTORM_LEVELEND_HPP
+void TileMapRendererComponent::destroy()
+{
+
+    RendererComponent::destroy();
+}
+
+void TileMapRendererComponent::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout,
+                                      VkDescriptorSet sceneDescriptorSet)
+{
+    auto* tileMap = dynamic_cast<TileMapSceneNode*>(sceneNode);
+
+    if (tileMap->isTilesChanged())
+    {
+        tileMap->buildTiles();
+    }
+
+    if (transformation->isGeometryUpdated())
+    {
+        tileMap->updateTilesPosition();
+    }
+
+    for (auto& tileColumn : tileMap->getTiles())
+    {
+        for (auto& tile : tileColumn)
+        {
+            auto sceneNode = tile.getSceneNode();
+            if (sceneNode != nullptr && sceneNode->getRenderer() != nullptr)
+            {
+                sceneNode->getRenderer()->render(commandBuffer, pipelineLayout, sceneDescriptorSet);
+            }
+        }
+    }
+}
+
+}

@@ -31,6 +31,7 @@
 #include "Alien.hpp"
 #include "GroundBrick.hpp"
 #include "LevelEnd.hpp"
+#include "GroundTileMap.hpp"
 
 #include <iostream>
 #include <memory>
@@ -64,9 +65,8 @@ private:
     graphics::Sprite* grassLeftSprite;
     graphics::Sprite* grassMidSprite;
     graphics::Sprite* grassRightSprite;
-    scene::GroundBrick grassLeftSceneNode;
-    scene::GroundBrick grassMidSceneNode;
-    scene::GroundBrick grassRightSceneNode;
+
+    scene::GroundTileMap groundTileMap;
 
     graphics::SpriteSheet* playerSpriteSheet = nullptr;
     Alien playerSceneNode;

@@ -25,7 +25,8 @@
 
 namespace fs::scene
 {
-void GroundBrick::create(io::InputManager& inputManager, const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager)
+void GroundBrick::create(io::InputManager& inputManager, const graphics::Sprite& sprite,
+                         physics::PhysicsManager& physicsManager)
 {
     SpriteSceneNode::create(inputManager, sprite);
 
@@ -36,7 +37,7 @@ void GroundBrick::create(io::InputManager& inputManager, const graphics::Sprite&
     core::fs_float32 halfHeight = sprite.getHeightUnits() / 2.f;
 
     b2EdgeShape shape;
-    shape.Set(b2Vec2(-halfWidth , -halfHeight), b2Vec2(halfWidth, -halfHeight));
+    shape.Set(b2Vec2(-halfWidth, -halfHeight), b2Vec2(halfWidth, -halfHeight));
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &shape;

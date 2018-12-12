@@ -20,28 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LEVELEND_HPP
-#define FIRESTORM_LEVELEND_HPP
+#ifndef FIRESTORM_TILE_HPP
+#define FIRESTORM_TILE_HPP
 
-#include "scene/SceneNode.hpp"
+#include "SceneNode.hpp"
 
 #include <memory>
 
 namespace fs::scene
 {
-class LevelEnd : public SceneNode
+class Tile
 {
 public:
-    LevelEnd() = default;
-    ~LevelEnd() override = default;
+    Tile() = default;
+    Tile(Tile&& other);
+    virtual ~Tile() = default;
 
-    void create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const core::Vector2f& point1,
-                const core::Vector2f& point2);
-    void destroy() override;
+    void create(core::fs_int32 id, SceneNode* sceneNode);
+    virtual void destroy();
+
+    core::fs_int32 getId() const;
+    void setId(core::fs_int32 id);
+
+    SceneNode* getSceneNode();
+    const SceneNode* getSceneNode() const;
+    void setSceneNode(SceneNode* sceneNode);
+
+protected:
+    core::fs_int32 id = -1;
+    SceneNodePtr sceneNode = nullptr;
 
 };
 
-typedef std::unique_ptr<LevelEnd> LevelEndPtr;
+typedef std::unique_ptr<Tile> TilePtr;
+
 }
 
-#endif //FIRESTORM_LEVELEND_HPP
+#endif //FIRESTORM_TILE_HPP

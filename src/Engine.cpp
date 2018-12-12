@@ -123,7 +123,7 @@ void Engine::run()
         auto steps = static_cast<core::fs_int32>(elapsedTime / physicsManager->getTimeStep());
         if (steps > 0)
         {
-            if(activeScene != nullptr)
+            if (activeScene != nullptr)
             {
                 activeScene->physicsUpdate();
             }

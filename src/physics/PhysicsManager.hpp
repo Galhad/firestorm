@@ -54,7 +54,7 @@ public:
 protected:
     std::unique_ptr<b2World> world = nullptr;
 
-    core::fs_float32 timeStep = 1.f/60.f;
+    core::fs_float32 timeStep = 1.f / 60.f;
     core::fs_int32 velocityIterations = 9;
     core::fs_int32 positionIterations = 3;
 

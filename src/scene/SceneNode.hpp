@@ -52,6 +52,7 @@ public:
     virtual void update(float deltaTime);
 
     virtual void physicsUpdate();
+    virtual void applyPhysicsStep();
     virtual void beginCollision(const BodyComponent& other);
     virtual void endCollision(const BodyComponent& other);
 
@@ -64,6 +65,8 @@ public:
     const BodyComponent* getBody() const;
     BodyComponent* getBody();
 
+    io::InputManager* getInputManager() const;
+
     const std::set<std::string>& getLabels() const;
     std::set<std::string>& getLabels();
     void setLabels(const std::set<std::string>& labels);
@@ -74,7 +77,7 @@ protected:
 
 protected:
     TransformationComponentPtr transformation = nullptr;
-    RendererComponent* renderer = nullptr;
+    RendererComponentPtr renderer = nullptr;
     BodyComponentPtr body = nullptr;
 
     io::InputManager* inputManager = nullptr;

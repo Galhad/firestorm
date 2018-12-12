@@ -60,11 +60,7 @@ void Scene::applyPhysicsStep()
 {
     for (auto& node : nodes)
     {
-        auto* body = node->getBody();
-        if (body != nullptr)
-        {
-            body->applyPhysicsStep();
-        }
+        node->applyPhysicsStep();
     }
 }
 

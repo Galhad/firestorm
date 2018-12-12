@@ -36,7 +36,8 @@ public:
     GroundBrick() = default;
     ~GroundBrick() override = default;
 
-    void create(io::InputManager& inputManager, const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager);
+    void
+    create(io::InputManager& inputManager, const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager);
     void destroy() override;
 
 protected:

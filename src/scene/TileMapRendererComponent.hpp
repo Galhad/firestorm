@@ -20,28 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LEVELEND_HPP
-#define FIRESTORM_LEVELEND_HPP
+#ifndef FIRESTORM_TILEMAPRENDERERCOMPONENT_HPP
+#define FIRESTORM_TILEMAPRENDERERCOMPONENT_HPP
 
-#include "scene/SceneNode.hpp"
+
+#include "TileMapSceneNode.hpp"
+
+#include "RendererComponent.hpp"
 
 #include <memory>
 
 namespace fs::scene
 {
-class LevelEnd : public SceneNode
+
+class TileMapRendererComponent : public RendererComponent
 {
 public:
-    LevelEnd() = default;
-    ~LevelEnd() override = default;
+    TileMapRendererComponent() = default;
+    ~TileMapRendererComponent() override = default;
 
-    void create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const core::Vector2f& point1,
-                const core::Vector2f& point2);
+    void create(TileMapSceneNode& tileMap, TransformationComponent& transformation);
     void destroy() override;
+
+    void
+    render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet) override;
 
 };
 
-typedef std::unique_ptr<LevelEnd> LevelEndPtr;
+typedef std::unique_ptr<TileMapRendererComponent> TileMapRendererComponentPtr;
 }
 
-#endif //FIRESTORM_LEVELEND_HPP
+#endif //FIRESTORM_TILEMAPRENDERERCOMPONENT_HPP

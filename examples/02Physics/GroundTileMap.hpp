@@ -20,28 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LEVELEND_HPP
-#define FIRESTORM_LEVELEND_HPP
+#ifndef FIRESTORM_GROUNDTILEMAP_HPP
+#define FIRESTORM_GROUNDTILEMAP_HPP
 
-#include "scene/SceneNode.hpp"
+#include "GroundBrick.hpp"
+#include "scene/TileMapSceneNode.hpp"
+#include "scene/Scene.hpp"
 
 #include <memory>
 
 namespace fs::scene
 {
-class LevelEnd : public SceneNode
+class GroundTileMap : public TileMapSceneNode
 {
 public:
-    LevelEnd() = default;
-    ~LevelEnd() override = default;
+    GroundTileMap() = default;
+    ~GroundTileMap() override = default;
 
-    void create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const core::Vector2f& point1,
-                const core::Vector2f& point2);
+    void create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager,
+                const graphics::Sprite& leftSprite, const graphics::Sprite& midSprite,
+                const graphics::Sprite& rightSprite);
     void destroy() override;
+
+protected:
+    const core::fs_int32 leftId = 0;
+    const core::fs_int32 midId = 1;
+    const core::fs_int32 rightId = 2;
 
 };
 
-typedef std::unique_ptr<LevelEnd> LevelEndPtr;
+typedef std::unique_ptr<GroundTileMap> GroundTileMapPtr;
 }
 
-#endif //FIRESTORM_LEVELEND_HPP
+#endif //FIRESTORM_GROUNDTILEMAP_HPP

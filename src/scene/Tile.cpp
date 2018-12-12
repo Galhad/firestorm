@@ -20,28 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LEVELEND_HPP
-#define FIRESTORM_LEVELEND_HPP
-
-#include "scene/SceneNode.hpp"
-
-#include <memory>
+#include "Tile.hpp"
 
 namespace fs::scene
 {
-class LevelEnd : public SceneNode
+Tile::Tile(Tile&& other) : id(other.id), sceneNode(std::move(other.sceneNode))
 {
-public:
-    LevelEnd() = default;
-    ~LevelEnd() override = default;
-
-    void create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const core::Vector2f& point1,
-                const core::Vector2f& point2);
-    void destroy() override;
-
-};
-
-typedef std::unique_ptr<LevelEnd> LevelEndPtr;
 }
 
-#endif //FIRESTORM_LEVELEND_HPP
+void Tile::create(core::fs_int32 id, SceneNode* sceneNode)
+{
+    Tile::id = id;
+    Tile::sceneNode = SceneNodePtr(sceneNode);
+}
+
+void Tile::destroy()
+{
+    sceneNode = nullptr;
+    id = -1;
+}
+
+core::fs_int32 Tile::getId() const
+{
+    return id;
+}
+
+void Tile::setId(core::fs_int32 id)
+{
+    Tile::id = id;
+}
+
+SceneNode* Tile::getSceneNode()
+{
+    return sceneNode.get();
+}
+
+const SceneNode* Tile::getSceneNode() const
+{
+    return sceneNode.get();
+}
+
+void Tile::setSceneNode(SceneNode* sceneNode)
+{
+    Tile::sceneNode = SceneNodePtr(sceneNode);
+}
+
+}

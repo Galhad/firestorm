@@ -37,9 +37,9 @@ namespace fs::graphics
 {
 
 using WindowResizedCallback =
-std::function< void(core::fs_int32
-width,
-core::fs_int32 height
+std::function<void(core::fs_int32
+                   width,
+                   core::fs_int32 height
 )>;
 
 class Window

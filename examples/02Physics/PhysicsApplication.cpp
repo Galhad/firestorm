@@ -63,16 +63,8 @@ PhysicsApplication::PhysicsApplication()
     bgSceneNode.getTransformation().setScale(10.f, 10.f);
     scene->getNodes().push_back(&bgSceneNode);
 
-    grassLeftSceneNode.create(*inputManager, *grassLeftSprite, *physicsManager);
-    scene->getNodes().push_back(&grassLeftSceneNode);
-
-    grassMidSceneNode.create(*inputManager, *grassMidSprite, *physicsManager);
-    grassMidSceneNode.getBody()->getBody()->SetTransform({0.7f, 0.f}, 0.f);
-    scene->getNodes().push_back(&grassMidSceneNode);
-
-    grassRightSceneNode.create(*inputManager, *grassRightSprite, *physicsManager);
-    grassRightSceneNode.getBody()->getBody()->SetTransform({1.4f, 0.f}, 0.f);
-    scene->getNodes().push_back(&grassRightSceneNode);
+    groundTileMap.create(*inputManager, *physicsManager, *grassLeftSprite, *grassMidSprite, *grassRightSprite);
+    scene->getNodes().push_back(&groundTileMap);
 
     playerSceneNode.create(*inputManager, *playerSpriteSheet, *physicsManager);
     scene->getNodes().push_back(&playerSceneNode);

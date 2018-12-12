@@ -36,7 +36,8 @@ public:
     Alien() = default;
     ~Alien() override = default;
 
-    void create(io::InputManager& inputManager, graphics::SpriteSheet& playerSpriteSheet, physics::PhysicsManager& physicsManager);
+    void create(io::InputManager& inputManager, graphics::SpriteSheet& playerSpriteSheet,
+                physics::PhysicsManager& physicsManager);
     void destroy() override;
 
 private:

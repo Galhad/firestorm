@@ -26,7 +26,8 @@
 
 namespace fs::scene
 {
-void PlayerSceneNode::create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
+void PlayerSceneNode::create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager,
+                             const b2BodyDef& bodyDef,
                              const b2FixtureDef& fixtureDef, const Animation& standingAnimation,
                              const Animation& walkingAnimation,
                              const Animation& jumpingAnimation)
@@ -38,6 +39,8 @@ void PlayerSceneNode::create(io::InputManager& inputManager, physics::PhysicsMan
     PlayerSceneNode::jumpingAnimation = jumpingAnimation;
 
     createBodyComponent(physicsManager, bodyDef, fixtureDef);
+
+    transformation->setLayer(0.1f);
 
     labels.insert(LABEL_PLAYER);
 }
@@ -80,11 +83,11 @@ void PlayerSceneNode::update(float deltaTimeMs)
         }
     }
 
-    if(!lastInAir && inAir)
+    if (!lastInAir && inAir)
     {
         setAnimation(jumpingAnimation);
     }
-    else if(lastInAir && !inAir)
+    else if (lastInAir && !inAir)
     {
         setAnimation(standingAnimation);
     }
@@ -124,7 +127,7 @@ void PlayerSceneNode::beginCollision(const BodyComponent& other)
     {
         ++groundCollisions;
 
-        if(groundCollisions > 0)
+        if (groundCollisions > 0)
         {
             inAir = false;
         }
@@ -139,7 +142,7 @@ void PlayerSceneNode::endCollision(const BodyComponent& other)
     {
         --groundCollisions;
 
-        if(groundCollisions == 0)
+        if (groundCollisions == 0)
         {
             inAir = true;
         }

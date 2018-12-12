@@ -54,7 +54,8 @@ void AnimatedSpriteSceneNode::update(float deltaTime)
             currentFrame = 0;
         }
 
-        spriteRenderer->setSprite(*animation->at(currentFrame));
+//        spriteRenderer->setSprite(*animation->at(currentFrame));
+        dynamic_cast<SpriteRendererComponent*>(renderer.get())->setSprite(*animation->at(currentFrame));
         elapsedTime -= frameTime;
     }
 

@@ -75,7 +75,7 @@ void PhysicsManager::BeginContact(b2Contact* contact)
     auto* bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData();
     auto* bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
 
-    if(bodyUserDataA != nullptr && bodyUserDataB != nullptr)
+    if (bodyUserDataA != nullptr && bodyUserDataB != nullptr)
     {
         auto* bodyComponentA = static_cast<scene::BodyComponent*>(bodyUserDataA);
         auto* bodyComponentB = static_cast<scene::BodyComponent*>(bodyUserDataB);
@@ -90,7 +90,7 @@ void PhysicsManager::EndContact(b2Contact* contact)
     auto* bodyUserDataA = contact->GetFixtureA()->GetBody()->GetUserData();
     auto* bodyUserDataB = contact->GetFixtureB()->GetBody()->GetUserData();
 
-    if(bodyUserDataA != nullptr && bodyUserDataB != nullptr)
+    if (bodyUserDataA != nullptr && bodyUserDataB != nullptr)
     {
         auto* bodyComponentA = static_cast<scene::BodyComponent*>(bodyUserDataA);
         auto* bodyComponentB = static_cast<scene::BodyComponent*>(bodyUserDataB);

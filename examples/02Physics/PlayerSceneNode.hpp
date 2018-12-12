@@ -58,7 +58,7 @@ protected:
     bool inAir = false;
     bool lastInAir = false;
 
-    core::fs_float32 jumpForce = 2.5f;
+    core::fs_float32 jumpForce = 3.5f;
     bool jumping = false;
 
     core::fs_uint8 groundCollisions = 0;
