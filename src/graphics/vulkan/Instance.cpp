@@ -148,7 +148,7 @@ Instance::getApplicationInfo(const std::string& applicationName, core::fs_uint32
     appInfo.applicationVersion = applicationVersion;
     appInfo.pEngineName = "Firestorm";
     appInfo.engineVersion = VK_MAKE_VERSION(0, 1, 0); // todo: Set engine version
-    appInfo.apiVersion = VK_API_VERSION_1_0;
+    appInfo.apiVersion = VK_API_VERSION_1_1;
     return appInfo;
 }
 

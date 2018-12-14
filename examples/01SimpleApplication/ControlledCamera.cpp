@@ -40,7 +40,7 @@ void ControlledCamera::update(float deltaTime)
 {
     float cameraOffset = cameraSpeed * deltaTime;
 
-    core::Vector2f position = transformation.getPosition();
+    core::Vector2f position = transformation->getPosition();
     if (inputManager->getKeyState(io::Key::Up) == io::KeyState::Pressed)
     {
         position.y += cameraOffset;
@@ -57,9 +57,9 @@ void ControlledCamera::update(float deltaTime)
     {
         position.x -= cameraOffset;
     }
-    if (transformation.getPosition() != position)
+    if (transformation->getPosition() != position)
     {
-        transformation.setPosition(position);
+        transformation->setPosition(position);
     }
 
     if (inputManager->getButtonState(io::Button::Left) == io::KeyState::Pressed)

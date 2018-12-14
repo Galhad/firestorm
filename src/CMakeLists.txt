@@ -3,7 +3,7 @@ file(GLOB_RECURSE SOURCES "*.cpp" "*.hpp")
 set(STB_DIRECTORY ../external/stb)
 set(SPDLOG_DIRECTORY ../external/spdlog/include)
 set(GLM_DIRECTORY ../external/glm)
-set(GLFW_DIRECTORY ../external/glfw)
+set(GLFW_DIRECTORY ../external/glfw/include)
 set(BOX2D_DIRECTORY ../external/Box2D/Box2D)
 
 file(GLOB_RECURSE STB_HEADERS "${STB_DIRECTORY}/*.h")

@@ -3,7 +3,7 @@ LIST(APPEND INCLUDE_DIRECTORIES "../../src")
 LIST(APPEND INCLUDE_DIRECTORIES "../../external/stb")
 LIST(APPEND INCLUDE_DIRECTORIES "../../external/spdlog/include")
 LIST(APPEND INCLUDE_DIRECTORIES "../../external/glm")
-LIST(APPEND INCLUDE_DIRECTORIES "../../external/glfw")
+LIST(APPEND INCLUDE_DIRECTORIES "../../external/glfw/include")
 LIST(APPEND INCLUDE_DIRECTORIES "../../external/Box2D/Box2D")
 
 LIST(APPEND LINK_LIBRARIES "firestorm")

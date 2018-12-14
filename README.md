@@ -29,3 +29,12 @@ Existing repositories can be updated manually:
 git submodule init
 git submodule update
 ```
+
+### Dependencies
+* Vulkan SDK
+* External libraries dependencies
+
+Install dependencies:
+```
+sudo dnf install libXcursor-devel libXinerama-devel libXrandr-devel xorg-x11-server-devel
+```
