@@ -28,7 +28,6 @@
 
 #include <memory>
 #include <cstdint>
-#include <stdint-gcc.h>
 
 namespace fs::graphics
 {

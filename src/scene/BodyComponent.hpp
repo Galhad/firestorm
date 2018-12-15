@@ -28,8 +28,6 @@
 #include "physics/PhysicsManager.hpp"
 #include "SceneNode.hpp"
 
-#include "Box2D/Box2D.h"
-
 #include <memory>
 #include <functional>
 

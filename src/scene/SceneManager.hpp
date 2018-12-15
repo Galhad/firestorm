@@ -40,7 +40,7 @@ public:
     virtual void destroy();
 
     Scene* createScene();
-    void destoryScene(const Scene* scene);
+    void destroyScene(const Scene* scene);
     void clearScenes();
 
     void setActiveScene(const Scene* activeScene);

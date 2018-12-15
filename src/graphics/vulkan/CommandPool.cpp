@@ -22,6 +22,7 @@
 
 #include "CommandPool.hpp"
 
+#include <stdexcept>
 
 namespace fs::graphics
 {

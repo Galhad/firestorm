@@ -14,6 +14,12 @@ set(BOX2D_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS OFF)
 
+if (WIN32)
+    set(VULKAN_SDK_DIRECTORY "E:\\Dev\\VulkanSDK\\Windows\\1.1.92.1")
+    include_directories(${VULKAN_SDK_DIRECTORY}\\Include)
+    link_directories(${VULKAN_SDK_DIRECTORY}\\Lib)
+endif(WIN32)
+
 add_subdirectory(src)
 add_subdirectory(examples)
 add_subdirectory(external/spdlog)

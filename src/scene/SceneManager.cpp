@@ -49,7 +49,7 @@ Scene* SceneManager::createScene()
     return result.first->get();
 }
 
-void SceneManager::destoryScene(const Scene* scene)
+void SceneManager::destroyScene(const Scene* scene)
 {
     for (const auto& ownedScene : scenes)
     {
@@ -62,6 +62,7 @@ void SceneManager::destoryScene(const Scene* scene)
 
             ownedScene->destroy();
             scenes.erase(ownedScene);
+            break;
         }
     }
 }
@@ -69,10 +70,11 @@ void SceneManager::destoryScene(const Scene* scene)
 void SceneManager::clearScenes()
 {
     activeScene = nullptr;
-    for (const auto& ownedScene : scenes)
+
+	for(auto it = scenes.begin(); it != scenes.end();)
     {
-        ownedScene->destroy();
-        scenes.erase(ownedScene);
+		(*it)->destroy();
+        it = scenes.erase(it);
     }
 }
 
