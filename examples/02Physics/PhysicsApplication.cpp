@@ -35,7 +35,9 @@ PhysicsApplication::PhysicsApplication()
 
     graphics::GraphicsCreationParams graphicsCreationParams;
     graphicsCreationParams.applicationName = "02Physics";
+#ifdef DEBUG
     graphicsCreationParams.enableValidationLayers = true;
+#endif
     engineCreationParams.graphicsCreationParams = graphicsCreationParams;
 
     create(engineCreationParams);

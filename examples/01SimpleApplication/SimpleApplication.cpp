@@ -35,7 +35,9 @@ SimpleApplication::SimpleApplication()
 
     graphics::GraphicsCreationParams graphicsCreationParams;
     graphicsCreationParams.applicationName = "01SimpleApplication";
+#ifdef DEBUG
     graphicsCreationParams.enableValidationLayers = true;
+#endif
     engineCreationParams.graphicsCreationParams = graphicsCreationParams;
 
     create(engineCreationParams);
