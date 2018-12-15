@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include "ControlledCamera.hpp"
 
 namespace fs
@@ -70,5 +71,7 @@ void ControlledCamera::update(float deltaTime)
     {
         setZoom(getZoom() - cameraOffset);
     }
+
+    CameraSceneNode::update(deltaTime);
 }
 }
