@@ -68,25 +68,28 @@ void VulkanDriver::create(const GraphicsCreationParams& graphicsCreationParams, 
 
 void VulkanDriver::destroy()
 {
-    waitIdle();
+    if(instance->getInstance() != VK_NULL_HANDLE && device->getDevice() != VK_NULL_HANDLE)
+    {
+        waitIdle();
 
-    destroyVertexBuffers();
+        destroyVertexBuffers();
 
-    destroySyncObjects();
+        destroySyncObjects();
 
-    destroyBuffers();
+        destroyBuffers();
 
-    graphicsPipeline->destroy();
+        graphicsPipeline->destroy();
 
-    destroySwapChain();
+        destroySwapChain();
 
-    fragmentShader->destroy();
-    vertexShader->destroy();
+        fragmentShader->destroy();
+        vertexShader->destroy();
 
-    maxFramesInFlight = 0;
+        maxFramesInFlight = 0;
 
-    device->destroy();
-    instance->destroy();
+        device->destroy();
+        instance->destroy();
+    }
 
     window = nullptr;
 }

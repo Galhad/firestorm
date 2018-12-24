@@ -8,7 +8,7 @@
 [submodule "external/glm"]
 	path = external/glm
 	url = https://github.com/g-truc/glm.git
-	branch = 0.9.8.5
+	branch = 0.9.9.3
 [submodule "external/glfw"]
 	path = external/glfw
 	url = https://github.com/glfw/glfw.git

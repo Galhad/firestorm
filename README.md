@@ -35,6 +35,21 @@ git submodule update
 * External libraries dependencies
 
 Install dependencies:
+
+* Fedora:
 ```
 sudo dnf install libXcursor-devel libXinerama-devel libXrandr-devel xorg-x11-server-devel
 ```
+
+* Ubuntu
+```
+sudo apt update
+sudo apt install build-essential xorg-dev
+wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.1.92-bionic.list http://packages.lunarg.com/vulkan/1.1.92/lunarg-vulkan-1.1.92-bionic.list
+sudo apt update
+sudo apt install lunarg-vulkan-sdk
+```
+
+* Windows \
+Install VulaknSDK from https://vulkan.lunarg.com/sdk/home#windows

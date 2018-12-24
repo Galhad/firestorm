@@ -106,7 +106,7 @@ bool Device::pickDeviceIfSuitable(VkPhysicalDevice device)
         extensionsSupported && !swapChainSupportDetails.formats.empty() &&
         !swapChainSupportDetails.presentModes.empty();
 
-    if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader &&
+    if (/*deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && */deviceFeatures.geometryShader &&
         indices.isComplete() && extensionsSupported && swapChainAdequate && deviceFeatures.samplerAnisotropy)
     {
         logger->info("Device {} is suitable", deviceProperties.deviceName);
