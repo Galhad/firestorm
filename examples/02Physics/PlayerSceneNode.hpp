@@ -47,10 +47,15 @@ public:
     void beginCollision(const BodyComponent& other) override;
     void endCollision(const BodyComponent& other) override;
 
+    const core::Vector2f& getStartingPosition() const;
+    void setStartingPosition(const core::Vector2f& startingPosition);
+
 protected:
     void resetPosition();
 
 protected:
+    utils::LoggerPtr logger;
+
     core::fs_float32 speed = 1.5f;
     core::fs_float32 moving = 0.f;
     core::fs_float32 lastMoving = 0.f;
@@ -70,6 +75,8 @@ protected:
     scene::AnimatedSpriteSceneNode::Animation standingAnimation;
     scene::AnimatedSpriteSceneNode::Animation walkingAnimation;
     scene::AnimatedSpriteSceneNode::Animation jumpingAnimation;
+
+    core::fs_int32 coins = 0;
 
 };
 

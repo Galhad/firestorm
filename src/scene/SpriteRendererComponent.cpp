@@ -40,6 +40,11 @@ void SpriteRendererComponent::destroy()
 void SpriteRendererComponent::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout,
                                      VkDescriptorSet sceneDescriptorSet)
 {
+    if (!active)
+    {
+        return;
+    }
+
     pushTransform(commandBuffer, pipelineLayout);
 
     std::array<VkDescriptorSet, 2> descriptorSets = {sceneDescriptorSet, sprite->getDescriptorSet()};

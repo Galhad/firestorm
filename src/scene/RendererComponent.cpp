@@ -29,17 +29,18 @@ void RendererComponent::create(SceneNode& sceneNode, TransformationComponent& tr
 {
     Component::create(sceneNode);
     RendererComponent::transformation = &transformation;
+    active = true;
 }
 
 void RendererComponent::destroy()
 {
+    active = false;
     transformation = nullptr;
     Component::destroy();
 }
 
 void RendererComponent::pushTransform(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout)
 {
-
     if (transformation->isGeometryUpdated())
     {
         transformation->updateTransform();
@@ -47,6 +48,16 @@ void RendererComponent::pushTransform(VkCommandBuffer commandBuffer, VkPipelineL
 
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(graphics::Transform),
                        &transformation->getTransform());
+}
+
+bool RendererComponent::isActive() const
+{
+    return active;
+}
+
+void RendererComponent::setActive(bool active)
+{
+    RendererComponent::active = active;
 }
 
 }

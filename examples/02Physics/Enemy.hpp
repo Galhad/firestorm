@@ -20,14 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LABELS_HPP
-#define FIRESTORM_LABELS_HPP
+#ifndef FIRESTORM_ENEMY_HPP
+#define FIRESTORM_ENEMY_HPP
 
-#define LABEL_PLAYER "player"
-#define LABEL_GROUND "ground"
-#define LABEL_LEVEL_END "level-end"
-#define LABEL_OBSTACLE "obstacle"
-#define LABEL_COLLECTABLE "collectable"
-#define LABEL_ENEMY "enemy"
+#include "scene/AnimatedSpriteSceneNode.hpp"
+#include "graphics/SpriteSheet.hpp"
 
-#endif //FIRESTORM_LABELS_HPP
+#include <memory>
+
+namespace fs::scene
+{
+class Enemy : public AnimatedSpriteSceneNode
+{
+public:
+    Enemy() = default;
+    ~Enemy() override = default;
+
+    void create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
+                const b2FixtureDef& fixtureDef, const Animation& walkingAnimation);
+    void destroy() override;
+
+    const core::Vector2f& getStartingPosition() const;
+    void setStartingPosition(const core::Vector2f& startingPosition);
+
+protected:
+    utils::LoggerPtr logger;
+
+    core::fs_float32 speed = 1.5f;
+    core::fs_float32 moving = 0.f;
+    core::fs_float32 lastMoving = 0.f;
+
+    core::Vector2f startingPosition;
+
+    scene::AnimatedSpriteSceneNode::Animation walkingAnimation;
+
+};
+
+typedef std::unique_ptr<Enemy> EnemyPtr;
+}
+
+#endif //FIRESTORM_ENEMY_HPP

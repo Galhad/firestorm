@@ -32,6 +32,7 @@ namespace fs::scene
 
 void Scene::create()
 {
+    nodesModified = true;
 }
 
 void Scene::destroy()
@@ -74,6 +75,8 @@ void Scene::render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayou
             renderer->render(commandBuffer, pipelineLayout, sceneDescriptorSet);
         }
     }
+
+    nodesModified = false;
 }
 
 const std::vector<SceneNode*>& Scene::getNodes() const
@@ -106,6 +109,11 @@ void Scene::setActiveCamera(CameraSceneNode* activeCamera)
 
 bool Scene::isGeometryUpdated() const
 {
+    if (nodesModified)
+    {
+        return true;
+    }
+
     for (auto& node : nodes)
     {
         if (node->getTransformation().isGeometryUpdated())
@@ -114,6 +122,27 @@ bool Scene::isGeometryUpdated() const
         }
     }
     return false;
+}
+
+void Scene::addSceneNode(SceneNode& sceneNode)
+{
+    nodes.push_back(&sceneNode);
+    sceneNode.setScene(this);
+    nodesModified = true;
+}
+
+void Scene::removeSceneNode(SceneNode& sceneNode)
+{
+    for (auto it = nodes.begin(); it != nodes.end(); it++)
+    {
+        if (*it == &sceneNode)
+        {
+            nodes.erase(it);
+        }
+    }
+
+    sceneNode.setScene(nullptr);
+    nodesModified = true;
 }
 
 }

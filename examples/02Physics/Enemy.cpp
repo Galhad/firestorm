@@ -20,14 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LABELS_HPP
-#define FIRESTORM_LABELS_HPP
+#include "Enemy.hpp"
+#include "Labels.hpp"
 
-#define LABEL_PLAYER "player"
-#define LABEL_GROUND "ground"
-#define LABEL_LEVEL_END "level-end"
-#define LABEL_OBSTACLE "obstacle"
-#define LABEL_COLLECTABLE "collectable"
-#define LABEL_ENEMY "enemy"
+namespace fs::scene
+{
 
-#endif //FIRESTORM_LABELS_HPP
+void Enemy::create(io::InputManager& inputManager, physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
+                   const b2FixtureDef& fixtureDef, const Animation& walkingAnimation)
+{
+    AnimatedSpriteSceneNode::create(inputManager, walkingAnimation);
+
+    logger = spdlog::get(utils::CONSOLE_LOGGER_NAME);
+
+    Enemy::walkingAnimation = walkingAnimation;
+
+    createBodyComponent(physicsManager, bodyDef, fixtureDef);
+
+    transformation->setLayer(0.1f);
+
+    labels.insert(LABEL_ENEMY);
+}
+
+void Enemy::destroy()
+{
+    AnimatedSpriteSceneNode::destroy();
+}
+
+const core::Vector2f& Enemy::getStartingPosition() const
+{
+    return startingPosition;
+}
+
+void Enemy::setStartingPosition(const core::Vector2f& startingPosition)
+{
+    Enemy::startingPosition = startingPosition;
+}
+}

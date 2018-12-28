@@ -92,7 +92,7 @@ bool Device::pickDeviceIfSuitable(VkPhysicalDevice device)
     VkPhysicalDeviceFeatures deviceFeatures = {};
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-    logger->debug("Found device {}{} with driver version {} vendor id {}", deviceProperties.deviceName,
+    logger->debug("Found device {} ({}) with driver version {} vendor id {}", deviceProperties.deviceName,
                   deviceProperties.deviceID,
                   deviceProperties.driverVersion, deviceProperties.vendorID);
     logger->debug("Maximum texture size: {}", deviceProperties.limits.maxImageDimension2D);

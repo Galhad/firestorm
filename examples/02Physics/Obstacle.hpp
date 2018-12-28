@@ -20,14 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LABELS_HPP
-#define FIRESTORM_LABELS_HPP
+#ifndef FIRESTORM_OBSTACLE_HPP
+#define FIRESTORM_OBSTACLE_HPP
 
-#define LABEL_PLAYER "player"
-#define LABEL_GROUND "ground"
-#define LABEL_LEVEL_END "level-end"
-#define LABEL_OBSTACLE "obstacle"
-#define LABEL_COLLECTABLE "collectable"
-#define LABEL_ENEMY "enemy"
+#include "scene/SpriteSceneNode.hpp"
 
-#endif //FIRESTORM_LABELS_HPP
+#include <memory>
+
+namespace fs::scene
+{
+class Obstacle : public SpriteSceneNode
+{
+public:
+    Obstacle() = default;
+    ~Obstacle() override = default;
+
+    void
+    create(io::InputManager& inputManager, const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager);
+    void destroy() override;
+
+};
+
+typedef std::unique_ptr<Obstacle> ObstaclePtr;
+}
+
+#endif //FIRESTORM_OBSTACLE_HPP

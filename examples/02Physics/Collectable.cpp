@@ -1,4 +1,3 @@
-
 // MIT License
 //
 // Copyright (c) 2018 Wojciech Wilk
@@ -21,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "GroundBrick.hpp"
+#include "Collectable.hpp"
 #include "Labels.hpp"
+#include "scene/Scene.hpp"
 
 namespace fs::scene
 {
-void GroundBrick::create(io::InputManager& inputManager, const graphics::Sprite& sprite,
+void Collectable::create(io::InputManager& inputManager, const graphics::Sprite& sprite,
                          physics::PhysicsManager& physicsManager)
 {
     SpriteSceneNode::create(inputManager, sprite);
@@ -34,23 +34,43 @@ void GroundBrick::create(io::InputManager& inputManager, const graphics::Sprite&
     b2BodyDef bodyDef;
     bodyDef.type = b2_staticBody;
 
-    core::fs_float32 halfWidth = sprite.getWidthUnits() / 2.f;
-    core::fs_float32 halfHeight = sprite.getHeightUnits() / 2.f;
+    core::fs_float32 halfWidth = sprite.getWidthUnits() / 4.f;
+    core::fs_float32 halfHeight = sprite.getHeightUnits() / 4.f;
 
-    b2EdgeShape shape;
-    shape.Set(b2Vec2(-halfWidth, -halfHeight), b2Vec2(halfWidth, -halfHeight));
+    b2PolygonShape shape;
+    shape.SetAsBox(halfWidth, halfHeight);
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &shape;
-    fixtureDef.restitution = 0.f;
+    fixtureDef.isSensor = true;
 
     createBodyComponent(physicsManager, bodyDef, fixtureDef);
 
-    labels.insert(LABEL_GROUND);
+    labels.insert(LABEL_COLLECTABLE);
+
+    shouldBeDestroyed = false;
 }
 
-void GroundBrick::destroy()
+void Collectable::destroy()
 {
     SpriteSceneNode::destroy();
+}
+
+void Collectable::beginCollision(const BodyComponent& other)
+{
+    const auto& labels = other.getSceneNode()->getLabels();
+    if (labels.find(LABEL_PLAYER) != labels.end())
+    {
+        shouldBeDestroyed = true;
+    }
+}
+
+void Collectable::update(float deltaTime)
+{
+    if (shouldBeDestroyed)
+    {
+        body->getBody()->SetActive(false);
+        renderer->setActive(false);
+    }
 }
 }

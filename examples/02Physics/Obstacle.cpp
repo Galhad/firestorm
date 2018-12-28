@@ -20,14 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LABELS_HPP
-#define FIRESTORM_LABELS_HPP
+#include "Obstacle.hpp"
+#include "Labels.hpp"
 
-#define LABEL_PLAYER "player"
-#define LABEL_GROUND "ground"
-#define LABEL_LEVEL_END "level-end"
-#define LABEL_OBSTACLE "obstacle"
-#define LABEL_COLLECTABLE "collectable"
-#define LABEL_ENEMY "enemy"
+namespace fs::scene
+{
 
-#endif //FIRESTORM_LABELS_HPP
+void Obstacle::create(io::InputManager& inputManager, const graphics::Sprite& sprite,
+                      physics::PhysicsManager& physicsManager)
+{
+    SpriteSceneNode::create(inputManager, sprite);
+
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_staticBody;
+
+    core::fs_float32 halfWidth = sprite.getWidthUnits() / 2.f;
+    core::fs_float32 halfHeight = sprite.getHeightUnits() / 2.f;
+
+    b2PolygonShape shape;
+    shape.SetAsBox(halfWidth, halfHeight);
+
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &shape;
+    fixtureDef.restitution = 0.f;
+
+    createBodyComponent(physicsManager, bodyDef, fixtureDef);
+
+    labels.insert(LABEL_OBSTACLE);
+    labels.insert(LABEL_GROUND);
+}
+
+void Obstacle::destroy()
+{
+    SpriteSceneNode::destroy();
+}
+}

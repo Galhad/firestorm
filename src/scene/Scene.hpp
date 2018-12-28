@@ -47,6 +47,9 @@ public:
     const std::vector<SceneNode*>& getNodes() const;
     std::vector<SceneNode*>& getNodes();
 
+    void addSceneNode(SceneNode& sceneNode);
+    void removeSceneNode(SceneNode& sceneNode);
+
     CameraSceneNode* getActiveCamera();
     void setActiveCamera(CameraSceneNode* activeCamera);
 
@@ -56,6 +59,7 @@ protected:
     std::string name;
     std::vector<SceneNode*> nodes;
     CameraSceneNode* activeCamera = nullptr;
+    bool nodesModified = true;
 
 };
 

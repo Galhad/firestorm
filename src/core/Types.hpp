@@ -75,8 +75,8 @@ struct Rectf
 
 struct Vector2i
 {
-    fs_uint64 x = 0ull;
-    fs_uint64 y = 0ull;
+    fs_int64 x = 0ull;
+    fs_int64 y = 0ull;
 };
 
 struct Vector2d

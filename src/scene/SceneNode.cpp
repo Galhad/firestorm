@@ -32,19 +32,27 @@ void SceneNode::create(io::InputManager& inputManager)
     transformation->create(*this);
     renderer = nullptr;
     body = nullptr;
+    scene = nullptr;
 
     SceneNode::inputManager = &inputManager;
 }
 
 void SceneNode::destroy()
 {
+    scene = nullptr;
     inputManager = nullptr;
-    body = nullptr;
+    if (body != nullptr)
+    {
+        body->destroy();
+        body = nullptr;
+    }
     if (renderer != nullptr)
     {
         renderer->destroy();
+        renderer = nullptr;
     }
     transformation->destroy();
+    transformation = nullptr;
 }
 
 void SceneNode::update(float deltaTime)
@@ -130,6 +138,16 @@ void SceneNode::applyPhysicsStep()
     {
         body->applyPhysicsStep();
     }
+}
+
+Scene* SceneNode::getScene() const
+{
+    return scene;
+}
+
+void SceneNode::setScene(Scene* scene)
+{
+    SceneNode::scene = scene;
 }
 
 }

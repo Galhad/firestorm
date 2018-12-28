@@ -34,6 +34,8 @@ void PlayerSceneNode::create(io::InputManager& inputManager, physics::PhysicsMan
 {
     AnimatedSpriteSceneNode::create(inputManager, standingAnimation);
 
+    logger = spdlog::get(utils::CONSOLE_LOGGER_NAME);
+
     PlayerSceneNode::standingAnimation = standingAnimation;
     PlayerSceneNode::walkingAnimation = walkingAnimation;
     PlayerSceneNode::jumpingAnimation = jumpingAnimation;
@@ -43,6 +45,8 @@ void PlayerSceneNode::create(io::InputManager& inputManager, physics::PhysicsMan
     transformation->setLayer(0.1f);
 
     labels.insert(LABEL_PLAYER);
+
+    coins = 0;
 }
 
 void PlayerSceneNode::destroy()
@@ -65,6 +69,10 @@ void PlayerSceneNode::update(float deltaTimeMs)
     {
         moving = 0.f;
     }
+
+    auto rotation = transformation->getRotation();
+    rotation.y = moving < 0.f ? 180.f : 0.f;
+    transformation->setRotation(rotation);
 
     if (inputManager->getKeyState(io::Key::W) == io::KeyState::Pressed)
     {
@@ -132,6 +140,16 @@ void PlayerSceneNode::beginCollision(const BodyComponent& other)
             inAir = false;
         }
     }
+    else if (labels.find(LABEL_COLLECTABLE) != labels.end())
+    {
+        ++coins;
+        logger->info("Collected coin, total coins: {}", coins);
+    }
+    else if (labels.find(LABEL_ENEMY) != labels.end())
+    {
+        resettingPosition = true;
+        logger->info("Enemy have killed player");
+    }
 }
 
 void PlayerSceneNode::endCollision(const BodyComponent& other)
@@ -155,6 +173,16 @@ void PlayerSceneNode::resetPosition()
     jumping = false;
 
     body->getBody()->SetTransform(b2Vec2(startingPosition.x, startingPosition.y), 0.f);
+}
+
+const core::Vector2f& PlayerSceneNode::getStartingPosition() const
+{
+    return startingPosition;
+}
+
+void PlayerSceneNode::setStartingPosition(const core::Vector2f& startingPosition)
+{
+    PlayerSceneNode::startingPosition = startingPosition;
 }
 
 }

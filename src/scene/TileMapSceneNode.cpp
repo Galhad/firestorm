@@ -100,7 +100,6 @@ void TileMapSceneNode::setTileId(const std::vector<core::Vector2i>& positions, c
 void
 TileMapSceneNode::setTileBuilderCallback(const TileMapSceneNode::CreateSceneNodeCallback& callback)
 {
-//    builderMapping.insert_or_assign(id, callback);
     builderCallback = callback;
 }
 
@@ -116,13 +115,6 @@ void TileMapSceneNode::buildTiles()
                 continue;
             }
 
-//            const auto& builderIt = builderMapping.find(id);
-//            if (builderIt == builderMapping.end())
-//            {
-//                throw std::runtime_error("Builder not set for tile with id " + std::to_string(id));
-//            }
-
-//            SceneNode* sceneNode = builderIt->second(id);
             SceneNode* sceneNode = builderCallback(id);
             tile.setSceneNode(sceneNode);
         }

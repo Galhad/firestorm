@@ -40,6 +40,8 @@ class BodyComponent;
 
 typedef std::unique_ptr<BodyComponent> BodyComponentPtr;
 
+class Scene;
+
 class SceneNode
 {
 public:
@@ -71,11 +73,16 @@ public:
     std::set<std::string>& getLabels();
     void setLabels(const std::set<std::string>& labels);
 
+    Scene* getScene() const;
+    void setScene(Scene* scene);
+
 protected:
     void createBodyComponent(physics::PhysicsManager& physicsManager, const b2BodyDef& bodyDef,
                              const b2FixtureDef& fixtureDef);
 
 protected:
+    Scene* scene = nullptr;
+
     TransformationComponentPtr transformation = nullptr;
     RendererComponentPtr renderer = nullptr;
     BodyComponentPtr body = nullptr;

@@ -31,6 +31,7 @@ PhysicsApplication::PhysicsApplication()
 
     graphics::WindowCreationParams windowCreationParams;
     windowCreationParams.windowTitle = "02Physics";
+    windowCreationParams.windowSize = {1280, 720};
     engineCreationParams.windowCreationParams = windowCreationParams;
 
     graphics::GraphicsCreationParams graphicsCreationParams;
@@ -53,33 +54,75 @@ PhysicsApplication::PhysicsApplication()
     bgSprite = bgSpriteSheet->addSprite({0, 0, bgSpriteSheet->getWidthPixels(), bgSpriteSheet->getHeightPixels()});
 
     tilesSpriteSheet = graphicsManager->createSpriteSheet(spritesheetResource);
-    grassLeftSprite = tilesSpriteSheet->addSprite({504, 648, 70, 70});
-    grassMidSprite = tilesSpriteSheet->addSprite({504, 576, 70, 70});
-    grassRightSprite = tilesSpriteSheet->addSprite({504, 504, 70, 70});
-
+    itemsSpriteSheet = graphicsManager->createSpriteSheet(itemsResource);
     playerSpriteSheet = graphicsManager->createSpriteSheet(playerResource);
+    enemiesSpriteSheet = graphicsManager->createSpriteSheet(enemiesResource);
 
-    bgSceneNode.create(*inputManager, *bgSprite);
-    bgSceneNode.getTransformation().setPosition({0.f, 0.f});
-    bgSceneNode.getTransformation().setLayer(-0.1f);
-    bgSceneNode.getTransformation().setScale(10.f, 10.f);
-    scene->getNodes().push_back(&bgSceneNode);
-
-    groundTileMap.create(*inputManager, *physicsManager, *grassLeftSprite, *grassMidSprite, *grassRightSprite);
-    scene->getNodes().push_back(&groundTileMap);
-
-    playerSceneNode.create(*inputManager, *playerSpriteSheet, *physicsManager);
-    scene->getNodes().push_back(&playerSceneNode);
-
-    levelEnd.create(*inputManager, *physicsManager, core::Vector2f(-10.f, 1.f), core::Vector2f(10.f, 1.f));
+    createBgSceneNode();
+    createTileMap();
+    createPlayer();
+    createSlimes();
+    createLevelEndSceneNode();
 
     sceneManager->setActiveScene(scene);
 
     camera.create(*inputManager, graphicsManager->getWindow(), vulkanDriver.getUniformBuffer());
-    camera.getTransformation().setPosition(-9.2f, -5.2f);
+    camera.getTransformation().setPosition(-1.2f, -14.2f);
     camera.setZoom(41.5f);
     scene->getNodes().push_back(&camera);
     scene->setActiveCamera(&camera);
+}
+
+void PhysicsApplication::createSlimes()
+{
+    slime1.create(*inputManager, *enemiesSpriteSheet, *physicsManager, {17.45f, 5.475f});
+    scene->getNodes().push_back(&slime1);
+
+    slime2.create(*inputManager, *enemiesSpriteSheet, *physicsManager, {17.45f, 11.075f});
+    scene->getNodes().push_back(&slime2);
+
+    slime3.create(*inputManager, *enemiesSpriteSheet, *physicsManager, {20.32f, 11.075f});
+    scene->getNodes().push_back(&slime3);
+}
+
+void PhysicsApplication::createPlayer()
+{
+    core::Vector2f playerStartingPosition = {0.f, groundTileMap.getTileSize().y * 14};
+    playerSceneNode.create(*inputManager, *playerSpriteSheet, *physicsManager, playerStartingPosition);
+    scene->getNodes().push_back(&playerSceneNode);
+}
+
+void PhysicsApplication::createTileMap()
+{
+    groundTileMap.create(*inputManager, *physicsManager, *tilesSpriteSheet, *itemsSpriteSheet);
+    scene->getNodes().push_back(&groundTileMap);
+}
+
+void PhysicsApplication::createLevelEndSceneNode()
+{
+    core::fs_float32 levelEndWidth = (groundTileMap.getTileSize().x + 2) * groundTileMap.getSize().x;
+    core::fs_float32 halfLevelEndWidth = levelEndWidth / 2.f;
+
+    core::fs_float32 levelEndY = groundTileMap.getTileSize().y * (groundTileMap.getSize().y + 2);
+
+    core::Vector2f point1 = {-halfLevelEndWidth, levelEndY};
+    core::Vector2f point2 = {halfLevelEndWidth, levelEndY};
+
+    levelEnd.create(*inputManager, *physicsManager, point1, point2);
+    scene->getNodes().push_back(&levelEnd);
+}
+
+void PhysicsApplication::createBgSceneNode()
+{
+    bgSceneNode.create(*inputManager, *bgSprite);
+
+    core::Vector2f position = {-bgSprite->getWidthUnits() / 2.f, -bgSprite->getHeightUnits() / 2.f};
+    core::Vector2f scale = {50.f, 50.f};
+
+    bgSceneNode.getTransformation().setPosition(position);
+    bgSceneNode.getTransformation().setLayer(-0.1f);
+    bgSceneNode.getTransformation().setScale(scale);
+    scene->getNodes().push_back(&bgSceneNode);
 }
 
 PhysicsApplication::~PhysicsApplication()
@@ -94,16 +137,22 @@ void PhysicsApplication::update(float deltaTime)
 void PhysicsApplication::loadResources()
 {
     auto spritesheetResourceFuture = fileProvider->loadFileAsync("../resources/tiles_spritesheet.png");
+    auto itemsResourceFuture = fileProvider->loadFileAsync("../resources/items_spritesheet.png");
     auto bgResourceFuture = fileProvider->loadFileAsync("../resources/bg.png");
     auto playerResourceFuture = fileProvider->loadFileAsync("../resources/p1_spritesheet.png");
+    auto enemiesResourceFuture = fileProvider->loadFileAsync("../resources/enemies_spritesheet.png");
 
     spritesheetResourceFuture.wait();
+    itemsResourceFuture.wait();
     bgResourceFuture.wait();
     playerResourceFuture.wait();
+    enemiesResourceFuture.wait();
 
     spritesheetResource = spritesheetResourceFuture.get();
+    itemsResource = itemsResourceFuture.get();
     bgResource = bgResourceFuture.get();
     playerResource = playerResourceFuture.get();
+    enemiesResource = enemiesResourceFuture.get();
 }
 
 }

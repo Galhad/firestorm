@@ -20,14 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LABELS_HPP
-#define FIRESTORM_LABELS_HPP
+#ifndef FIRESTORM_COLLECTABLE_HPP
+#define FIRESTORM_COLLECTABLE_HPP
 
-#define LABEL_PLAYER "player"
-#define LABEL_GROUND "ground"
-#define LABEL_LEVEL_END "level-end"
-#define LABEL_OBSTACLE "obstacle"
-#define LABEL_COLLECTABLE "collectable"
-#define LABEL_ENEMY "enemy"
+#include "scene/SpriteSceneNode.hpp"
 
-#endif //FIRESTORM_LABELS_HPP
+#include <memory>
+
+namespace fs::scene
+{
+class Collectable : public SpriteSceneNode
+{
+public:
+    Collectable() = default;
+    ~Collectable() override = default;
+
+    void
+    create(io::InputManager& inputManager, const graphics::Sprite& sprite, physics::PhysicsManager& physicsManager);
+    void destroy() override;
+
+    void beginCollision(const BodyComponent& other) override;
+
+    void update(float deltaTime) override;
+
+protected:
+    bool shouldBeDestroyed = false;
+
+};
+
+typedef std::unique_ptr<Collectable> CollectablePtr;
+}
+
+#endif //FIRESTORM_COLLECTABLE_HPP

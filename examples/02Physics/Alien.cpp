@@ -26,7 +26,7 @@ namespace fs
 {
 
 void Alien::create(io::InputManager& inputManager, graphics::SpriteSheet& playerSpriteSheet,
-                   physics::PhysicsManager& physicsManager)
+                   physics::PhysicsManager& physicsManager, const core::Vector2f& startingPosition)
 {
     Alien::playerSpriteSheet = &playerSpriteSheet;
 
@@ -37,17 +37,18 @@ void Alien::create(io::InputManager& inputManager, graphics::SpriteSheet& player
 
     createWalkingAnimation();
 
-    startingPosition = {0.7f, -1.7f - 0.22f};
+    Alien::startingPosition = startingPosition;
 
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
-    bodyDef.position = {0.7f, -1.7f - 0.22f};
+    bodyDef.position = {startingPosition.x, startingPosition.y};
 
     b2PolygonShape shape;
     shape.SetAsBox(standingSprite->getWidthUnits() / 2.f, standingSprite->getHeightUnits() / 2.f);
 
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &shape;
+    fixtureDef.restitution = 0.f;
 
     PlayerSceneNode::create(inputManager, physicsManager, bodyDef, fixtureDef, standingAnimation, walkingAnimation,
                             jumpingAnimation);

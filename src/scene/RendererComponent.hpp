@@ -44,11 +44,15 @@ public:
     virtual void
     render(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout, VkDescriptorSet sceneDescriptorSet) = 0;
 
+    bool isActive() const;
+    void setActive(bool active);
+
 protected:
     void pushTransform(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
 
 protected:
     TransformationComponent* transformation = nullptr;
+    bool active = true;
 
 };
 

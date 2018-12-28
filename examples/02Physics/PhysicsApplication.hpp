@@ -32,6 +32,7 @@
 #include "GroundBrick.hpp"
 #include "LevelEnd.hpp"
 #include "GroundTileMap.hpp"
+#include "Slime.hpp"
 
 #include <iostream>
 #include <memory>
@@ -48,11 +49,18 @@ public:
 
 private:
     void loadResources();
+    void createBgSceneNode();
+    void createLevelEndSceneNode();
+    void createTileMap();
+    void createPlayer();
+    void createSlimes();
 
 private:
     io::Resource spritesheetResource;
+    io::Resource itemsResource;
     io::Resource bgResource;
     io::Resource playerResource;
+    io::Resource enemiesResource;
 
     scene::CameraSceneNode camera;
     scene::Scene* scene;
@@ -62,15 +70,18 @@ private:
     scene::SpriteSceneNode bgSceneNode;
 
     graphics::SpriteSheet* tilesSpriteSheet;
-    graphics::Sprite* grassLeftSprite;
-    graphics::Sprite* grassMidSprite;
-    graphics::Sprite* grassRightSprite;
+    graphics::SpriteSheet* itemsSpriteSheet;
+    graphics::SpriteSheet* enemiesSpriteSheet;
 
     scene::GroundTileMap groundTileMap;
 
     graphics::SpriteSheet* playerSpriteSheet = nullptr;
     Alien playerSceneNode;
     scene::LevelEnd levelEnd;
+//    std::vector<scene::SlimePtr> slimes;
+    scene::Slime slime1;
+    scene::Slime slime2;
+    scene::Slime slime3;
 };
 
 typedef std::unique_ptr<PhysicsApplication> SimpleApplicationPtr;

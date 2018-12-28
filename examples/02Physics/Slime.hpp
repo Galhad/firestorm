@@ -20,14 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef FIRESTORM_LABELS_HPP
-#define FIRESTORM_LABELS_HPP
+#ifndef FIRESTORM_SLIME_HPP
+#define FIRESTORM_SLIME_HPP
 
-#define LABEL_PLAYER "player"
-#define LABEL_GROUND "ground"
-#define LABEL_LEVEL_END "level-end"
-#define LABEL_OBSTACLE "obstacle"
-#define LABEL_COLLECTABLE "collectable"
-#define LABEL_ENEMY "enemy"
+#include "Enemy.hpp"
 
-#endif //FIRESTORM_LABELS_HPP
+#include <memory>
+
+namespace fs::scene
+{
+class Slime : public Enemy
+{
+public:
+    Slime() = default;
+    ~Slime() override = default;
+
+    void create(io::InputManager& inputManager, graphics::SpriteSheet& enemiesSpriteSheet,
+                physics::PhysicsManager& physicsManager, const core::Vector2f& position);
+    void destroy() override;
+
+    void update(float deltaTime) override;
+    virtual void physicsUpdate();
+
+protected:
+    core::fs_float32 boundry = 0.7f;
+    core::fs_float32 movementSpeed = 2.f;
+    core::fs_float32 movementDirection = -1.f;
+    core::Vector2f centerPostition = {};
+
+    void setMovement(core::fs_float32 movement) const;
+};
+
+typedef std::unique_ptr<Slime> SlimePtr;
+}
+
+#endif //FIRESTORM_SLIME_HPP

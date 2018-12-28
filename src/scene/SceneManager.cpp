@@ -71,9 +71,9 @@ void SceneManager::clearScenes()
 {
     activeScene = nullptr;
 
-	for(auto it = scenes.begin(); it != scenes.end();)
+    for (auto it = scenes.begin(); it != scenes.end();)
     {
-		(*it)->destroy();
+        (*it)->destroy();
         it = scenes.erase(it);
     }
 }
