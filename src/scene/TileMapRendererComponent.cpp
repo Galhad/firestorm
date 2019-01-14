@@ -46,7 +46,7 @@ void TileMapRendererComponent::render(VkCommandBuffer commandBuffer, VkPipelineL
         tileMap->buildTiles();
     }
 
-    if (transformation->isGeometryUpdated())
+    if (transformation->isTransformUpdated())
     {
         tileMap->updateTilesPosition();
     }

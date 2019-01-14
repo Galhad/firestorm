@@ -55,8 +55,8 @@ public:
     void setScale(core::fs_float32 x, core::fs_float32 y);
     void setScale(core::Vector2f scale);
 
-    bool isGeometryUpdated() const;
-    void setGeometryUpdated(bool geometryUpdated);
+    bool isTransformUpdated() const;
+    void setTransformUpdated(bool geometryUpdated);
 
     void updateTransform();
 
@@ -72,7 +72,7 @@ protected:
     core::Vector3f rotation;
     core::fs_float32 layer = 0.f;
     core::Vector2f scale;
-    bool geometryUpdated = false;
+    bool transformUpdated = false;
 
 };
 

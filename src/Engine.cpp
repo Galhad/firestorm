@@ -140,7 +140,7 @@ void Engine::run()
 
             graphicsManager->draw();
 
-            if (activeScene->isGeometryUpdated())
+            if (activeScene->isTransformUpdated())
             {
                 graphicsManager->getVulkanDriver().finish();
                 graphicsManager->getVulkanDriver().recordCommandBuffers();
@@ -170,6 +170,11 @@ scene::SceneManager& Engine::getSceneManager() const
 const utils::LoggerPtr& Engine::getLogger() const
 {
     return logger;
+}
+
+void Engine::update(float deltaTime)
+{
+
 }
 
 }

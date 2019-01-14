@@ -31,29 +31,13 @@ void SpriteSceneNode::create(io::InputManager& inputManager, const graphics::Spr
 {
     SceneNode::create(inputManager);
 
-//    spriteRenderer = std::make_unique<SpriteRendererComponent>();
-//    spriteRenderer->create(*this, *transformation, sprite);
-//    renderer = spriteRenderer.get();
-
     renderer = std::make_unique<SpriteRendererComponent>();
     dynamic_cast<SpriteRendererComponent*>(renderer.get())->create(*this, *transformation, sprite);
 }
 
 void SpriteSceneNode::destroy()
 {
-//    spriteRenderer->destroy();
-
     SceneNode::destroy();
 }
-
-//const SpriteRendererComponent* SpriteSceneNode::getSpriteRenderer() const
-//{
-//    return spriteRenderer.get();
-//}
-//
-//SpriteRendererComponent* SpriteSceneNode::getSpriteRenderer()
-//{
-//    return spriteRenderer.get();
-//}
 
 }

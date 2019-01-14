@@ -64,6 +64,7 @@ const fs::graphics::Sprite* SpriteRendererComponent::getSprite() const
 void SpriteRendererComponent::setSprite(const fs::graphics::Sprite& sprite)
 {
     SpriteRendererComponent::sprite = &sprite;
+    transformation->setTransformUpdated(true);
 }
 
 }

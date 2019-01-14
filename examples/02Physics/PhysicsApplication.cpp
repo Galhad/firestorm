@@ -130,10 +130,6 @@ PhysicsApplication::~PhysicsApplication()
 
 }
 
-void PhysicsApplication::update(float deltaTime)
-{
-}
-
 void PhysicsApplication::loadResources()
 {
     auto spritesheetResourceFuture = fileProvider->loadFileAsync("../resources/tiles_spritesheet.png");

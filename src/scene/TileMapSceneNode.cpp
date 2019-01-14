@@ -179,7 +179,7 @@ void TileMapSceneNode::updateTilesPosition()
         }
     }
 
-    transformation->setGeometryUpdated(false);
+    transformation->setTransformUpdated(false);
 }
 
 void TileMapSceneNode::update(float deltaTime)

@@ -50,7 +50,7 @@ enum class Key
 
     // Printable keys
         Space = GLFW_KEY_SPACE,
-    Apostgrophe = GLFW_KEY_APOSTROPHE,       /* ' */
+    Apostrophe = GLFW_KEY_APOSTROPHE,       /* ' */
     Comma = GLFW_KEY_COMMA,                  /* , */
     Minus = GLFW_KEY_MINUS,                  /* - */
     Period = GLFW_KEY_PERIOD,                /* . */

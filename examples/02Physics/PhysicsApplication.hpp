@@ -45,8 +45,6 @@ public:
     PhysicsApplication();
     ~PhysicsApplication() override;
 
-    void update(float deltaTime) override;
-
 private:
     void loadResources();
     void createBgSceneNode();
@@ -78,7 +76,6 @@ private:
     graphics::SpriteSheet* playerSpriteSheet = nullptr;
     Alien playerSceneNode;
     scene::LevelEnd levelEnd;
-//    std::vector<scene::SlimePtr> slimes;
     scene::Slime slime1;
     scene::Slime slime2;
     scene::Slime slime3;

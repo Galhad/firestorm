@@ -60,7 +60,7 @@ void CameraSceneNode::setActive(bool active)
     CameraSceneNode::active = active;
     if (active)
     {
-        transformation->setGeometryUpdated(true);
+        transformation->setTransformUpdated(true);
     }
 }
 
@@ -72,7 +72,7 @@ core::fs_float32 CameraSceneNode::getZoom() const
 void CameraSceneNode::setZoom(core::fs_float32 zoom)
 {
     CameraSceneNode::zoom = zoom;
-    transformation->setGeometryUpdated(true);
+    transformation->setTransformUpdated(true);
 }
 
 const graphics::Window* CameraSceneNode::getWindow() const
@@ -88,9 +88,9 @@ void CameraSceneNode::setWindow(const graphics::Window* window)
 
 void CameraSceneNode::update(float deltaTime)
 {
-    if (transformation->isGeometryUpdated() && active)
+    if (transformation->isTransformUpdated() && active)
     {
-        transformation->setGeometryUpdated(false);
+        transformation->setTransformUpdated(false);
         updateUniformData();
     }
 }

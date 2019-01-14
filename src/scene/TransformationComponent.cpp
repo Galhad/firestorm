@@ -34,13 +34,13 @@ void TransformationComponent::create(SceneNode& sceneNode)
     rotation = {0.f, 0.f, 0.f};
     layer = 0.f;
     scale = {1.f, 1.f};
-    geometryUpdated = true;
+    transformUpdated = true;
 }
 
 void TransformationComponent::destroy()
 {
     transform = {};
-    geometryUpdated = true;
+    transformUpdated = true;
 
     Component::destroy();
 }
@@ -59,7 +59,7 @@ void TransformationComponent::setPosition(core::fs_float32 x, core::fs_float32 y
 void TransformationComponent::setPosition(core::Vector2f position)
 {
     TransformationComponent::position = position;
-    geometryUpdated = true;
+    transformUpdated = true;
 }
 
 core::fs_float32 TransformationComponent::getLayer() const
@@ -70,7 +70,7 @@ core::fs_float32 TransformationComponent::getLayer() const
 void TransformationComponent::setLayer(core::fs_float32 layer)
 {
     TransformationComponent::layer = layer;
-    geometryUpdated = true;
+    transformUpdated = true;
 }
 
 core::Vector3f TransformationComponent::getRotation() const
@@ -81,13 +81,13 @@ core::Vector3f TransformationComponent::getRotation() const
 void TransformationComponent::setRotation(core::fs_float32 rotation)
 {
     TransformationComponent::rotation.z = rotation;
-    geometryUpdated = true;
+    transformUpdated = true;
 }
 
 void TransformationComponent::setRotation(core::Vector3f rotation)
 {
     TransformationComponent::rotation = rotation;
-    geometryUpdated = true;
+    transformUpdated = true;
 }
 
 core::Vector2f TransformationComponent::getScale() const
@@ -99,13 +99,13 @@ void TransformationComponent::setScale(core::fs_float32 x, core::fs_float32 y)
 {
     scale.x = x;
     scale.y = y;
-    geometryUpdated = true;
+    transformUpdated = true;
 }
 
 void TransformationComponent::setScale(core::Vector2f scale)
 {
     TransformationComponent::scale = scale;
-    geometryUpdated = true;
+    transformUpdated = true;
 }
 
 void TransformationComponent::calculateModelMatrix()
@@ -121,15 +121,15 @@ void TransformationComponent::calculateModelMatrix()
 }
 
 
-bool TransformationComponent::isGeometryUpdated() const
+bool TransformationComponent::isTransformUpdated() const
 {
-    return geometryUpdated;
+    return transformUpdated;
 }
 
 void TransformationComponent::updateTransform()
 {
     calculateModelMatrix();
-    geometryUpdated = false;
+    transformUpdated = false;
 }
 
 const graphics::Transform& TransformationComponent::getTransform() const
@@ -137,8 +137,8 @@ const graphics::Transform& TransformationComponent::getTransform() const
     return transform;
 }
 
-void TransformationComponent::setGeometryUpdated(bool geometryUpdated)
+void TransformationComponent::setTransformUpdated(bool geometryUpdated)
 {
-    TransformationComponent::geometryUpdated = geometryUpdated;
+    TransformationComponent::transformUpdated = geometryUpdated;
 }
 }

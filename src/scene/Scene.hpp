@@ -53,7 +53,7 @@ public:
     CameraSceneNode* getActiveCamera();
     void setActiveCamera(CameraSceneNode* activeCamera);
 
-    bool isGeometryUpdated() const;
+    bool isTransformUpdated() const;
 
 protected:
     std::string name;

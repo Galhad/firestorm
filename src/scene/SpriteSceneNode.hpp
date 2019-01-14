@@ -39,11 +39,6 @@ public:
     void create(io::InputManager& inputManager, const graphics::Sprite& sprite);
     void destroy() override;
 
-//    const SpriteRendererComponent* getSpriteRenderer() const;
-//    SpriteRendererComponent* getSpriteRenderer();
-
-protected:
-//    SpriteRendererComponentPtr spriteRenderer;
 };
 
 typedef std::unique_ptr<SpriteSceneNode> SpriteSceneNodePtr;

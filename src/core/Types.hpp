@@ -45,14 +45,14 @@ using fs_int32 = int32_t;
 using fs_uint64 = uint64_t;
 using fs_int64 = int64_t;
 
+using fs_float32 = float;
+using fs_float64 = double;
+
 using Vector2f = glm::vec2;
 using Vector3f = glm::vec3;
 using Vector4f = glm::vec4;
 
 using Quaternion = glm::quat;
-
-using fs_float32 = float;
-using fs_float64 = double;
 
 using fs_mat4 = glm::mat4;
 using fs_mat3 = glm::mat3;

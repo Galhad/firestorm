@@ -41,7 +41,7 @@ void RendererComponent::destroy()
 
 void RendererComponent::pushTransform(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout)
 {
-    if (transformation->isGeometryUpdated())
+    if (transformation->isTransformUpdated())
     {
         transformation->updateTransform();
     }

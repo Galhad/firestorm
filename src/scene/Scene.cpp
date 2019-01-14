@@ -107,7 +107,7 @@ void Scene::setActiveCamera(CameraSceneNode* activeCamera)
     activeCamera->setActive(true);
 }
 
-bool Scene::isGeometryUpdated() const
+bool Scene::isTransformUpdated() const
 {
     if (nodesModified)
     {
@@ -116,7 +116,7 @@ bool Scene::isGeometryUpdated() const
 
     for (auto& node : nodes)
     {
-        if (node->getTransformation().isGeometryUpdated())
+        if (node->getTransformation().isTransformUpdated())
         {
             return true;
         }
