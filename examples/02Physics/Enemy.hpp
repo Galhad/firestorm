@@ -45,11 +45,6 @@ public:
 
 protected:
     utils::LoggerPtr logger;
-
-    core::fs_float32 speed = 1.5f;
-    core::fs_float32 moving = 0.f;
-    core::fs_float32 lastMoving = 0.f;
-
     core::Vector2f startingPosition;
 
     scene::AnimatedSpriteSceneNode::Animation walkingAnimation;

@@ -35,7 +35,6 @@ class TileMapSceneNode : public SceneNode
 public:
     using CreateSceneNodeCallback = std::function<SceneNode*(core::fs_int32 id)>;
 
-    void updateTilesPosition();
 public:
     TileMapSceneNode() = default;
     ~TileMapSceneNode() override = default;
@@ -64,6 +63,7 @@ public:
     void setTilesChanged(bool tilesChanged);
 
     void buildTiles();
+    void updateTilesPosition();
 
     void update(float deltaTime) override;
     void physicsUpdate() override;
@@ -75,7 +75,6 @@ protected:
 protected:
     std::vector<std::vector<Tile>> tiles;
 
-//    std::map<core::fs_int32, CreateSceneNodeCallback> builderMapping;
     CreateSceneNodeCallback builderCallback;
 
     core::Vector2i size;

@@ -63,9 +63,6 @@ private:
     graphics::Sprite* playerStandSprite;
     scene::SpriteSceneNode playerSceneNode;
 
-    scene::AnimatedSpriteSceneNode animatedSpriteSceneNode;
-    scene::AnimatedSpriteSceneNode::Animation animation;
-
 };
 
 typedef std::unique_ptr<SimpleApplication> SimpleApplicationPtr;

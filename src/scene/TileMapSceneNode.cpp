@@ -44,7 +44,6 @@ TileMapSceneNode::create(io::InputManager& inputManager, const core::Vector2i& s
 
 void TileMapSceneNode::destroy()
 {
-//    builderMapping.clear();
     builderCallback = {};
     tiles.clear();
 

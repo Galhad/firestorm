@@ -100,7 +100,7 @@ void SpriteSheet::createDescriptor()
 
     vkAllocateDescriptorSets(graphicsPipeline->getSwapChain()->getDevice()->getDevice(), &allocInfo, &descriptorSet);
 
-    writeDescriptorSet = {};
+    VkWriteDescriptorSet writeDescriptorSet = {};
     writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     writeDescriptorSet.dstSet = descriptorSet;
     writeDescriptorSet.dstBinding = 0;
@@ -116,7 +116,6 @@ void SpriteSheet::createDescriptor()
 void SpriteSheet::destroyDescriptor()
 {
     descriptorSet = VK_NULL_HANDLE;
-    writeDescriptorSet = {};
 }
 
 }

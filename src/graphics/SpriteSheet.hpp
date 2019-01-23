@@ -64,7 +64,6 @@ private:
     bool spritesChanged = true;
 
     VkDescriptorSet descriptorSet = VK_NULL_HANDLE;
-    VkWriteDescriptorSet writeDescriptorSet = {};
 
 };
 

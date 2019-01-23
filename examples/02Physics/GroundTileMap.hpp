@@ -47,9 +47,8 @@ protected:
     const core::fs_int32 midId = 1;
     const core::fs_int32 rightId = 2;
     const core::fs_int32 plantId = 3;
-    const core::fs_int32 cactusId = 4;
-    const core::fs_int32 weightId = 5;
-    const core::fs_int32 coinId = 6;
+    const core::fs_int32 weightId = 4;
+    const core::fs_int32 coinId = 5;
 
     graphics::SpriteSheet* tilesSpriteSheet = nullptr;
     graphics::Sprite* grassLeftSprite = nullptr;

@@ -83,13 +83,6 @@ SimpleApplication::SimpleApplication()
     playerSceneNode.getTransformation().setPosition({0.7f, -0.7f - 0.22f});
     scene->getNodes().push_back(&playerSceneNode);
 
-    animation.push_back(grassLeftSprite);
-    animation.push_back(grassMidSprite);
-    animation.push_back(grassRightSprite);
-    animatedSpriteSceneNode.create(*inputManager, animation);
-    animatedSpriteSceneNode.getTransformation().setPosition({-1.4f, -1.4f});
-    scene->getNodes().push_back(&animatedSpriteSceneNode);
-
     sceneManager->setActiveScene(scene);
 
     camera.create(*inputManager, graphicsManager->getWindow(), vulkanDriver.getUniformBuffer());

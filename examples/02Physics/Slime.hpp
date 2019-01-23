@@ -40,13 +40,12 @@ public:
     void destroy() override;
 
     void update(float deltaTime) override;
-    virtual void physicsUpdate();
+    void physicsUpdate() override;
 
 protected:
-    core::fs_float32 boundry = 0.7f;
+    core::fs_float32 boundary = 0.7f;
     core::fs_float32 movementSpeed = 2.f;
     core::fs_float32 movementDirection = -1.f;
-    core::Vector2f centerPostition = {};
 
     void setMovement(core::fs_float32 movement) const;
 };

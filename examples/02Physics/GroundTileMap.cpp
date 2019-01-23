@@ -61,10 +61,6 @@ void GroundTileMap::create(io::InputManager& inputManager, physics::PhysicsManag
                                    spriteSceneNode->create(inputManager, *plantSprite);
                                    return spriteSceneNode;
                                }
-                               else if (id == cactusId)
-                               {
-                                   return nullptr;
-                               }
                                else if (id == weightId)
                                {
                                    auto* obstacleSceneNode = new Obstacle();

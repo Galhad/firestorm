@@ -50,8 +50,6 @@ void Slime::create(io::InputManager& inputManager, graphics::SpriteSheet& enemie
 
     setSpeedFps(6.f);
 
-    centerPostition = position;
-
     setMovement(movementSpeed);
 }
 
@@ -67,11 +65,11 @@ void Slime::update(float deltaTime)
 
 void Slime::physicsUpdate()
 {
-    if (body->getBody()->GetPosition().x <= startingPosition.x - boundry)
+    if (body->getBody()->GetPosition().x <= startingPosition.x - boundary)
     {
         movementDirection = 1.f;
     }
-    else if (body->getBody()->GetPosition().x >= startingPosition.x + boundry)
+    else if (body->getBody()->GetPosition().x >= startingPosition.x + boundary)
     {
         movementDirection = -1.f;
     }
