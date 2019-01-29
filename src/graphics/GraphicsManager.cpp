@@ -51,41 +51,13 @@ void GraphicsManager::destroy()
     window->destroy();
 }
 
-Texture* GraphicsManager::createTexture(const io::Resource& resource, core::fs_uint32 pixelsPerUnit) const
-{
-    int width, height, channels;
-    int desiredChannels = STBI_rgb_alpha;
-    const auto& bytes = resource.getData();
-    stbi_uc* pixels = stbi_load_from_memory(bytes.data(), static_cast<int>(bytes.size()), &width, &height,
-                                            &channels, STBI_rgb_alpha);
-    auto imageSize = static_cast<VkDeviceSize>(width * height * desiredChannels);
-
-    if (!pixels)
-    {
-        throw std::runtime_error("Failed to load texture image!");
-    }
-
-    TextureImage textureImage;
-    textureImage.create(vulkanDriver->getDevice(), static_cast<core::fs_uint32>(width),
-                        static_cast<core::fs_uint32>(height),
-                        pixels, imageSize);
-
-    auto texture = new Texture();
-    texture->create(std::move(textureImage), static_cast<core::fs_uint32>(width), static_cast<core::fs_uint32>(height),
-                    pixelsPerUnit, static_cast<core::fs_uint32>(desiredChannels));
-
-    stbi_image_free(pixels);
-
-    return texture;
-}
-
 SpriteSheet* GraphicsManager::createSpriteSheet(const io::Resource& resource, core::fs_uint32 pixelsPerUnit)
 {
     int width, height, channels;
     int desiredChannels = STBI_rgb_alpha;
     const auto& bytes = resource.getData();
     stbi_uc* pixels = stbi_load_from_memory(bytes.data(), static_cast<int>(bytes.size()), &width, &height,
-                                            &channels, STBI_rgb_alpha);
+                                            &channels, desiredChannels);
     auto imageSize = static_cast<VkDeviceSize>(width * height * desiredChannels);
 
     if (!pixels)

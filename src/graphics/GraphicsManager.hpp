@@ -58,8 +58,6 @@ public:
 
     void draw();
 
-    Texture* createTexture(const io::Resource& resource, core::fs_uint32 pixelsPerUnit = 100) const;
-
     SpriteSheet* createSpriteSheet(const io::Resource& resource, core::fs_uint32 pixelsPerUnit = 100);
     void clearSpriteSheets();
 
