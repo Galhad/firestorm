@@ -14,7 +14,7 @@ if (WIN32)
     LIST(APPEND LINK_LIBRARIES "vulkan-1")
 else (WIN32)
     LIST(APPEND LINK_LIBRARIES "vulkan")
-	LIST(APPEND LINK_LIBRARIES "pthread")
+    LIST(APPEND LINK_LIBRARIES "pthread")
 endif (WIN32)
 
 
